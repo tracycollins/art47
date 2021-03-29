@@ -1,0 +1,101 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
+import { Link } from 'react-router-dom';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import Rating from '@material-ui/lab/Rating';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+// import { selectArtworkById } from "./artworksSlice";
+
+const useStyles = makeStyles(theme => ({
+  gridListTile: {
+    padding: theme.spacing(1),
+    // margin: theme.spacing(1),
+  },
+  image: {
+    width: '200px',
+    height: '200px',
+  },
+}));
+export function ArtworkExcerpt({ artwork, prevArtworkId, nextArtworkId }) {
+  // export const ArtworkExcerpt = ({ artwork, prevArtworkId, nextArtworkId }) => {
+  const defaultArtworkImageUrl = '/art47_logo.png';
+  const classes = useStyles();
+
+  const artworkImageUrl =
+    artwork && artwork.image && artwork.image.url
+      ? artwork.image.url.replace(/\.(jpeg|jpg|png)/, '-small.$1')
+      : defaultArtworkImageUrl;
+
+  const [displayTitle, setDisplayTitle] = useState(false);
+
+  const handleTitleShow = () => {
+    setDisplayTitle(true);
+  };
+  const handleTitleHide = () => {
+    setDisplayTitle(false);
+  };
+
+  const linkParams = {};
+  linkParams.pathname = `/artworks/${artwork.id}`;
+
+  if (prevArtworkId || nextArtworkId) {
+    linkParams.query = {};
+    linkParams.query.prev_id = prevArtworkId || null;
+    linkParams.query.next_id = nextArtworkId || null;
+  }
+
+  // console.log({ linkParams });
+
+  const title = display =>
+    display ? (
+      <GridListTileBar
+        title={artwork.title}
+        subtitle={
+          <>
+            <Typography variant="subtitle2">
+              {artwork.artist.displayName}
+            </Typography>
+            <Rating
+              readOnly
+              precision={0.5}
+              size="small"
+              name="rate"
+              value={artwork.ratingAverage ? artwork.ratingAverage : 0}
+            />
+          </>
+        }
+      />
+    ) : (
+      <></>
+    );
+
+  return (
+    <>
+      <GridListTile
+        key={artwork.id}
+        // cols={cols}
+        className={classes.gridListTile}
+        onMouseEnter={handleTitleShow}
+        onMouseLeave={handleTitleHide}
+      >
+        <Link to={linkParams}>
+          <img
+            className={classes.image}
+            src={artworkImageUrl}
+            alt={artwork.title}
+          />
+          {title(displayTitle)}
+        </Link>
+      </GridListTile>
+    </>
+  );
+}
+
+ArtworkExcerpt.propTypes = {
+  prevArtworkId: PropTypes.string,
+  nextArtworkId: PropTypes.string,
+  artwork: PropTypes.object,
+};
