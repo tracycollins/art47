@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useAuth0 } from '@auth0/auth0-react';
 import { makeStyles } from '@material-ui/core/styles';
+// import { selectUser } from './slice/selectors';
 
 import CardMedia from '@material-ui/core/CardMedia';
 import Container from '@material-ui/core/Container';

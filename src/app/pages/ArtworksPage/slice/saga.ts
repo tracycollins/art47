@@ -1,38 +1,20 @@
-/* eslint-disable no-console */
-/* eslint-disable no-underscore-dangle */
-/**
- * Gets the repositories of the user from Github
- */
-
+// import { useSelector, useDispatch } from 'react-redux';
 import {
+  // take,
   call,
-  put,
+  // put,
   select,
-  takeLeading,
   // takeLatest,
-  // takeEvery,
+  takeLeading,
 } from 'redux-saga/effects';
-
-import { SET_FILTER, LOAD_ARTWORKS, UPDATE_RATING } from 'app/constants';
-
-import {
-  artworksLoaded,
-  artworksLoadingError,
-  ratingUpdated,
-  ratingUpdateError,
-  setCursor,
-  setFilter,
-  artworksFilterSort,
-} from 'app/actions';
-
+// import { artworksActions as actions } from '.';
+import { selectUser } from 'app/pages/UserPage/slice/selectors';
+// import { selectArtworks } from './selectors';
 import request from 'utils/request';
 
-import {
-  makeSelectCurrentUser,
-  makeSelectCursor,
-  makeSelectFilter,
-} from 'app/selectors';
+import { LOAD_ARTWORKS } from 'app/constants';
 
+// function* doSomething() {}
 console.log(`CLIENT | NODE_ENV:          ${process.env.NODE_ENV}`);
 console.log(`CLIENT | PORT:          ${process.env.PORT}`);
 console.log(`CLIENT | REACT_APP_API_URL: ${process.env.REACT_APP_API_URL}`);
@@ -43,26 +25,21 @@ const productionAppApiUrl = process.env.REACT_APP_API_URL || false;
 
 const API_ROOT = productionAppApiUrl || developmentAppApiUrl;
 
-const POST_OPTIONS = {
-  method: 'POST', // *GET, POST, PUT, DELETE, etc.
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  // body: JSON.stringify(data), // body data type must match "Content-Type" header
-};
-
 export function* getArtworks(action) {
   console.log(`getArtworks | API_ROOT: ${API_ROOT}`);
   console.log({ action });
   try {
-    const user = yield select(makeSelectCurrentUser());
-    const cursor = yield select(makeSelectCursor());
-    const filter = yield select(makeSelectFilter());
+    const user = yield select(selectUser);
+    // const user = selectUser(state);
+    // const cursor = yield select(makeSelectCursor());
+    // const filter = yield select(makeSelectFilter());
 
     console.log({ user });
-    console.log({ cursor });
-    console.log({ filter });
+    // console.log({ cursor });
+    // console.log({ filter });
+
+    const filter = { topRecs: false, topRated: false, unrated: false };
+    const cursor = { _id: 0, subDoc: 'none', sort: 'none' };
 
     const userid = user.id || user.sub;
 
@@ -131,17 +108,25 @@ export function* getArtworks(action) {
       `results.artworks: ${results.artworks ? results.artworks.length : 0}`,
     );
 
-    yield put(artworksLoaded(results.artworks));
-    const tempCursor =
-      results.artworks.length < 20
-        ? { _id: 0 }
-        : Object.assign({}, cursor, results.nextKey);
+    // yield put(artworksLoaded(results.artworks));
+    // const tempCursor =
+    //   results.artworks.length < 20
+    //     ? { _id: 0 }
+    //     : Object.assign({}, cursor, results.nextKey);
 
-    yield put(setCursor(tempCursor));
+    // yield put(setCursor(tempCursor));
   } catch (err) {
-    yield put(artworksLoadingError(err));
+    // yield put(artworksLoadingError(err));
   }
 }
+const POST_OPTIONS = {
+  method: 'POST', // *GET, POST, PUT, DELETE, etc.
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  // body: JSON.stringify(data), // body data type must match "Content-Type" header
+};
 
 export function* updateRating(action) {
   console.log(`updateRating | API_ROOT: ${API_ROOT}`);
@@ -166,37 +151,37 @@ export function* updateRating(action) {
     };
 
     const { rating } = yield call(request, requestURL, options);
-    // console.log({ rating });
-    yield put(ratingUpdated(rating));
+    console.log({ rating });
+    // yield put(ratingUpdated(rating));
     // yield put(artworksLoaded([artwork]));
   } catch (err) {
-    yield put(ratingUpdateError(err));
+    // yield put(ratingUpdateError(err));
   }
 }
 
-export function* updateFilter(action) {
-  console.log(`updateFilter | API_ROOT: ${API_ROOT}`);
-  console.log(
-    `updateFilter` +
-      ` | TOP RATED: ${action.filter.topRated}` +
-      ` | TOP RECS: ${action.filter.topRecs}` +
-      ` | UNRATED: ${action.filter.unrated}`,
-  );
-  console.log({ action });
+// export function* updateFilter(action) {
+//   console.log(`updateFilter | API_ROOT: ${API_ROOT}`);
+//   console.log(
+//     `updateFilter` +
+//       ` | TOP RATED: ${action.filter.topRated}` +
+//       ` | TOP RECS: ${action.filter.topRecs}` +
+//       ` | UNRATED: ${action.filter.unrated}`,
+//   );
+//   console.log({ action });
 
-  try {
-    yield put(setFilter(action.filter));
-    yield put(artworksFilterSort({ filter: action.filter }));
-  } catch (err) {
-    throw err;
-  }
-}
+//   try {
+//     yield put(setFilter(action.filter));
+//     yield put(artworksFilterSort({ filter: action.filter }));
+//   } catch (err) {
+//     throw err;
+//   }
+// }
 
 /**
  * Root saga manages watcher lifecycle
  */
-export default function* artworksUpdate() {
-  yield takeLeading(SET_FILTER, updateFilter);
-  yield takeLeading(UPDATE_RATING, updateRating);
+export function* artworksSaga() {
+  // yield takeLeading(SET_FILTER, updateFilter);
+  // yield takeLeading(UPDATE_RATING, updateRating);
   yield takeLeading(LOAD_ARTWORKS, getArtworks);
 }

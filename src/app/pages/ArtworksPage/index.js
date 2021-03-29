@@ -2,8 +2,11 @@
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 import React, { useRef, useEffect, useState, memo, useCallback } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { compose } from 'redux';
+import { useArtworksSlice } from './slice';
+import { selectArtworks } from './slice/selectors';
+
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 // import { useAuth0 } from '@auth0/auth0-react';
@@ -14,33 +17,35 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { createStructuredSelector } from 'reselect';
-import {
-  makeSelectArtworks,
-  makeSelectCursor,
-  makeSelectFilter,
-  makeSelectCurrentUser,
-  makeSelectCurrentArtwork,
-  makeSelectLoading,
-  makeSelectError,
-} from 'app/selectors';
 
-import {
-  loadArtworks,
-  setCurrentArtwork,
-  updateRating,
-  setFilter,
-  // setCursor,
-} from 'app/actions';
+import {} from './slice/selectors';
+// import {
+//   makeSelectArtworks,
+//   makeSelectCursor,
+//   makeSelectFilter,
+//   makeSelectCurrentUser,
+//   makeSelectCurrentArtwork,
+//   makeSelectLoading,
+//   makeSelectError,
+// } from 'app/selectors';
 
-import { useInjectReducer } from 'utils/injectReducer';
-import { useInjectSaga } from 'utils/injectSaga';
-import reducer from 'app/reducer';
+// import {
+//   // loadArtworks,
+//   setCurrentArtwork,
+//   updateRating,
+//   setFilter,
+//   // setCursor,
+// } from 'app/actions';
+
+// import { useInjectReducer } from 'utils/injectReducer';
+// import { useInjectSaga } from 'utils/injectSaga';
+// import reducer from 'app/reducer';
 import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
-
-import saga from './saga';
+// import artworksSaga from './slice/saga';
+// import saga from './saga';
 import Artwork from '../Artwork';
 
-const key = 'global';
+// const key = 'global';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -93,13 +98,16 @@ function ArtworksPage({
   history,
   artworks,
   loading,
-  handleLoadMore,
+  // handleLoadMore,
   // handleSetCursor,
   handleSetCurrentArtwork,
   handleUpdateRating,
 }) {
-  useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga });
+  const { actions } = useArtworksSlice();
+  const dispatch = useDispatch();
+
+  // useInjectReducer({ key, reducer });
+  // useInjectSaga({ key, artworksSaga });
   // const { user } = useAuth0();
   const classes = useStyles();
 
@@ -126,7 +134,8 @@ function ArtworksPage({
     console.log(`DISPLAY | FILTER`);
     console.log({ newFilter });
     handleSetFilter(newFilter);
-    handleLoadMore();
+    dispatch(actions.loadArtworks());
+    // handleLoadMore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -195,7 +204,8 @@ function ArtworksPage({
   const currentArtworkIdRef = useRef(currentArtworkId);
 
   useEffect(() => {
-    handleLoadMore();
+    dispatch(actions.loadArtworks());
+    // handleLoadMore();
     handleSetCurrentArtwork(
       currentArtworkIdRef.current
         ? artworks.find((artwork, index) => {
@@ -211,7 +221,8 @@ function ArtworksPage({
   }, []);
 
   useEffect(() => {
-    handleLoadMore();
+    // handleLoadMore();
+    dispatch(actions.loadArtworks());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -241,7 +252,8 @@ function ArtworksPage({
   }, [location.pathname]);
 
   function infiniteHandleLoadMore() {
-    return handleLoadMore();
+    // return handleLoadMore();
+    return dispatch(actions.loadArtworks());
   }
 
   const infiniteRef = useInfiniteScroll({
@@ -360,28 +372,28 @@ ArtworksPage.propTypes = {
   loading: PropTypes.bool,
   history: PropTypes.object,
   // handleSetCursor: PropTypes.func,
-  handleLoadMore: PropTypes.func,
+  // handleLoadMore: PropTypes.func,
   handleSetCurrentArtwork: PropTypes.func,
   handleUpdateRating: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
-  artworks: makeSelectArtworks(),
-  filter: makeSelectFilter(),
-  cursor: makeSelectCursor(),
-  currentUser: makeSelectCurrentUser(),
-  currentArtwork: makeSelectCurrentArtwork(),
-  loading: makeSelectLoading(),
-  error: makeSelectError(),
+  artworks: selectArtworks(),
+  // filter: makeSelectFilter(),
+  // cursor: makeSelectCursor(),
+  // currentUser: makeSelectCurrentUser(),
+  // currentArtwork: makeSelectCurrentArtwork(),
+  // loading: makeSelectLoading(),
+  // error: makeSelectError(),
 });
 
 export function mapDispatchToProps(dispatch) {
   return {
-    handleLoadMore: () => dispatch(loadArtworks()),
-    handleSetCurrentArtwork: artwork => dispatch(setCurrentArtwork(artwork)),
-    // handleSetCursor: cursor => dispatch(setCursor(cursor)),
-    handleSetFilter: filter => dispatch(setFilter(filter)),
-    handleUpdateRating: rating => dispatch(updateRating(rating)),
+    // // handleLoadMore: () => dispatch(loadArtworks()),
+    // handleSetCurrentArtwork: artwork => dispatch(setCurrentArtwork(artwork)),
+    // // handleSetCursor: cursor => dispatch(setCursor(cursor)),
+    // handleSetFilter: filter => dispatch(setFilter(filter)),
+    // handleUpdateRating: rating => dispatch(updateRating(rating)),
   };
 }
 

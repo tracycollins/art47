@@ -12,6 +12,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import history from 'utils/history';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 // Use consistent styling
 import 'sanitize.css/sanitize.css';
@@ -35,7 +36,15 @@ ReactDOM.render(
   <Provider store={store}>
     <HelmetProvider>
       <React.StrictMode>
-        <App history={history} />
+        <Auth0Provider
+          domain="wild-disk-7982.us.auth0.com"
+          clientId="Utmgokd22lCluIMbM2WzmAVgyjCsHPxB"
+          redirectUri={
+            process.env.REACT_APP_AUTH0_REDIRECT_URI || `http://localhost:3000`
+          }
+        >
+          <App history={history} />
+        </Auth0Provider>
       </React.StrictMode>
     </HelmetProvider>
   </Provider>,

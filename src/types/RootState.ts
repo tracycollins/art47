@@ -1,3 +1,5 @@
+import { ArtworksState } from 'app/pages/ArtworksPage/slice/types';
+import { UserState } from 'app/pages/UserPage/slice/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
 /* 
@@ -5,5 +7,7 @@
   You have to declare them here manually
 */
 export interface RootState {
+  artworks?: ArtworksState;
+  user?: UserState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }

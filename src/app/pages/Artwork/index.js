@@ -10,7 +10,7 @@ import { createStructuredSelector } from 'reselect';
 import { makeStyles } from '@material-ui/core/styles';
 // import { useInjectReducer } from 'utils/injectReducer';
 // import { useInjectSaga } from 'utils/injectSaga';
-import { makeSelectLoading, makeSelectError } from 'app/selectors';
+// import { makeSelectLoading, makeSelectError } from 'app/selectors';
 // import { updateRating } from 'app/actions';
 
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -231,8 +231,8 @@ Artwork.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  loading: makeSelectLoading(),
-  error: makeSelectError(),
+  // loading: makeSelectLoading(),
+  // error: makeSelectError(),
 });
 
 export function mapDispatchToProps(dispatch) {

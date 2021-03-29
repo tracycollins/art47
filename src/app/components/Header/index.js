@@ -28,7 +28,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
 import { makeStyles } from '@material-ui/core/styles';
-import { makeSelectCurrentUser, makeSelectError } from 'app/selectors';
+// import { makeSelectCurrentUser, makeSelectError } from 'app/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -306,8 +306,8 @@ function Header({ history }) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: makeSelectCurrentUser(),
-  error: makeSelectError(),
+  // currentUser: makeSelectCurrentUser(),
+  // error: makeSelectError(),
 });
 
 Header.propTypes = {
