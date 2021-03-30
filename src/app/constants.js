@@ -35,16 +35,18 @@ export const INITIAL_STATE = {
   artworks: [],
 };
 
-export const SET_FILTER = 'art47/App/SET_FILTER';
-export const SET_CURSOR = 'art47/App/SET_CURSOR';
-export const UPDATE_RATING = 'art47/App/UPDATE_RATING';
-export const UPDATE_RATING_SUCCESS = 'art47/App/UPDATE_RATING_SUCCESS';
-export const UPDATE_RATING_ERROR = 'art47/App/UPDATE_RATING_ERROR';
-export const SET_CURRENT_USER = 'art47/App/SET_CURRENT_USER';
-export const SET_CURRENT_USER_SUCCESS = 'art47/App/SET_CURRENT_USER_SUCCESS';
-export const SET_CURRENT_USER_ERROR = 'art47/App/SET_CURRENT_USER_ERROR';
-export const SET_CURRENT_ARTWORK = 'art47/App/SET_CURRENT_ARTWORK';
-export const LOAD_ARTWORKS = 'art47/App/LOAD_ARTWORKS';
-export const LOAD_ARTWORKS_SUCCESS = 'art47/App/LOAD_ARTWORKS_SUCCESS';
-export const LOAD_ARTWORKS_ERROR = 'art47/App/LOAD_ARTWORKS_ERROR';
-export const ARTWORKS_FILTER_SORT = 'art47/App/ARTWORKS_FILTER_SORT';
+export const SET_FILTER = 'artworks/SET_FILTER';
+export const SET_CURSOR = 'artworks/SET_CURSOR';
+export const UPDATE_RATING = 'artworks/UPDATE_RATING';
+export const UPDATE_RATING_SUCCESS = 'artworks/UPDATE_RATING_SUCCESS';
+export const UPDATE_RATING_ERROR = 'artworks/UPDATE_RATING_ERROR';
+export const GET_USER = 'user/getUser';
+export const SET_USER = 'user/setUser';
+export const SET_CURRENT_USER_SUCCESS = 'artworks/SET_CURRENT_USER_SUCCESS';
+export const SET_CURRENT_USER_ERROR = 'artworks/SET_CURRENT_USER_ERROR';
+export const SET_CURRENT_ARTWORK = 'artworks/SET_CURRENT_ARTWORK';
+export const SET_ARTWORKS = 'artworks/setArtworks';
+export const GET_ARTWORKS = 'artworks/getArtworks';
+export const GET_ARTWORKS_SUCCESS = 'artworks/GET_ARTWORKS_SUCCESS';
+export const GET_ARTWORKS_ERROR = 'artworks/GET_ARTWORKS_ERROR';
+export const ARTWORKS_FILTER_SORT = 'artworks/ARTWORKS_FILTER_SORT';

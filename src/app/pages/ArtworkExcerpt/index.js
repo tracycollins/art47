@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -19,7 +19,8 @@ const useStyles = makeStyles(theme => ({
     height: '200px',
   },
 }));
-export function ArtworkExcerpt({ artwork, prevArtworkId, nextArtworkId }) {
+
+export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
   // export const ArtworkExcerpt = ({ artwork, prevArtworkId, nextArtworkId }) => {
   const defaultArtworkImageUrl = '/art47_logo.png';
   const classes = useStyles();
@@ -41,11 +42,11 @@ export function ArtworkExcerpt({ artwork, prevArtworkId, nextArtworkId }) {
   const linkParams = {};
   linkParams.pathname = `/artworks/${artwork.id}`;
 
-  if (prevArtworkId || nextArtworkId) {
-    linkParams.query = {};
-    linkParams.query.prev_id = prevArtworkId || null;
-    linkParams.query.next_id = nextArtworkId || null;
-  }
+  // if (prevArtworkId || nextArtworkId) {
+  //   linkParams.query = {};
+  //   linkParams.query.prev_id = prevArtworkId || null;
+  //   linkParams.query.next_id = nextArtworkId || null;
+  // }
 
   // console.log({ linkParams });
 
@@ -94,8 +95,8 @@ export function ArtworkExcerpt({ artwork, prevArtworkId, nextArtworkId }) {
   );
 }
 
-ArtworkExcerpt.propTypes = {
-  prevArtworkId: PropTypes.string,
-  nextArtworkId: PropTypes.string,
-  artwork: PropTypes.object,
-};
+// ArtworkExcerpt.propTypes = {
+//   prevArtworkId: PropTypes.string,
+//   nextArtworkId: PropTypes.string,
+//   artwork: PropTypes.object,
+// };

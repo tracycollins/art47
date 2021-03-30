@@ -1,11 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
-// import { push } from 'connected-react-router';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { createStructuredSelector } from 'reselect';
-
+import { useHistory } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
 import { green } from '@material-ui/core/colors';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -28,7 +24,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
 import { makeStyles } from '@material-ui/core/styles';
-// import { makeSelectCurrentUser, makeSelectError } from 'app/selectors';
+// import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -80,8 +76,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Header({ history }) {
+export function Header() {
   const { loginWithRedirect, user, logout, isAuthenticated } = useAuth0();
+  let history = useHistory();
+  // console.log({ history });
 
   const classes = useStyles();
   const [profile, setProfile] = React.useState(false);
@@ -211,10 +209,10 @@ function Header({ history }) {
             {isAuthenticated ? user.email : ''}
           </Typography>
           <Typography color="textSecondary">
-            {isAuthenticated ? `USER ID: ${user.sub}` : ''}
+            {isAuthenticated ? `ID: ${user.sub}` : ''}
           </Typography>
           <Typography color="textSecondary">
-            {isAuthenticated ? `USER DB ID: ${user._id}` : ''}
+            {isAuthenticated ? `DB ID: ${user._id}` : ''}
           </Typography>
         </CardContent>
         <CardActions>
@@ -304,21 +302,3 @@ function Header({ history }) {
     </div>
   );
 }
-
-const mapStateToProps = createStructuredSelector({
-  // currentUser: makeSelectCurrentUser(),
-  // error: makeSelectError(),
-});
-
-Header.propTypes = {
-  history: PropTypes.object,
-};
-
-// export default connect(
-//   null,
-//   { push },
-// )(Header);
-
-const withConnect = connect(mapStateToProps);
-
-export default compose(withConnect)(Header);

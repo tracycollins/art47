@@ -11,7 +11,6 @@ import { makeStyles } from '@material-ui/core/styles';
 // import { useInjectReducer } from 'utils/injectReducer';
 // import { useInjectSaga } from 'utils/injectSaga';
 // import { makeSelectLoading, makeSelectError } from 'app/selectors';
-// import { updateRating } from 'app/actions';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Link } from 'react-router-dom';

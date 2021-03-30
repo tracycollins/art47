@@ -2,19 +2,19 @@
 import {
   // take,
   call,
-  // put,
+  put,
   select,
-  // takeLatest,
+  delay,
   takeLeading,
 } from 'redux-saga/effects';
-// import { artworksActions as actions } from '.';
+import { artworksActions } from '.';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 // import { selectArtworks } from './selectors';
 import request from 'utils/request';
+// import { Artwork } from 'types/Artwork';
+import { User } from 'types/User';
+import { GET_ARTWORKS } from 'app/constants';
 
-import { LOAD_ARTWORKS } from 'app/constants';
-
-// function* doSomething() {}
 console.log(`CLIENT | NODE_ENV:          ${process.env.NODE_ENV}`);
 console.log(`CLIENT | PORT:          ${process.env.PORT}`);
 console.log(`CLIENT | REACT_APP_API_URL: ${process.env.REACT_APP_API_URL}`);
@@ -25,11 +25,15 @@ const productionAppApiUrl = process.env.REACT_APP_API_URL || false;
 
 const API_ROOT = productionAppApiUrl || developmentAppApiUrl;
 
-export function* getArtworks(action) {
+export function* getArtworks(options) {
+  console.log({ options });
+  console.log({ artworksActions });
+
   console.log(`getArtworks | API_ROOT: ${API_ROOT}`);
-  console.log({ action });
   try {
-    const user = yield select(selectUser);
+    yield delay(500);
+
+    const user: User = yield select(selectUser);
     // const user = selectUser(state);
     // const cursor = yield select(makeSelectCursor());
     // const filter = yield select(makeSelectFilter());
@@ -59,7 +63,7 @@ export function* getArtworks(action) {
 
     let requestURL = '';
 
-    if (!cursor.subDoc) {
+    if (cursor.subDoc === 'none') {
       requestURL = `${API_ROOT}/artworks/user/${userid}/cursor/${cursor._id}/`;
     } else if (filter.unrated) {
       // '/artworks/user/:userid/cursor/:cursorid/(:subdoc)?(.:sort.:value)?',
@@ -108,7 +112,7 @@ export function* getArtworks(action) {
       `results.artworks: ${results.artworks ? results.artworks.length : 0}`,
     );
 
-    // yield put(artworksLoaded(results.artworks));
+    yield put(artworksActions.artworksLoaded(results.artworks));
     // const tempCursor =
     //   results.artworks.length < 20
     //     ? { _id: 0 }
@@ -116,9 +120,12 @@ export function* getArtworks(action) {
 
     // yield put(setCursor(tempCursor));
   } catch (err) {
+    console.error(err);
+
     // yield put(artworksLoadingError(err));
   }
 }
+
 const POST_OPTIONS = {
   method: 'POST', // *GET, POST, PUT, DELETE, etc.
   headers: {
@@ -183,5 +190,5 @@ export function* updateRating(action) {
 export function* artworksSaga() {
   // yield takeLeading(SET_FILTER, updateFilter);
   // yield takeLeading(UPDATE_RATING, updateRating);
-  yield takeLeading(LOAD_ARTWORKS, getArtworks);
+  yield takeLeading(GET_ARTWORKS, getArtworks);
 }

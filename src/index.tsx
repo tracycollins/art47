@@ -11,7 +11,7 @@ import 'react-app-polyfill/stable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import history from 'utils/history';
+// import history from 'utils/history';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 // Use consistent styling
@@ -43,7 +43,7 @@ ReactDOM.render(
             process.env.REACT_APP_AUTH0_REDIRECT_URI || `http://localhost:3000`
           }
         >
-          <App history={history} />
+          <App />
         </Auth0Provider>
       </React.StrictMode>
     </HelmetProvider>

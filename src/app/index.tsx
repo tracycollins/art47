@@ -5,22 +5,36 @@
  * This component is the skeleton around the actual pages, and should only
  * contain code that should be seen on all pages. (e.g. navigation bar)
  */
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useUserSlice } from 'app/pages/UserPage/slice';
 
-import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 import { GlobalStyle } from 'styles/global-styles';
 
 import { ArtworksPage } from './pages/ArtworksPage/Loadable';
 import { UserPage } from './pages/UserPage/Loadable';
 import { HomePage } from './pages/HomePage/Loadable';
+import { Header } from './components/Header';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
-import Header from './components/Header';
 
-export function App({ history }) {
+export function App() {
+  const dispatch = useDispatch();
   const { i18n } = useTranslation();
+  const { actions } = useUserSlice();
+  const { user, isAuthenticated } = useAuth0();
+
+  useEffect(() => {
+    console.log(`setUser: `, user);
+    dispatch(actions.setUser(user));
+    if (user) dispatch(actions.getUser(user.sub));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
   return (
     <BrowserRouter>
       <Helmet
@@ -30,7 +44,7 @@ export function App({ history }) {
       >
         <meta name="description" content="art recommendation app" />
       </Helmet>
-      <Header history={history} />
+      <Header />
 
       <Switch>
         <Route path="/artworks/:id" component={ArtworksPage} />
