@@ -29,9 +29,16 @@ export function App() {
   const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
-    console.log(`setUser: `, user);
-    dispatch(actions.setUser(user));
-    if (user) dispatch(actions.getUser(user.sub));
+    console.log(
+      `app | setUser | isAuthenticated: ${isAuthenticated} | USER: ${
+        user ? user.sub : 'UNDEFINED'
+      }`,
+    );
+    if (isAuthenticated && user) {
+      dispatch(actions.getUser(user));
+    } else {
+      dispatch(actions.setUser(user));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 

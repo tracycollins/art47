@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
 // import { selectArtworks, selectLoading, selectError } from './slice/selectors';
-import { selectArtworks } from './slice/selectors';
+import { selectArtworks, selectLoading, selectCursor } from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
@@ -67,21 +67,28 @@ export function ArtworksPage() {
 
   const { actions } = useArtworksSlice();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const artworks = useSelector(selectArtworks);
+  const loading = useSelector(selectLoading);
+  const cursor = useSelector(selectCursor);
+  const hasNextPage = true;
+
   // const isLoading = useSelector(selectLoading);
   // const error = useSelector(selectError);
-  const user = useSelector(selectUser);
 
-  console.log({ artworks });
   console.log({ user });
+  console.log({ cursor });
+  console.log({ loading });
+  console.log({ artworks });
 
   const classes = useStyles();
   const currentArtworkId = 0;
 
   useEffect(() => {
-    console.log(`display getArtworks`);
+    console.log(`ArtworksPage | getArtworks`);
     const options = { user };
-    dispatch(actions.getArtworks(options));
+    const results = dispatch(actions.getArtworks(options));
+    console.log({ results });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -91,17 +98,18 @@ export function ArtworksPage() {
     return dispatch(actions.getArtworks(options));
   }
 
-  const loading = false;
-  const hasNextPage = true;
-
   const infiniteRef = useInfiniteScroll({
     loading,
     hasNextPage,
     onLoadMore: infiniteHandleLoadMore,
   });
 
+  // export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
+
   const artworksDisplay = () =>
-    artworks.map(artwork => <ArtworkExcerpt key={artwork.id} />);
+    artworks.map(artwork => (
+      <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
+    ));
 
   const content = currentArtworkId ? (
     <div className={classes.artworkRoot}>

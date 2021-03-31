@@ -1,9 +1,11 @@
 import { Artwork } from 'types/Artwork';
+import { Cursor } from 'types/Cursor';
 
 /* --- STATE --- */
 export interface ArtworksState {
   artworks: Artwork[];
   loading: boolean;
+  cursor: Cursor;
   error?: ArtworkErrorType | null;
 }
 

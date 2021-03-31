@@ -1,5 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { Artwork } from 'types/Artwork';
+// import { Artwork } from 'types/Artwork';
+// import { Cursor } from 'types/Cursor';
 import { createSlice } from 'utils/@reduxjs/toolkit';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { artworksSaga } from './saga';
@@ -9,6 +10,7 @@ export const initialState: ArtworksState = {
   loading: false,
   error: null,
   artworks: [],
+  cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
 };
 
 const slice = createSlice({
@@ -18,16 +20,29 @@ const slice = createSlice({
     getArtworks(state) {
       state.loading = true;
       state.error = null;
-      state.artworks = [];
+      // state.artworks = [];
     },
     loadArtworks(state) {
       state.loading = true;
       state.error = null;
-      state.artworks = [];
+      // state.artworks = [];
     },
-    artworksLoaded(state, action: PayloadAction<Artwork[]>) {
-      const artworks = action.payload;
-      state.artworks = artworks;
+    artworksLoaded(state, action) {
+      const artworks = [...state.artworks];
+      const newArtworks = [...action.payload.artworks];
+      let tempArtworks = artworks.filter(
+        artwork =>
+          !newArtworks.find(newArtwork => newArtwork._id === artwork._id),
+      );
+      tempArtworks = [...tempArtworks, ...newArtworks];
+      tempArtworks.sort((a, b) => {
+        if (a._id < b._id) return -1;
+        if (a._id > b._id) return 1;
+        return 0;
+      });
+      state.artworks = tempArtworks;
+      const cursor = action.payload.cursor;
+      state.cursor = cursor;
       state.loading = false;
     },
     artworksError(state, action: PayloadAction<ArtworkErrorType>) {

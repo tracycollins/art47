@@ -16,7 +16,12 @@ const slice = createSlice({
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<User>) {
-      const user = action.payload;
+      // console.log(`setUser`);
+      const user = Object.assign({}, action.payload);
+      console.log({ user });
+      if (user && user.picture && user.image === null) {
+        user.image = user.picture;
+      }
       state.user = user;
       state.error = null;
       state.loading = false;

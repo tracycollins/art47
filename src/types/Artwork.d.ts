@@ -1,10 +1,9 @@
-interface ArtworkItem {
-  title: string;
+export interface Artwork {
+  _id: string;
   id: number;
-}
-
-export interface Artwork extends ArtworkItem {
-  forks: number;
-  open_issues: number;
-  watchers: number;
+  title: string;
+  ratings: array;
+  ratingUser: object;
+  recommendations: array;
+  recommendationUser: object;
 }

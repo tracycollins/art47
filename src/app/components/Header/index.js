@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
 import { green } from '@material-ui/core/colors';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -24,7 +24,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
 import { makeStyles } from '@material-ui/core/styles';
-// import { selectUser } from 'app/pages/UserPage/slice/selectors';
+import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -77,9 +77,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Header() {
-  const { loginWithRedirect, user, logout, isAuthenticated } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   let history = useHistory();
-  // console.log({ history });
+  const user = useSelector(selectUser);
 
   const classes = useStyles();
   const [profile, setProfile] = React.useState(false);
@@ -195,28 +195,28 @@ export function Header() {
       <Card className={classes.profile}>
         <CardMedia
           className={classes.media}
-          image={isAuthenticated ? user.picture : '/art47_logo.png'}
-          title={isAuthenticated ? user.name : ''}
+          image={user ? user.picture : '/art47_logo.png'}
+          title={user ? user.name : ''}
         />
         <CardContent>
           <Typography variant="h5" component="h2">
-            {isAuthenticated ? user.name : ''}
+            {user ? user.name : ''}
           </Typography>
           <Typography variant="h5" component="h3">
-            {isAuthenticated ? user.nickname : ''}
+            {user ? user.nickname : ''}
           </Typography>
           <Typography color="textSecondary">
-            {isAuthenticated ? user.email : ''}
+            {user ? user.email : ''}
           </Typography>
           <Typography color="textSecondary">
-            {isAuthenticated ? `ID: ${user.sub}` : ''}
+            {user ? `ID: ${user.id}` : ''}
           </Typography>
           <Typography color="textSecondary">
-            {isAuthenticated ? `DB ID: ${user._id}` : ''}
+            {user ? `DB ID: ${user._id}` : ''}
           </Typography>
         </CardContent>
         <CardActions>
-          {isAuthenticated ? (
+          {user && isAuthenticated ? (
             <Button onClick={logout} variant="contained" color="secondary">
               LOGOUT
             </Button>

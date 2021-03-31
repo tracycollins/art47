@@ -10,6 +10,11 @@ export const selectArtworks = createSelector(
   artworksState => artworksState.artworks,
 );
 
+export const selectCursor = createSelector(
+  [selectDomain],
+  artworksState => artworksState.cursor,
+);
+
 export const selectLoading = createSelector(
   [selectDomain],
   artworksState => artworksState.loading,
