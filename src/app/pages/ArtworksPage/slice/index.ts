@@ -22,6 +22,11 @@ const slice = createSlice({
       state.loading = false;
       state.currentArtworkId = action.payload;
     },
+    getArtworkById(state, action) {
+      state.currentArtworkId = action.payload;
+      state.loading = true;
+      state.error = null;
+    },
     getArtworks(state) {
       state.loading = true;
       state.error = null;
@@ -44,8 +49,11 @@ const slice = createSlice({
         return 0;
       });
       state.artworks = tempArtworks;
-      const cursor = action.payload.cursor;
-      state.cursor = cursor;
+      if (action.payload.cursor) {
+        const cursor = action.payload.cursor;
+        state.cursor = cursor;
+      }
+
       state.loading = false;
     },
     artworksError(state, action: PayloadAction<ArtworkErrorType>) {

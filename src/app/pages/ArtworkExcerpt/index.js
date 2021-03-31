@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
-  // export const ArtworkExcerpt = ({ artwork, prevArtworkId, nextArtworkId }) => {
   const defaultArtworkImageUrl = '/art47_logo.png';
   const classes = useStyles();
 
@@ -41,14 +40,6 @@ export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
 
   const linkParams = {};
   linkParams.pathname = `/artworks/${artwork.id}`;
-
-  // if (prevArtworkId || nextArtworkId) {
-  //   linkParams.query = {};
-  //   linkParams.query.prev_id = prevArtworkId || null;
-  //   linkParams.query.next_id = nextArtworkId || null;
-  // }
-
-  // console.log({ linkParams });
 
   const title = display =>
     display ? (
@@ -94,9 +85,3 @@ export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
     </>
   );
 }
-
-// ArtworkExcerpt.propTypes = {
-//   prevArtworkId: PropTypes.string,
-//   nextArtworkId: PropTypes.string,
-//   artwork: PropTypes.object,
-// };

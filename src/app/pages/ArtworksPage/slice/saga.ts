@@ -15,10 +15,10 @@ import request from 'utils/request';
 // import { Artwork } from 'types/Artwork';
 import { User } from 'types/User';
 import { Cursor } from 'types/Cursor';
-import { GET_ARTWORKS } from 'app/constants';
+import { GET_ARTWORKS, GET_ARTWORK_BY_ID } from 'app/constants';
 
-console.log(`CLIENT | NODE_ENV:          ${process.env.NODE_ENV}`);
-console.log(`CLIENT | PORT:          ${process.env.PORT}`);
+console.log(`CLIENT | NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`CLIENT | PORT: ${process.env.PORT}`);
 console.log(`CLIENT | REACT_APP_API_URL: ${process.env.REACT_APP_API_URL}`);
 
 const developmentAppApiUrl =
@@ -27,30 +27,57 @@ const productionAppApiUrl = process.env.REACT_APP_API_URL || false;
 
 const API_ROOT = productionAppApiUrl || developmentAppApiUrl;
 
-export function* getArtworks(options) {
-  console.log({ options });
-  console.log({ artworksActions });
+export function* getArtworkById(action) {
+  const artworkId = action.payload;
+  console.log(`artworkId | API_ROOT: ${API_ROOT} | ARTWORK ID: ${artworkId}`);
+  try {
+    yield delay(100);
 
+    const user: User = yield select(selectUser);
+    const userId = user.id || user.sub || 0;
+
+    const requestURL = `${API_ROOT}/artworks/user/${userId}/id/${artworkId}/`;
+
+    const results = yield call(request, requestURL);
+    const artwork = results.artwork;
+
+    if (user._id) {
+      if (artwork.ratings && artwork.ratings.length > 0) {
+        artwork.ratings.forEach(rating => {
+          if (rating.user === user._id) {
+            artwork.ratingUser = rating;
+          }
+        });
+      }
+      if (artwork.recommendations && artwork.recommendations.length > 0) {
+        for (let j = 0; j < artwork.recommendations.length; j += 1) {
+          if (artwork.recommendations[j].user === user._id) {
+            artwork.recommendationUser = artwork.recommendations[j];
+          }
+        }
+      }
+    }
+
+    console.log(`ArtworksPage | FETCHED ARTWORK | ID: ${artworkId}`);
+
+    yield put(artworksActions.artworksLoaded({ artworks: [artwork] }));
+  } catch (err) {
+    console.error(err);
+
+    // yield put(artworksLoadingError(err));
+  }
+}
+
+export function* getArtworks(options) {
   console.log(`getArtworks | API_ROOT: ${API_ROOT}`);
   try {
     yield delay(500);
 
     const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
-    // let artworks: Artwork[] = yield select(selectArtworks);
-
-    // const user = selectUser(state);
-    // const cursor = yield select(makeSelectCursor());
-    // const filter = yield select(makeSelectFilter());
-
-    console.log({ user });
-    // console.log({ cursor });
-    // console.log({ filter });
 
     const filter = { topRecs: false, topRated: false, unrated: false };
-    // let cursor = { _id: 0, subDoc: 'none', sort: 'none' };
-
-    const userid = user.id || user.sub;
+    const userId = user.id || user.sub || 0;
 
     if (filter.topRated) {
       cursor.subDoc = 'rating';
@@ -69,22 +96,17 @@ export function* getArtworks(options) {
     let requestURL = '';
 
     if (cursor.subDoc === 'none') {
-      requestURL = `${API_ROOT}/artworks/user/${userid}/cursor/${cursor._id}/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/`;
     } else if (filter.unrated) {
-      // '/artworks/user/:userid/cursor/:cursorid/(:subdoc)?(.:sort.:value)?',
-      requestURL = `${API_ROOT}/artworks/user/${userid}/cursor/${cursor._id}/${cursor.subDoc}/`;
+      // '/artworks/user/:userId/cursor/:cursorid/(:subdoc)?(.:sort.:value)?',
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/${cursor.subDoc}/`;
     } else {
-      requestURL = `${API_ROOT}/artworks/user/${userid}/cursor/${cursor._id}/${
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/${
         cursor.subDoc
       }.${cursor.sort}.${cursor[cursor.sort] || 999}/`;
     }
-    console.log({ requestURL });
     const results = yield call(request, requestURL);
     const artworks = [...results.artworks];
-
-    // console.log({ results });
-
-    // console.log(`nextKey:`, results.nextKey);
 
     if (user._id) {
       for (let i = 0; i < artworks.length; i += 1) {
@@ -119,13 +141,6 @@ export function* getArtworks(options) {
         ? { _id: 0 }
         : Object.assign({}, cursor, results.nextKey);
     yield put(artworksActions.artworksLoaded({ artworks, cursor: tempCursor }));
-    // const tempCursor =
-    //   results.artworks.length < 20
-    //     ? { _id: 0 }
-    //     : Object.assign({}, cursor, results.nextKey);
-
-    // yield put(setCursor(tempCursor));
-    // return { artworks, cursor };
   } catch (err) {
     console.error(err);
 
@@ -152,12 +167,9 @@ export function* updateRating(action) {
       ` | ARTWORK _ID: ${action.rating.artwork._id}` +
       ` | RATE: ${action.rating.rate}`,
   );
-  console.log({ action });
 
   try {
     const requestURL = `${API_ROOT}/ratings/create/`;
-
-    // console.log({ requestURL });
 
     const options = {
       ...POST_OPTIONS,
@@ -181,7 +193,6 @@ export function* updateRating(action) {
 //       ` | TOP RECS: ${action.filter.topRecs}` +
 //       ` | UNRATED: ${action.filter.unrated}`,
 //   );
-//   console.log({ action });
 
 //   try {
 //     yield put(setFilter(action.filter));
@@ -197,5 +208,6 @@ export function* updateRating(action) {
 export function* artworksSaga() {
   // yield takeLeading(SET_FILTER, updateFilter);
   // yield takeLeading(UPDATE_RATING, updateRating);
+  yield takeLeading(GET_ARTWORK_BY_ID, getArtworkById);
   yield takeLeading(GET_ARTWORKS, getArtworks);
 }

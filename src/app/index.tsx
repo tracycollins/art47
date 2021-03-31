@@ -26,21 +26,24 @@ export function App() {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
   const { actions } = useUserSlice();
-  const { user, isAuthenticated } = useAuth0();
+  const { isLoading, user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
     console.log(
-      `app | setUser | isAuthenticated: ${isAuthenticated} | USER: ${
-        user ? user.sub : 'UNDEFINED'
-      }`,
+      `app | auth0` +
+        ` | isLoading: ${isLoading}` +
+        ` | isAuthenticated: ${isAuthenticated}` +
+        ` | USER: ${user ? user.sub : 'UNDEFINED'}`,
     );
-    if (isAuthenticated && user) {
-      dispatch(actions.getUser(user));
-    } else {
-      dispatch(actions.setUser(user));
+    if (!isLoading) {
+      if (isAuthenticated && user) {
+        dispatch(actions.getUser(user));
+      } else {
+        dispatch(actions.setUser(user));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isLoading, isAuthenticated]);
 
   return (
     <BrowserRouter>

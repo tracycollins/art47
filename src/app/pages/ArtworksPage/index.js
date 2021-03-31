@@ -69,7 +69,6 @@ const useStyles = makeStyles(theme => ({
 
 export function ArtworksPage() {
   let history = useHistory();
-  console.log({ history });
 
   const artworkIdRegex = /\/artworks\/(\w+)/;
   const urlArtworkId =
@@ -90,38 +89,50 @@ export function ArtworksPage() {
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  const hasNextPage = true;
+  const [hasNextPage, setHasNextPage] = useState(true);
 
-  // const isLoading = useSelector(selectLoading);
   // const error = useSelector(selectError);
-
-  console.log({ user });
-  console.log({ cursor });
-  console.log({ loading });
-  console.log({ artworks });
 
   const classes = useStyles();
 
   useEffect(() => {
     console.log(`ArtworksPage | getArtworks | urlArtworkId: ${urlArtworkId}`);
     const options = { user };
-    const results = dispatch(actions.getArtworks(options));
-    console.log({ results });
-    console.log({ urlArtworkId });
+    // if (artworks.length === 0) {
+    //   dispatch(actions.getArtworkById(options));
+    // }
     if (urlArtworkId) {
+      if (!currentArtwork || currentArtwork.id !== urlArtworkId) {
+        dispatch(actions.getArtworkById(urlArtworkId));
+      }
       dispatch(actions.setCurrentArtworkId(urlArtworkId));
       setDisplayCurrentArtwork(true);
     } else {
-      dispatch(actions.setCurrentArtworkId(null));
       setDisplayCurrentArtwork(false);
+      if (artworks.length === 0) {
+        dispatch(actions.setCurrentArtworkId(null));
+        dispatch(actions.getArtworks(options));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlArtworkId]);
 
   function infiniteHandleLoadMore() {
-    console.log(`infiniteHandleLoadMore`);
+    setHasNextPage(false);
     const options = { user };
-    return dispatch(actions.getArtworks(options));
+    if (hasNextPage) {
+      dispatch(actions.getArtworks(options));
+    }
+    setHasNextPage(cursor && cursor._id !== null);
+    console.log(
+      `infiniteHandleLoadMore` +
+        ` | LAST ARTWORK ID: ${
+          artworks.length > 0 ? artworks[artworks.length - 1].id : null
+        }` +
+        ` | cursor._id: ${cursor && cursor._id ? cursor._id : null}` +
+        ` | loading: ${loading}` +
+        ` | hasNextPage: ${hasNextPage}`,
+    );
   }
 
   const infiniteRef = useInfiniteScroll({
@@ -130,26 +141,33 @@ export function ArtworksPage() {
     onLoadMore: infiniteHandleLoadMore,
   });
 
-  // const handleSetCurrentArtwork = artwork_id => {
-  //   dispatch(actions.setCurrentArtworkId(artwork_id));
-  //   setDisplayCurrentArtwork(true);
-  // };
-
-  const handlePrevNext = artwork_id => {
+  const handlePrevNext = (prevNext, artworkId) => {
+    console.log(`handlePrevNext | ${prevNext} | ARTWORK ID: ${artworkId}`);
+    let newArtworkId = '';
+    if (prevNext === 'next') {
+      newArtworkId =
+        artworkId === artworks[artworks.length - 1].id
+          ? parseInt(artworks[0].id)
+          : parseInt(artworkId) + 1;
+    } else {
+      newArtworkId =
+        parseInt(artworkId) === 1
+          ? parseInt(artworks[artworks.length - 1].id)
+          : parseInt(artworkId) - 1;
+    }
+    console.log({ newArtworkId });
+    history.push(`/artworks/${newArtworkId}`);
     // dispatch(actions.setCurrentArtwork(artwork_id));
   };
 
   const handleUpdateRating = artwork_id => {
     // dispatch(actions.setCurrentArtwork(artwork_id));
   };
-  // export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
 
   const artworksDisplay = () =>
     artworks.map(artwork => (
       <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
     ));
-
-  // function Artwork({ user, artwork, prevNext, handleUpdateRating, history }) {
 
   const content = displayCurrentArtwork ? (
     <div className={classes.artworkRoot}>

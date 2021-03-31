@@ -47,6 +47,7 @@ export const SET_CURRENT_USER_ERROR = 'artworks/SET_CURRENT_USER_ERROR';
 export const SET_CURRENT_ARTWORK = 'artworks/SET_CURRENT_ARTWORK';
 export const SET_ARTWORKS = 'artworks/setArtworks';
 export const GET_ARTWORKS = 'artworks/getArtworks';
+export const GET_ARTWORK_BY_ID = 'artworks/getArtworkById';
 export const GET_ARTWORKS_SUCCESS = 'artworks/GET_ARTWORKS_SUCCESS';
 export const GET_ARTWORKS_ERROR = 'artworks/GET_ARTWORKS_ERROR';
 export const ARTWORKS_FILTER_SORT = 'artworks/ARTWORKS_FILTER_SORT';

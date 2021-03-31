@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function Artwork({ artworkId, handleUpdateRating, prevNext }) {
+export function Artwork({ handleUpdateRating, prevNext }) {
   const history = useHistory();
 
   const { isAuthenticated } = useAuth0();
@@ -92,10 +92,10 @@ export function Artwork({ artworkId, handleUpdateRating, prevNext }) {
   };
 
   useHotkeys('up', () => history.push(`/artworks`), [artwork]);
-  useHotkeys('left', () => prevNext('prev'), [artwork]);
-  useHotkeys('right', () => prevNext('next'), [artwork]);
-  useHotkeys('n', () => prevNext('next'), [artwork]);
-  useHotkeys('p', () => prevNext('prev'), [artwork]);
+  useHotkeys('left', () => prevNext('prev', artwork.id), [artwork]);
+  useHotkeys('right', () => prevNext('next', artwork.id), [artwork]);
+  useHotkeys('n', () => prevNext('next', artwork.id), [artwork]);
+  useHotkeys('p', () => prevNext('prev', artwork.id), [artwork]);
   useHotkeys('0', () => handleSetRating(0), [isAuthenticated, user, artwork]);
   useHotkeys('1', () => handleSetRating(1), [isAuthenticated, user, artwork]);
   useHotkeys('2', () => handleSetRating(2), [isAuthenticated, user, artwork]);
@@ -190,14 +190,14 @@ export function Artwork({ artworkId, handleUpdateRating, prevNext }) {
                 <IconButton
                   size="medium"
                   value="prev"
-                  onClick={() => prevNext('prev')}
+                  onClick={() => prevNext('prev', artwork.id)}
                 >
                   <ArrowBackIosRoundedIcon />
                 </IconButton>
                 <IconButton
                   size="medium"
                   value="next"
-                  onClick={() => prevNext('next')}
+                  onClick={() => prevNext('next', artwork.id)}
                 >
                   <ArrowForwardIosRoundedIcon />
                 </IconButton>
