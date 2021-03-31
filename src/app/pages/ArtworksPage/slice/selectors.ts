@@ -10,6 +10,14 @@ export const selectArtworks = createSelector(
   artworksState => artworksState.artworks,
 );
 
+export const selectCurrentArtwork = createSelector(
+  [selectDomain],
+  artworksState =>
+    artworksState.artworks.find(
+      artwork => artwork.id === artworksState.currentArtworkId,
+    ),
+);
+
 export const selectCursor = createSelector(
   [selectDomain],
   artworksState => artworksState.cursor,

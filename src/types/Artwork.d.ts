@@ -1,6 +1,6 @@
 export interface Artwork {
   _id: string;
-  id: number;
+  id: string;
   title: string;
   ratings: array;
   ratingUser: object;

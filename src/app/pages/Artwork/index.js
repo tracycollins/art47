@@ -1,16 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
-import React, { memo } from 'react';
-// import { push } from 'connected-react-router';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
+
 import { makeStyles } from '@material-ui/core/styles';
-// import { useInjectReducer } from 'utils/injectReducer';
-// import { useInjectSaga } from 'utils/injectSaga';
-// import { makeSelectLoading, makeSelectError } from 'app/selectors';
+import { useSelector } from 'react-redux';
+
+import { selectCurrentArtwork } from 'app/pages/ArtworksPage/slice/selectors';
+import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Link } from 'react-router-dom';
@@ -30,6 +27,7 @@ import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,20 +67,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Artwork({ user, artwork, prevNext, handleUpdateRating, history }) {
-  const { isAuthenticated } = useAuth0();
+export function Artwork({ artworkId, handleUpdateRating, prevNext }) {
+  const history = useHistory();
 
-  console.log({ user });
-  console.log({ artwork });
+  const { isAuthenticated } = useAuth0();
+  const user = useSelector(selectUser);
+  const artwork = useSelector(selectCurrentArtwork);
 
   const classes = useStyles();
-
-  // const [ratingUser, setRatingUser] = useState(null);
-
-  // useEffect(() => {
-  //   setRatingUser(artwork.ratingUser);
-  //   console.log(`artwork.ratingUser: `, artwork.ratingUser);
-  // }, [artwork, user]);
 
   const handleSetRating = ratingInput => {
     if (!isAuthenticated) {
@@ -220,29 +212,3 @@ function Artwork({ user, artwork, prevNext, handleUpdateRating, history }) {
 
   return <div>{content(artwork)}</div>;
 }
-
-Artwork.propTypes = {
-  prevNext: PropTypes.func,
-  artwork: PropTypes.object,
-  user: PropTypes.object,
-  handleUpdateRating: PropTypes.func,
-  history: PropTypes.object,
-};
-
-const mapStateToProps = createStructuredSelector({
-  // loading: makeSelectLoading(),
-  // error: makeSelectError(),
-});
-
-export function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-    // handleUpdateRating: rating => {
-    //   console.log(`dispatch updateRating`, rating);
-    //   dispatch(updateRating(rating));
-    // },
-  };
-}
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default compose(withConnect, memo)(Artwork);

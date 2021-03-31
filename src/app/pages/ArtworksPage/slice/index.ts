@@ -10,6 +10,7 @@ export const initialState: ArtworksState = {
   loading: false,
   error: null,
   artworks: [],
+  currentArtworkId: null,
   cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
 };
 
@@ -17,15 +18,17 @@ const slice = createSlice({
   name: 'artworks',
   initialState,
   reducers: {
+    setCurrentArtworkId(state, action) {
+      state.loading = false;
+      state.currentArtworkId = action.payload;
+    },
     getArtworks(state) {
       state.loading = true;
       state.error = null;
-      // state.artworks = [];
     },
     loadArtworks(state) {
       state.loading = true;
       state.error = null;
-      // state.artworks = [];
     },
     artworksLoaded(state, action) {
       const artworks = [...state.artworks];

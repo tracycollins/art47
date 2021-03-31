@@ -1,11 +1,16 @@
 /* eslint-disable indent */
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
 // import { selectArtworks, selectLoading, selectError } from './slice/selectors';
-import { selectArtworks, selectLoading, selectCursor } from './slice/selectors';
+import {
+  selectArtworks,
+  selectCurrentArtwork,
+  selectLoading,
+  selectCursor,
+} from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
@@ -18,7 +23,7 @@ import Button from '@material-ui/core/Button';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import {} from './slice/selectors';
 import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
-import Artwork from '../Artwork';
+import { Artwork } from '../Artwork';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -64,11 +69,25 @@ const useStyles = makeStyles(theme => ({
 
 export function ArtworksPage() {
   let history = useHistory();
+  console.log({ history });
+
+  const artworkIdRegex = /\/artworks\/(\w+)/;
+  const urlArtworkId =
+    history.location &&
+    history.location.pathname &&
+    history.location.pathname.match(artworkIdRegex)
+      ? parseInt(history.location.pathname.match(artworkIdRegex)[1], 10)
+      : false;
+
+  // const currentArtworkIdRef = useRef(currentArtworkId);
+
+  const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
 
   const { actions } = useArtworksSlice();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const artworks = useSelector(selectArtworks);
+  const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
   const hasNextPage = true;
@@ -82,15 +101,22 @@ export function ArtworksPage() {
   console.log({ artworks });
 
   const classes = useStyles();
-  const currentArtworkId = 0;
 
   useEffect(() => {
-    console.log(`ArtworksPage | getArtworks`);
+    console.log(`ArtworksPage | getArtworks | urlArtworkId: ${urlArtworkId}`);
     const options = { user };
     const results = dispatch(actions.getArtworks(options));
     console.log({ results });
+    console.log({ urlArtworkId });
+    if (urlArtworkId) {
+      dispatch(actions.setCurrentArtworkId(urlArtworkId));
+      setDisplayCurrentArtwork(true);
+    } else {
+      dispatch(actions.setCurrentArtworkId(null));
+      setDisplayCurrentArtwork(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [urlArtworkId]);
 
   function infiniteHandleLoadMore() {
     console.log(`infiniteHandleLoadMore`);
@@ -104,6 +130,18 @@ export function ArtworksPage() {
     onLoadMore: infiniteHandleLoadMore,
   });
 
+  // const handleSetCurrentArtwork = artwork_id => {
+  //   dispatch(actions.setCurrentArtworkId(artwork_id));
+  //   setDisplayCurrentArtwork(true);
+  // };
+
+  const handlePrevNext = artwork_id => {
+    // dispatch(actions.setCurrentArtwork(artwork_id));
+  };
+
+  const handleUpdateRating = artwork_id => {
+    // dispatch(actions.setCurrentArtwork(artwork_id));
+  };
   // export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
 
   const artworksDisplay = () =>
@@ -111,9 +149,15 @@ export function ArtworksPage() {
       <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
     ));
 
-  const content = currentArtworkId ? (
+  // function Artwork({ user, artwork, prevNext, handleUpdateRating, history }) {
+
+  const content = displayCurrentArtwork ? (
     <div className={classes.artworkRoot}>
-      <Artwork history={history} />
+      <Artwork
+        artwork={currentArtwork}
+        prevNext={handlePrevNext}
+        handleUpdateRating={handleUpdateRating}
+      />
     </div>
   ) : (
     <>

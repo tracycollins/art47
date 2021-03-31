@@ -4,6 +4,7 @@ import { Cursor } from 'types/Cursor';
 /* --- STATE --- */
 export interface ArtworksState {
   artworks: Artwork[];
+  currentArtworkId?: string | null;
   loading: boolean;
   cursor: Cursor;
   error?: ArtworkErrorType | null;
