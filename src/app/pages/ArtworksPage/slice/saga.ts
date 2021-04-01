@@ -17,7 +17,7 @@ import { User } from 'types/User';
 import { Cursor } from 'types/Cursor';
 import { Filter } from 'types/Filter';
 import {
-  SET_FILTER,
+  UPDATE_FILTER_SORT,
   UPDATE_RATING,
   GET_ARTWORKS,
   GET_ARTWORK_BY_ID,
@@ -68,7 +68,7 @@ export function* getArtworkById(action) {
 
     console.log(`ArtworksPage | FETCHED ARTWORK | ID: ${artworkId}`);
 
-    yield put(artworksActions.artworksLoaded({ artworks: [artwork] }));
+    yield put(artworksActions.artworksLoaded({ artworks: [artwork], user }));
     yield put(artworksActions.setCurrentArtworkId(artwork.id));
   } catch (err) {
     console.error(err);
@@ -121,7 +121,7 @@ export function* getArtworks(options) {
       for (let i = 0; i < artworks.length; i += 1) {
         if (artworks[i].ratings && artworks[i].ratings.length > 0) {
           artworks[i].ratings.forEach(rating => {
-            if (rating.user === user._id) {
+            if (rating.user._id === user._id) {
               artworks[i].ratingUser = rating;
               artworks[i].ratingUser.user = user;
             }
@@ -132,7 +132,7 @@ export function* getArtworks(options) {
           artworks[i].recommendations.length > 0
         ) {
           for (let j = 0; j < artworks[i].recommendations.length; j += 1) {
-            if (artworks[i].recommendations[j].user === user._id) {
+            if (artworks[i].recommendations[j].user._id === user._id) {
               artworks[i].recommendationUser = artworks[i].recommendations[j];
               artworks[i].recommendationUser.user = user;
             }
@@ -151,7 +151,9 @@ export function* getArtworks(options) {
       results.artworks.length < 20
         ? { _id: 0 }
         : Object.assign({}, cursor, results.nextKey);
-    yield put(artworksActions.artworksLoaded({ artworks, cursor: tempCursor }));
+    yield put(
+      artworksActions.artworksLoaded({ artworks, cursor: tempCursor, user }),
+    );
   } catch (err) {
     console.error(err);
 
@@ -196,7 +198,12 @@ export function* updateRating(action) {
     const updatedArtwork = { ...currentArtwork };
     updatedArtwork.ratingUser = result.rating;
     // yield put(ratingUpdated(rating));
-    yield put(artworksActions.artworksLoaded({ artworks: [updatedArtwork] }));
+    yield put(
+      artworksActions.artworksLoaded({
+        artworks: [updatedArtwork],
+        user: rating.user,
+      }),
+    );
     yield put(artworksActions.setCurrentArtworkId(updatedArtwork.id));
   } catch (err) {
     console.error(err);
@@ -205,18 +212,18 @@ export function* updateRating(action) {
   }
 }
 
-export function* setFilter(action) {
+export function* updateFilterSort(action) {
   const filter = action.payload.filter;
-  console.log(`setFilter | API_ROOT: ${API_ROOT}`);
+  console.log(`updateFilterSort | API_ROOT: ${API_ROOT}`);
   console.log(
-    `setFilter` +
+    `updateFilterSort` +
       ` | TOP RATED: ${filter.topRated}` +
       ` | TOP RECS: ${filter.topRecs}` +
       ` | UNRATED: ${filter.unrated}`,
   );
 
   try {
-    yield put(artworksActions.setFilter(filter));
+    yield put(artworksActions.updateFilterSort(filter));
     yield put(artworksActions.artworksFilterSort({ filter: filter }));
   } catch (err) {
     throw err;
@@ -227,7 +234,7 @@ export function* setFilter(action) {
  * Root saga manages watcher lifecycle
  */
 export function* artworksSaga() {
-  yield takeLeading(SET_FILTER, setFilter);
+  yield takeLeading(UPDATE_FILTER_SORT, updateFilterSort);
   yield takeLeading(UPDATE_RATING, updateRating);
   yield takeLeading(GET_ARTWORK_BY_ID, getArtworkById);
   yield takeLeading(GET_ARTWORKS, getArtworks);

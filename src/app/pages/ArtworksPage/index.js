@@ -10,7 +10,7 @@ import {
   selectCurrentArtwork,
   selectLoading,
   selectCursor,
-  // selectFilter,
+  selectFilter,
 } from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
@@ -102,7 +102,7 @@ export function ArtworksPage() {
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  // const filter = useSelector(selectFilter);
+  const filter = useSelector(selectFilter);
   // const error = useSelector(selectError);
 
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -142,11 +142,15 @@ export function ArtworksPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlArtworkId, loading, hasNextPage]);
 
-  const updateFilterSort = useCallback(filter => {
-    console.log(`DISPLAY | FILTER`);
-    console.log({ filter });
-    // dispatch(actions.updateFilterSort({ filter }));
-  }, []);
+  const updateFilterSort = useCallback(
+    newFilter => {
+      console.log(`UPDATE FILTER SDORT`);
+      console.log({ newFilter });
+      dispatch(actions.updateFilterSort({ filter: newFilter }));
+      console.log({ filter });
+    },
+    [actions, dispatch, filter],
+  );
 
   const toggleFilter = useCallback(
     toggle => {
@@ -270,6 +274,7 @@ export function ArtworksPage() {
               })
             }
             variant="contained"
+            color={topRecs ? 'secondary' : 'primary'}
           >
             REC SORT
           </Button>
@@ -284,6 +289,7 @@ export function ArtworksPage() {
               })
             }
             variant="contained"
+            color={topRated ? 'secondary' : 'primary'}
           >
             RATING SORT
           </Button>
@@ -298,6 +304,7 @@ export function ArtworksPage() {
               })
             }
             variant="contained"
+            color={unrated ? 'secondary' : 'primary'}
           >
             YOUR UNRATED
           </Button>

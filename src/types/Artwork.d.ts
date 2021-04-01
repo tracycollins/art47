@@ -3,7 +3,15 @@ export interface Artwork {
   id: string;
   title: string;
   ratings: array;
-  ratingUser: object;
+  ratingUser: {
+    id: string;
+    user: object;
+    rate: number;
+  };
   recommendations: array;
-  recommendationUser: object;
+  recommendationUser: {
+    id: string;
+    user: object;
+    score: number;
+  };
 }
