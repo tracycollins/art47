@@ -10,6 +10,7 @@ import {
   selectCurrentArtwork,
   selectLoading,
   selectCursor,
+  selectFilter,
 } from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
@@ -89,6 +90,7 @@ export function ArtworksPage() {
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
+  const filter = useSelector(selectFilter);
   const [hasNextPage, setHasNextPage] = useState(true);
 
   // const error = useSelector(selectError);
@@ -166,6 +168,11 @@ export function ArtworksPage() {
     dispatch(actions.setCurrentArtworkId(urlArtworkId));
   };
 
+  const handleSetFilter = toggleFilter => {
+    console.log(`toggle ${toggleFilter}`);
+    // dispatch(actions.setFilter(urlArtworkId));
+  };
+
   const artworksDisplay = () =>
     artworks.map(artwork => (
       <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
@@ -185,21 +192,21 @@ export function ArtworksPage() {
         <Toolbar className={classes.toolBar}>
           <Button
             className={classes.toolBarButton}
-            onClick={() => console.log('click topRecs')}
+            onClick={() => handleSetFilter('topRecs')}
             variant="contained"
           >
             REC SORT
           </Button>
           <Button
             className={classes.toolBarButton}
-            onClick={() => console.log('click topRated')}
+            onClick={() => handleSetFilter('topRated')}
             variant="contained"
           >
             RATING SORT
           </Button>
           <Button
             className={classes.toolBarButton}
-            onClick={() => console.log('click unrated')}
+            onClick={() => handleSetFilter('unrated')}
             variant="contained"
           >
             YOUR UNRATED

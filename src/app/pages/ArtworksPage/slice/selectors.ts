@@ -23,6 +23,11 @@ export const selectCursor = createSelector(
   artworksState => artworksState.cursor,
 );
 
+export const selectFilter = createSelector(
+  [selectDomain],
+  artworksState => artworksState.filter,
+);
+
 export const selectLoading = createSelector(
   [selectDomain],
   artworksState => artworksState.loading,

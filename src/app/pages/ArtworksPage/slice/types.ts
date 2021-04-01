@@ -1,11 +1,13 @@
 import { Artwork } from 'types/Artwork';
 import { Cursor } from 'types/Cursor';
+import { Filter } from 'types/Filter';
 
 /* --- STATE --- */
 export interface ArtworksState {
   artworks: Artwork[];
   currentArtworkId?: string | null;
   loading: boolean;
+  filter: Filter;
   cursor: Cursor;
   error?: ArtworkErrorType | null;
 }

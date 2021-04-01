@@ -9,13 +9,19 @@ import {
 } from 'redux-saga/effects';
 import { artworksActions } from '.';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
-import { selectCursor, selectCurrentArtwork } from './selectors';
+import { selectCursor, selectFilter, selectCurrentArtwork } from './selectors';
 // import { selectArtworks } from './selectors';
 import request from 'utils/request';
 import { Artwork } from 'types/Artwork';
 import { User } from 'types/User';
 import { Cursor } from 'types/Cursor';
-import { UPDATE_RATING, GET_ARTWORKS, GET_ARTWORK_BY_ID } from 'app/constants';
+import { Filter } from 'types/Filter';
+import {
+  SET_FILTER,
+  UPDATE_RATING,
+  GET_ARTWORKS,
+  GET_ARTWORK_BY_ID,
+} from 'app/constants';
 
 console.log(`CLIENT | NODE_ENV: ${process.env.NODE_ENV}`);
 console.log(`CLIENT | PORT: ${process.env.PORT}`);
@@ -78,8 +84,8 @@ export function* getArtworks(options) {
 
     const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
+    const filter: Filter = yield select(selectFilter);
 
-    const filter = { topRecs: false, topRated: false, unrated: false };
     const userId = user.id || user.sub || 0;
 
     if (filter.topRated) {
@@ -199,28 +205,29 @@ export function* updateRating(action) {
   }
 }
 
-// export function* updateFilter(action) {
-//   console.log(`updateFilter | API_ROOT: ${API_ROOT}`);
-//   console.log(
-//     `updateFilter` +
-//       ` | TOP RATED: ${action.filter.topRated}` +
-//       ` | TOP RECS: ${action.filter.topRecs}` +
-//       ` | UNRATED: ${action.filter.unrated}`,
-//   );
+export function* setFilter(action) {
+  const filter = action.payload.filter;
+  console.log(`setFilter | API_ROOT: ${API_ROOT}`);
+  console.log(
+    `setFilter` +
+      ` | TOP RATED: ${filter.topRated}` +
+      ` | TOP RECS: ${filter.topRecs}` +
+      ` | UNRATED: ${filter.unrated}`,
+  );
 
-//   try {
-//     yield put(setFilter(action.filter));
-//     yield put(artworksFilterSort({ filter: action.filter }));
-//   } catch (err) {
-//     throw err;
-//   }
-// }
+  try {
+    yield put(artworksActions.setFilter(filter));
+    yield put(artworksActions.artworksFilterSort({ filter: filter }));
+  } catch (err) {
+    throw err;
+  }
+}
 
 /**
  * Root saga manages watcher lifecycle
  */
 export function* artworksSaga() {
-  // yield takeLeading(SET_FILTER, updateFilter);
+  yield takeLeading(SET_FILTER, setFilter);
   yield takeLeading(UPDATE_RATING, updateRating);
   yield takeLeading(GET_ARTWORK_BY_ID, getArtworkById);
   yield takeLeading(GET_ARTWORKS, getArtworks);

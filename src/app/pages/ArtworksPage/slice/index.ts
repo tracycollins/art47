@@ -12,6 +12,7 @@ export const initialState: ArtworksState = {
   artworks: [],
   currentArtworkId: null,
   cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
+  filter: { topRated: false, topRecs: false, unrated: false },
 };
 
 const slice = createSlice({
@@ -26,6 +27,9 @@ const slice = createSlice({
       const rating = action.payload.rating;
       console.log({ rating });
       state.loading = false;
+    },
+    setFilter(state, action) {
+      state.filter = action.payload;
     },
     setCurrentArtworkId(state, action) {
       state.loading = false;
@@ -43,6 +47,40 @@ const slice = createSlice({
     loadArtworks(state) {
       state.loading = true;
       state.error = null;
+    },
+    artworksFilterSort(state, action) {
+      const filter = action.payload.filter;
+      const tempArtworks = [...state.artworks];
+      console.log({ filter });
+      console.log({ tempArtworks });
+      // if (state.filter.topRated) {
+      //   tempArtworks.sort((a, b) => {
+      //     console.log({ a });
+      //     const aRate = (a.ratingUser && a.ratingUser.rate) || 0;
+      //     const bRate = (b.ratingUser !== undefined && b.ratingUser.rate) || 0;
+      //     if (aRate < bRate) return -1;
+      //     if (aRate > bRate) return 1;
+      //     return 0;
+      //   });
+      // } else if (state.filter.topRecs) {
+      //   tempArtworks.sort((a, b) => {
+      //     const aScore =
+      //       a.recommendationUser !== undefined ? a.recommendationUser.score : 0;
+      //     const bScore =
+      //       b.recommendationUser !== undefined ? b.recommendationUser.score : 0;
+      //     if (aScore < bScore) return -1;
+      //     if (aScore > bScore) return 1;
+      //     return 0;
+      //   });
+      // } else if (state.filter.unrated) {
+      //   tempArtworks.filter(artwork => artwork.ratingUser === undefined);
+      // } else {
+      //   tempArtworks.sort((a, b) => {
+      //     if (a._id < b._id) return -1;
+      //     if (a._id > b._id) return 1;
+      //     return 0;
+      //   });
+      // }
     },
     artworksLoaded(state, action) {
       const artworks = [...state.artworks];
