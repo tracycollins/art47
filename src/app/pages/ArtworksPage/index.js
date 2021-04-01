@@ -115,7 +115,7 @@ export function ArtworksPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlArtworkId]);
+  }, [urlArtworkId, loading]);
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);
@@ -160,8 +160,10 @@ export function ArtworksPage() {
     // dispatch(actions.setCurrentArtwork(artwork_id));
   };
 
-  const handleUpdateRating = artwork_id => {
-    // dispatch(actions.setCurrentArtwork(artwork_id));
+  const handleUpdateRating = rating => {
+    console.log({ rating });
+    dispatch(actions.updateRating({ rating }));
+    dispatch(actions.setCurrentArtworkId(urlArtworkId));
   };
 
   const artworksDisplay = () =>

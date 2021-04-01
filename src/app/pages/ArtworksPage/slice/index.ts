@@ -18,6 +18,15 @@ const slice = createSlice({
   name: 'artworks',
   initialState,
   reducers: {
+    updateRating(state, action) {
+      state.loading = true;
+      state.error = null;
+    },
+    ratingLoaded(state, action) {
+      const rating = action.payload.rating;
+      console.log({ rating });
+      state.loading = false;
+    },
     setCurrentArtworkId(state, action) {
       state.loading = false;
       state.currentArtworkId = action.payload;
@@ -53,7 +62,7 @@ const slice = createSlice({
         const cursor = action.payload.cursor;
         state.cursor = cursor;
       }
-
+      state.error = null;
       state.loading = false;
     },
     artworksError(state, action: PayloadAction<ArtworkErrorType>) {

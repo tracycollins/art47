@@ -37,7 +37,7 @@ export const INITIAL_STATE = {
 
 export const SET_FILTER = 'artworks/SET_FILTER';
 export const SET_CURSOR = 'artworks/SET_CURSOR';
-export const UPDATE_RATING = 'artworks/UPDATE_RATING';
+export const UPDATE_RATING = 'artworks/updateRating';
 export const UPDATE_RATING_SUCCESS = 'artworks/UPDATE_RATING_SUCCESS';
 export const UPDATE_RATING_ERROR = 'artworks/UPDATE_RATING_ERROR';
 export const GET_USER = 'user/getUser';

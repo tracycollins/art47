@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 
-import { selectCurrentArtwork } from 'app/pages/ArtworksPage/slice/selectors';
+// import { selectCurrentArtwork } from 'app/pages/ArtworksPage/slice/selectors';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -67,12 +67,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function Artwork({ handleUpdateRating, prevNext }) {
+export function Artwork({ artwork, handleUpdateRating, prevNext }) {
   const history = useHistory();
 
   const { isAuthenticated } = useAuth0();
-  const user = useSelector(selectUser);
-  const artwork = useSelector(selectCurrentArtwork);
+  const currentUser = useSelector(selectUser);
+  let rate =
+    artwork &&
+    artwork.ratingUser &&
+    artwork.ratingUser.user &&
+    artwork.ratingUser.user._id &&
+    artwork.ratingUser.user._id === currentUser._id
+      ? artwork.ratingUser.rate
+      : 0;
+  // const rateRef = useRef(rate);
+
+  // const artwork = useSelector(selectCurrentArtwork);
 
   const classes = useStyles();
 
@@ -83,7 +93,7 @@ export function Artwork({ handleUpdateRating, prevNext }) {
     }
 
     const ratingInstance = {
-      user,
+      user: currentUser,
       artwork,
       rate: ratingInput,
     };
@@ -96,12 +106,38 @@ export function Artwork({ handleUpdateRating, prevNext }) {
   useHotkeys('right', () => prevNext('next', artwork.id), [artwork]);
   useHotkeys('n', () => prevNext('next', artwork.id), [artwork]);
   useHotkeys('p', () => prevNext('prev', artwork.id), [artwork]);
-  useHotkeys('0', () => handleSetRating(0), [isAuthenticated, user, artwork]);
-  useHotkeys('1', () => handleSetRating(1), [isAuthenticated, user, artwork]);
-  useHotkeys('2', () => handleSetRating(2), [isAuthenticated, user, artwork]);
-  useHotkeys('3', () => handleSetRating(3), [isAuthenticated, user, artwork]);
-  useHotkeys('4', () => handleSetRating(4), [isAuthenticated, user, artwork]);
-  useHotkeys('5', () => handleSetRating(5), [isAuthenticated, user, artwork]);
+
+  const depArray = [isAuthenticated, currentUser, artwork];
+  useHotkeys('0', () => handleSetRating(0), depArray);
+  useHotkeys('1', () => handleSetRating(1), depArray);
+  useHotkeys('2', () => handleSetRating(2), depArray);
+  useHotkeys('3', () => handleSetRating(3), depArray);
+  useHotkeys('4', () => handleSetRating(4), depArray);
+  useHotkeys('5', () => handleSetRating(5), depArray);
+
+  // useEffect(() => {
+  //   console.log(`Artwork ID: ${artwork.id}`);
+
+  //   if (artwork.ratingUser) {
+  //     if (
+  //       artwork.ratingUser.user &&
+  //       artwork.ratingUser.user === currentUser._id
+  //     ) {
+  //       rateRef.current = artwork.ratingUser.rate;
+  //       return;
+  //     }
+  //     if (
+  //       artwork.ratingUser.user &&
+  //       artwork.ratingUser.user._id &&
+  //       artwork.ratingUser.user._id === currentUser._id
+  //     ) {
+  //       rateRef.current = artwork.ratingUser.rate;
+  //       return;
+  //     }
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [artwork, rate]);
 
   const content = () =>
     artwork ? (
@@ -162,26 +198,14 @@ export function Artwork({ handleUpdateRating, prevNext }) {
                 <IconButton
                   size="small"
                   aria-label="0 rate"
-                  color={
-                    artwork.ratingUser &&
-                    artwork.ratingUser.user._id === user._id &&
-                    artwork.ratingUser.rate === 0
-                      ? 'secondary'
-                      : 'primary'
-                  }
+                  color={rate === 0 ? 'secondary' : 'primary'}
                   onClick={() => handleSetRating(0)}
                 >
                   <NotInterestedIcon />
                 </IconButton>
                 <Rating
                   name="rate"
-                  value={
-                    artwork.ratingUser &&
-                    artwork.ratingUser.user &&
-                    artwork.ratingUser.user._id === user._id
-                      ? artwork.ratingUser.rate
-                      : 0
-                  }
+                  value={rate}
                   onChange={(event, newValue) => handleSetRating(newValue)}
                 />
               </CardActions>
