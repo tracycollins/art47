@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
 // import { selectArtworks, selectLoading, selectError } from './slice/selectors';
@@ -10,7 +10,7 @@ import {
   selectCurrentArtwork,
   selectLoading,
   selectCursor,
-  selectFilter,
+  // selectFilter,
 } from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
@@ -81,24 +81,47 @@ export function ArtworksPage() {
 
   // const currentArtworkIdRef = useRef(currentArtworkId);
 
-  const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
+  const useToggle = (initialValue = false) => {
+    const [value, setValue] = useState(initialValue);
+    const toggle = useCallback(n => {
+      if (n !== undefined) {
+        setValue(v => n);
+      } else {
+        setValue(v => !v);
+      }
+    }, []);
+    return [value, toggle];
+  };
 
   const { actions } = useArtworksSlice();
+
   const dispatch = useDispatch();
+
   const user = useSelector(selectUser);
   const artworks = useSelector(selectArtworks);
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  const filter = useSelector(selectFilter);
-  const [hasNextPage, setHasNextPage] = useState(true);
-
+  // const filter = useSelector(selectFilter);
   // const error = useSelector(selectError);
+
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
+
+  const [topRated, toogleTopRated] = useToggle();
+  const [topRecs, toogleTopRecs] = useToggle();
+  const [unrated, toogleUnrated] = useToggle();
 
   const classes = useStyles();
 
   useEffect(() => {
-    console.log(`ArtworksPage | getArtworks | urlArtworkId: ${urlArtworkId}`);
+    setHasNextPage(cursor && cursor._id !== null);
+  }, [cursor]);
+
+  useEffect(() => {
+    console.log(
+      `ArtworksPage | getArtworks | displayCurrentArtwork: ${displayCurrentArtwork} | loading: ${loading}  | hasNextPage: ${hasNextPage} | urlArtworkId: ${urlArtworkId}`,
+    );
     const options = { user };
     // if (artworks.length === 0) {
     //   dispatch(actions.getArtworkById(options));
@@ -111,21 +134,71 @@ export function ArtworksPage() {
       setDisplayCurrentArtwork(true);
     } else {
       setDisplayCurrentArtwork(false);
-      if (artworks.length === 0) {
+      if (artworks.length === 0 && hasNextPage && !loading) {
         dispatch(actions.setCurrentArtworkId(null));
         dispatch(actions.getArtworks(options));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlArtworkId, loading]);
+  }, [urlArtworkId, loading, hasNextPage]);
+
+  const updateFilterSort = useCallback(filter => {
+    console.log(`DISPLAY | FILTER`);
+    console.log({ filter });
+    // dispatch(actions.updateFilterSort({ filter }));
+  }, []);
+
+  const toggleFilter = useCallback(
+    toggle => {
+      if (toggle.topRated) {
+        toogleTopRated();
+        toogleTopRecs(false);
+        toogleUnrated(false);
+        updateFilterSort({
+          topRated: !topRated,
+          topRecs: false,
+          unrated: false,
+        });
+      }
+      if (toggle.topRecs) {
+        toogleTopRated(false);
+        toogleTopRecs();
+        toogleUnrated(false);
+        updateFilterSort({
+          topRecs: !topRecs,
+          topRated: false,
+          unrated: false,
+        });
+      }
+      if (toggle.unrated) {
+        toogleTopRated(false);
+        toogleTopRecs(false);
+        toogleUnrated();
+        updateFilterSort({
+          unrated: !unrated,
+          topRecs: false,
+          topRated: false,
+        });
+      }
+    },
+    [
+      updateFilterSort,
+      topRated,
+      topRecs,
+      unrated,
+      toogleTopRated,
+      toogleTopRecs,
+      toogleUnrated,
+    ],
+  );
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);
     const options = { user };
-    if (hasNextPage) {
+    if (hasNextPage && !loading) {
       dispatch(actions.getArtworks(options));
+      setHasNextPage(cursor && cursor._id !== null);
     }
-    setHasNextPage(cursor && cursor._id !== null);
     console.log(
       `infiniteHandleLoadMore` +
         ` | LAST ARTWORK ID: ${
@@ -168,15 +241,11 @@ export function ArtworksPage() {
     dispatch(actions.setCurrentArtworkId(urlArtworkId));
   };
 
-  const handleSetFilter = toggleFilter => {
-    console.log(`toggle ${toggleFilter}`);
-    // dispatch(actions.setFilter(urlArtworkId));
-  };
-
-  const artworksDisplay = () =>
-    artworks.map(artwork => (
+  const artworksDisplay = () => {
+    return artworks.map(artwork => (
       <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
     ));
+  };
 
   const content = displayCurrentArtwork ? (
     <div className={classes.artworkRoot}>
@@ -192,21 +261,42 @@ export function ArtworksPage() {
         <Toolbar className={classes.toolBar}>
           <Button
             className={classes.toolBarButton}
-            onClick={() => handleSetFilter('topRecs')}
+            // onClick={() => handleSetFilter('topRecs')}
+            onClick={() =>
+              toggleFilter({
+                topRecs: true,
+                topRated: false,
+                unrated: false,
+              })
+            }
             variant="contained"
           >
             REC SORT
           </Button>
           <Button
             className={classes.toolBarButton}
-            onClick={() => handleSetFilter('topRated')}
+            // onClick={() => handleSetFilter('topRated')}
+            onClick={() =>
+              toggleFilter({
+                topRecs: false,
+                topRated: true,
+                unrated: false,
+              })
+            }
             variant="contained"
           >
             RATING SORT
           </Button>
           <Button
             className={classes.toolBarButton}
-            onClick={() => handleSetFilter('unrated')}
+            // onClick={() => handleSetFilter('unrated')}
+            onClick={() =>
+              toggleFilter({
+                topRecs: false,
+                topRated: false,
+                unrated: true,
+              })
+            }
             variant="contained"
           >
             YOUR UNRATED

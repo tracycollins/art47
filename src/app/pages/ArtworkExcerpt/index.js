@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function ArtworkExcerpt({ key, user, artwork, handleSetCurrent }) {
+export function ArtworkExcerpt({ key, user, artwork }) {
   const defaultArtworkImageUrl = '/art47_logo.png';
   const classes = useStyles();
 
