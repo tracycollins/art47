@@ -120,7 +120,12 @@ export function ArtworksPage() {
 
   useEffect(() => {
     console.log(
-      `ArtworksPage | getArtworks | displayCurrentArtwork: ${displayCurrentArtwork} | loading: ${loading}  | hasNextPage: ${hasNextPage} | urlArtworkId: ${urlArtworkId}`,
+      `ArtworksPage | getArtworks` +
+        ` | ${artworks ? artworks.length : 0} ARTWORKS` +
+        ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
+        ` | loading: ${loading}` +
+        ` | hasNextPage: ${hasNextPage}` +
+        ` | urlArtworkId: ${urlArtworkId}`,
     );
     const options = { user };
     // if (artworks.length === 0) {
@@ -140,13 +145,29 @@ export function ArtworksPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlArtworkId, loading, hasNextPage]);
+  }, [artworks, urlArtworkId, loading, hasNextPage]);
 
   const updateFilterSort = useCallback(
     newFilter => {
-      console.log(`UPDATE FILTER SDORT`);
+      console.log(`UPDATE FILTER SORT`);
       console.log({ newFilter });
       dispatch(actions.updateFilterSort({ filter: newFilter }));
+      if (newFilter.unrated) {
+        console.log(`UPDATE UNRATED SORT`);
+        dispatch(
+          actions.setCursor({
+            cursor: {
+              _id: 0,
+              sortType: 'all',
+              subDoc: null,
+              sort: null,
+              rate: 0,
+              score: 0,
+              value: 0,
+            },
+          }),
+        );
+      }
       console.log({ filter });
     },
     [actions, dispatch, filter],

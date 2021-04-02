@@ -29,6 +29,8 @@ import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounde
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
 
+// import getProp from 'dotprop';
+
 const useStyles = makeStyles(theme => ({
   root: {
     width: '50%',
@@ -72,17 +74,6 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
 
   const { isAuthenticated } = useAuth0();
   const currentUser = useSelector(selectUser);
-  let rate =
-    artwork &&
-    artwork.ratingUser &&
-    artwork.ratingUser.user &&
-    artwork.ratingUser.user._id &&
-    artwork.ratingUser.user._id === currentUser._id
-      ? artwork.ratingUser.rate
-      : 0;
-  // const rateRef = useRef(rate);
-
-  // const artwork = useSelector(selectCurrentArtwork);
 
   const classes = useStyles();
 
@@ -198,14 +189,18 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
                 <IconButton
                   size="small"
                   aria-label="0 rate"
-                  color={rate === 0 ? 'secondary' : 'primary'}
+                  color={
+                    artwork.ratingUser && artwork.ratingUser.rate === 0
+                      ? 'secondary'
+                      : 'primary'
+                  }
                   onClick={() => handleSetRating(0)}
                 >
                   <NotInterestedIcon />
                 </IconButton>
                 <Rating
                   name="rate"
-                  value={rate}
+                  value={artwork.ratingUser ? artwork.ratingUser.rate : null}
                   onChange={(event, newValue) => handleSetRating(newValue)}
                 />
               </CardActions>

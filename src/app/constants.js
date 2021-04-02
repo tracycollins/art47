@@ -23,14 +23,14 @@ export const INITIAL_STATE = {
     sortType: 'all',
     subDoc: null,
     sort: null,
-    rate: 6,
-    score: 2,
+    rate: 0,
+    score: 0,
     value: 0,
   },
   filter: {
     topRated: false,
     topRecs: false,
-    unrated: false,
+    unrated: true,
   },
   artworks: [],
 };

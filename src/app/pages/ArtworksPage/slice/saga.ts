@@ -88,31 +88,40 @@ export function* getArtworks(options) {
 
     const userId = user.id || user.sub || 0;
 
+    let tempCursor = { ...cursor };
+
     if (filter.topRated) {
-      cursor.subDoc = 'rating';
-      cursor.sort = 'rate';
+      tempCursor.subDoc = 'rating';
+      tempCursor.sort = 'rate';
     }
 
     if (filter.topRated) {
-      cursor.subDoc = 'rating';
-      cursor.sort = 'rate';
+      tempCursor.subDoc = 'rating';
+      tempCursor.sort = 'rate';
     }
 
     if (filter.unrated) {
-      cursor.subDoc = 'unrated';
+      tempCursor.subDoc = 'unrated';
     }
 
     let requestURL = '';
 
-    if (cursor.subDoc === 'none') {
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/`;
+    if (
+      !cursor.subDoc ||
+      cursor.subDoc === undefined ||
+      cursor.subDoc === null ||
+      cursor.subDoc === 'none'
+    ) {
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor._id}/`;
     } else if (filter.unrated) {
       // '/artworks/user/:userId/cursor/:cursorid/(:subdoc)?(.:sort.:value)?',
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/${cursor.subDoc}/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor._id}/${tempCursor.subDoc}/`;
     } else {
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${cursor._id}/${
-        cursor.subDoc
-      }.${cursor.sort}.${cursor[cursor.sort] || 999}/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${
+        tempCursor._id
+      }/${tempCursor.subDoc}.${tempCursor.sort}.${
+        tempCursor[tempCursor.sort] || 999
+      }/`;
     }
     const results = yield call(request, requestURL);
     const artworks = [...results.artworks];
@@ -147,13 +156,14 @@ export function* getArtworks(options) {
       } ARTWORKS | CURSOR ID: ${results.nextKey ? results.nextKey._id : null}`,
     );
 
-    const tempCursor =
+    tempCursor =
       results.artworks.length < 20
         ? { _id: 0 }
-        : Object.assign({}, cursor, results.nextKey);
+        : Object.assign({}, tempCursor, results.nextKey);
     yield put(
       artworksActions.artworksLoaded({ artworks, cursor: tempCursor, user }),
     );
+    yield put(artworksActions.artworksFilterSort());
   } catch (err) {
     console.error(err);
 
@@ -223,8 +233,8 @@ export function* updateFilterSort(action) {
   );
 
   try {
-    yield put(artworksActions.updateFilterSort(filter));
-    yield put(artworksActions.artworksFilterSort({ filter: filter }));
+    yield put(artworksActions.updateFilterSort({ filter }));
+    yield put(artworksActions.artworksFilterSort());
   } catch (err) {
     throw err;
   }

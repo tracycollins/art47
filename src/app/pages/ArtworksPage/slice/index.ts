@@ -19,6 +19,9 @@ const slice = createSlice({
   name: 'artworks',
   initialState,
   reducers: {
+    setCursor(state, action) {
+      state.cursor = action.payload.cursor;
+    },
     updateRating(state, action) {
       state.loading = true;
       state.error = null;
@@ -29,7 +32,7 @@ const slice = createSlice({
       state.loading = false;
     },
     updateFilterSort(state, action) {
-      state.filter = action.payload;
+      state.filter = action.payload.filter;
     },
     setCurrentArtworkId(state, action) {
       state.loading = false;
@@ -48,41 +51,46 @@ const slice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    artworksFilterSort(state, action) {
+    artworksFilterSort(state) {
       const artworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
+
       if (state.filter.topRated) {
-        state.artworks = artworks.sort((a, b) => {
+        artworks.sort((a, b) => {
           const aRate = a.ratingUser ? a.ratingUser.rate : 0;
           const bRate = b.ratingUser ? b.ratingUser.rate : 0;
           if (aRate < bRate) return 1;
           if (aRate > bRate) return -1;
           return 0;
         });
+        state.artworks = [...artworks];
       } else if (state.filter.topRecs) {
-        state.artworks = artworks.sort((a, b) => {
+        artworks.sort((a, b) => {
           const aScore = a.recommendationUser ? a.recommendationUser.score : 0;
           const bScore = b.recommendationUser ? b.recommendationUser.score : 0;
           if (aScore < bScore) return 1;
           if (aScore > bScore) return -1;
           return 0;
         });
+        state.artworks = [...artworks];
       } else if (state.filter.unrated) {
-        state.artworks = artworks.filter(
-          artwork => artwork.ratingUser === undefined,
-        );
+        const tempArtworks = artworks.filter(artwork => {
+          console.log({ artwork });
+          return artwork.ratingUser === undefined;
+        });
+        state.artworks = [...tempArtworks];
       } else {
-        state.artworks = artworks.sort((a, b) => {
-          if (a._id < b._id) return 1;
-          if (a._id > b._id) return -1;
+        artworks.sort((a, b) => {
+          if (a._id < b._id) return -1;
+          if (a._id > b._id) return 1;
           return 0;
         });
+        state.artworks = [...artworks];
       }
-      // state.artworks = artworks;
     },
     artworksLoaded(state, action) {
-      const user = action.payload.user;
+      // const user = action.payload.user;
       console.log({ action });
-      const artworks = [...state.artworks];
+      const artworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
       const newArtworks = [...action.payload.artworks];
       let tempArtworks = artworks.filter(
         artwork =>
