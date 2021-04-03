@@ -234,7 +234,7 @@ export function* updateFilterSort(action) {
 
   try {
     yield put(artworksActions.updateFilterSort({ filter }));
-    yield put(artworksActions.artworksFilterSort());
+    // yield put(artworksActions.artworksFilterSort());
   } catch (err) {
     throw err;
   }

@@ -5,6 +5,7 @@ import { Filter } from 'types/Filter';
 /* --- STATE --- */
 export interface ArtworksState {
   artworks: Artwork[];
+  artworksDisplayIds: string[];
   currentArtworkId?: string | null;
   loading: boolean;
   filter: Filter;

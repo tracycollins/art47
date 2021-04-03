@@ -7,10 +7,11 @@ import { useArtworksSlice } from './slice';
 // import { selectArtworks, selectLoading, selectError } from './slice/selectors';
 import {
   selectArtworks,
+  selectArtworksDisplayIds,
   selectCurrentArtwork,
   selectLoading,
   selectCursor,
-  selectFilter,
+  // selectFilter,
 } from './slice/selectors';
 // import { ArtworkErrorType } from './slice/types';
 
@@ -99,10 +100,11 @@ export function ArtworksPage() {
 
   const user = useSelector(selectUser);
   const artworks = useSelector(selectArtworks);
+  const artworksDisplayIds = useSelector(selectArtworksDisplayIds);
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  const filter = useSelector(selectFilter);
+  // const filter = useSelector(selectFilter);
   // const error = useSelector(selectError);
 
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -119,25 +121,35 @@ export function ArtworksPage() {
   }, [cursor]);
 
   useEffect(() => {
-    console.log(
-      `ArtworksPage | getArtworks` +
-        ` | ${artworks ? artworks.length : 0} ARTWORKS` +
-        ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
-        ` | loading: ${loading}` +
-        ` | hasNextPage: ${hasNextPage}` +
-        ` | urlArtworkId: ${urlArtworkId}`,
-    );
     const options = { user };
     // if (artworks.length === 0) {
     //   dispatch(actions.getArtworkById(options));
     // }
     if (urlArtworkId) {
+      console.log(
+        `ArtworksPage | getArtworks` +
+          ` | ${artworks ? artworks.length : 0} ARTWORKS` +
+          ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
+          ` | loading: ${loading}` +
+          ` | hasNextPage: ${hasNextPage}` +
+          ` | urlArtworkId: ${urlArtworkId}`,
+      );
+
       if (!currentArtwork || currentArtwork.id !== urlArtworkId) {
         dispatch(actions.getArtworkById(urlArtworkId));
       }
       dispatch(actions.setCurrentArtworkId(urlArtworkId));
       setDisplayCurrentArtwork(true);
     } else {
+      console.log(
+        `ArtworksPage | getArtworks` +
+          ` | ${artworks ? artworks.length : 0} ARTWORKS` +
+          ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
+          ` | loading: ${loading}` +
+          ` | hasNextPage: ${hasNextPage}` +
+          ` | urlArtworkId: ${urlArtworkId}`,
+      );
+
       setDisplayCurrentArtwork(false);
       if (artworks.length === 0 && hasNextPage && !loading) {
         dispatch(actions.setCurrentArtworkId(null));
@@ -152,15 +164,17 @@ export function ArtworksPage() {
       console.log(`UPDATE FILTER SORT`);
       console.log({ newFilter });
       dispatch(actions.updateFilterSort({ filter: newFilter }));
+      dispatch(actions.artworksFilterSort());
+
       if (newFilter.unrated) {
         console.log(`UPDATE UNRATED SORT`);
         dispatch(
           actions.setCursor({
             cursor: {
               _id: 0,
-              sortType: 'all',
-              subDoc: null,
-              sort: null,
+              sortType: 'none',
+              subDoc: 'none',
+              sort: 'none',
               rate: 0,
               score: 0,
               value: 0,
@@ -168,9 +182,8 @@ export function ArtworksPage() {
           }),
         );
       }
-      console.log({ filter });
     },
-    [actions, dispatch, filter],
+    [actions, dispatch],
   );
 
   const toggleFilter = useCallback(
@@ -243,17 +256,20 @@ export function ArtworksPage() {
 
   const handlePrevNext = (prevNext, artworkId) => {
     console.log(`handlePrevNext | ${prevNext} | ARTWORK ID: ${artworkId}`);
+    const currentIndex = artworksDisplayIds.findIndex(id => artworkId === id);
+
     let newArtworkId = '';
+
     if (prevNext === 'next') {
       newArtworkId =
-        artworkId === artworks[artworks.length - 1].id
-          ? parseInt(artworks[0].id)
-          : parseInt(artworkId) + 1;
+        currentIndex === artworksDisplayIds.length - 1
+          ? artworksDisplayIds[0]
+          : artworksDisplayIds[currentIndex + 1];
     } else {
       newArtworkId =
-        parseInt(artworkId) === 1
-          ? parseInt(artworks[artworks.length - 1].id)
-          : parseInt(artworkId) - 1;
+        currentIndex === 0
+          ? artworksDisplayIds[artworksDisplayIds.length - 1]
+          : artworksDisplayIds[currentIndex - 1];
     }
     console.log({ newArtworkId });
     history.push(`/artworks/${newArtworkId}`);
@@ -267,7 +283,10 @@ export function ArtworksPage() {
   };
 
   const artworksDisplay = () => {
-    return artworks.map(artwork => (
+    const displayArtworks = artworksDisplayIds.map(id =>
+      artworks.find(artwork => artwork.id === id),
+    );
+    return displayArtworks.map(artwork => (
       <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
     ));
   };

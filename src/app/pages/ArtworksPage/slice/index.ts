@@ -10,6 +10,7 @@ export const initialState: ArtworksState = {
   loading: false,
   error: null,
   artworks: [],
+  artworksDisplayIds: [],
   currentArtworkId: null,
   cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
   filter: { topRated: false, topRecs: false, unrated: false },
@@ -52,39 +53,46 @@ const slice = createSlice({
       state.error = null;
     },
     artworksFilterSort(state) {
-      const artworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
+      const allArtworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
+      // const artworksDisplayIds = current(state).artworksDisplayIds;
+      const filter = current(state).filter;
+      console.log(filter);
 
-      if (state.filter.topRated) {
-        artworks.sort((a, b) => {
+      if (filter.topRated) {
+        allArtworks.sort((a, b) => {
           const aRate = a.ratingUser ? a.ratingUser.rate : 0;
           const bRate = b.ratingUser ? b.ratingUser.rate : 0;
           if (aRate < bRate) return 1;
           if (aRate > bRate) return -1;
           return 0;
         });
-        state.artworks = [...artworks];
-      } else if (state.filter.topRecs) {
-        artworks.sort((a, b) => {
+        state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
+        // state.artworks = [...allArtworks];
+      } else if (filter.topRecs) {
+        allArtworks.sort((a, b) => {
           const aScore = a.recommendationUser ? a.recommendationUser.score : 0;
           const bScore = b.recommendationUser ? b.recommendationUser.score : 0;
           if (aScore < bScore) return 1;
           if (aScore > bScore) return -1;
           return 0;
         });
-        state.artworks = [...artworks];
-      } else if (state.filter.unrated) {
-        const tempArtworks = artworks.filter(artwork => {
-          console.log({ artwork });
+        state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
+        // state.artworks = [...allArtworks];
+      } else if (filter.unrated) {
+        const filteredArtworks = allArtworks.filter(artwork => {
+          // console.log({ artwork });
           return artwork.ratingUser === undefined;
         });
-        state.artworks = [...tempArtworks];
+        state.artworksDisplayIds = filteredArtworks.map(artwork => artwork.id);
+        // state.artworks = [...tempArtworks];
       } else {
-        artworks.sort((a, b) => {
+        allArtworks.sort((a, b) => {
           if (a._id < b._id) return -1;
           if (a._id > b._id) return 1;
           return 0;
         });
-        state.artworks = [...artworks];
+        state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
+        // state.artworks = [...artworks];
       }
     },
     artworksLoaded(state, action) {
@@ -103,35 +111,6 @@ const slice = createSlice({
         return 0;
       });
 
-      // if (user && user._id) {
-      //   state.artworks = tempArtworks.map(artwork => {
-      //     // console.log(artwork);
-      //     if (artwork.ratings && artwork.ratings.length > 0) {
-      //       artwork.ratingUser = artwork.ratings.find(rating => {
-      //         // console.log(rating);
-      //         return (
-      //           rating.user && rating.user._id && rating.user._id === user._id
-      //         );
-      //       });
-      //       // return artwork;
-      //     }
-      //     if (artwork.recommendations && artwork.recommendations.length > 0) {
-      //       artwork.recommendationUser = artwork.recommendations.find(
-      //         recommendation => {
-      //           // console.log(recommendation);
-      //           return (
-      //             recommendation.user &&
-      //             recommendation.user._id &&
-      //             recommendation.user._id === user._id
-      //           );
-      //         },
-      //       );
-      //       // return artwork;
-      //     }
-
-      //     return artwork;
-      //   });
-      // } else {
       state.artworks = tempArtworks;
       // }
       if (action.payload.cursor) {

@@ -10,6 +10,11 @@ export const selectArtworks = createSelector(
   artworksState => artworksState.artworks,
 );
 
+export const selectArtworksDisplayIds = createSelector(
+  [selectDomain],
+  artworksState => artworksState.artworksDisplayIds,
+);
+
 export const selectCurrentArtwork = createSelector(
   [selectDomain],
   artworksState =>

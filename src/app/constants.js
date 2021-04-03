@@ -20,9 +20,9 @@ export const INITIAL_STATE = {
   currentArtwork: false,
   cursor: {
     _id: 0,
-    sortType: 'all',
-    subDoc: null,
-    sort: null,
+    sortType: 'none',
+    subDoc: 'none',
+    sort: 'none',
     rate: 0,
     score: 0,
     value: 0,
