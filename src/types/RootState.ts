@@ -1,4 +1,5 @@
 import { ArtworksState } from 'app/pages/ArtworksPage/slice/types';
+import { ArtistsState } from 'app/pages/ArtistsPage/slice/types';
 import { UserState } from 'app/pages/UserPage/slice/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
@@ -8,6 +9,7 @@ import { UserState } from 'app/pages/UserPage/slice/types';
 */
 export interface RootState {
   artworks?: ArtworksState;
+  artists?: ArtistsState;
   user?: UserState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }

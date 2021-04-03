@@ -16,6 +16,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { GlobalStyle } from 'styles/global-styles';
 
 import { ArtworksPage } from './pages/ArtworksPage/Loadable';
+import { ArtistsPage } from './pages/ArtistsPage/Loadable';
 import { UserPage } from './pages/UserPage/Loadable';
 import { HomePage } from './pages/HomePage/Loadable';
 import { Header } from './components/Header';
@@ -59,6 +60,8 @@ export function App() {
       <Switch>
         <Route path="/artworks/:id" component={ArtworksPage} />
         <Route path="/artworks" component={ArtworksPage} />
+        <Route path="/artists/:id" component={ArtistsPage} />
+        <Route path="/artists" component={ArtistsPage} />
         <Route path="/authorize" component={HomePage} />
         <Route path="/login/callback" component={HomePage} />
         <Route path="/login" component={HomePage} />
