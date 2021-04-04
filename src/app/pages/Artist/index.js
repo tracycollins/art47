@@ -16,6 +16,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
+import SearchIcon from '@material-ui/icons/Search';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import FacebookIcon from '@material-ui/icons/Facebook';
@@ -52,16 +53,11 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
   },
   info: {
+    backgroundColor: 'transparent',
     width: 0.35 * window.innerWidth,
   },
   artistInfo: {
     marginBottom: theme.spacing(1),
-  },
-  rating: {
-    marginBottom: theme.spacing(1),
-  },
-  avatar: {
-    backgroundColor: theme.palette.secondary.main,
   },
 }));
 
@@ -109,6 +105,13 @@ export function Artist({ artist, prevNext }) {
         if (artist.facebookUrl) window.open(artist.facebookUrl, '_blank');
         break;
 
+      case 'search':
+        window.open(
+          `https://en.wikipedia.org/wiki/${artist.displayName}`,
+          '_blank',
+        );
+        break;
+
       default:
         break;
     }
@@ -124,7 +127,7 @@ export function Artist({ artist, prevNext }) {
         xs={12}
         className={classes.root}
       >
-        <Card className={classes.info}>
+        <Card style={{ backgroundColor: 'white' }} className={classes.info}>
           <CardActionArea>
             {/* <CardMedia
               component="img"
@@ -134,6 +137,7 @@ export function Artist({ artist, prevNext }) {
               title={artist.displayName}
             /> */}
             <Image
+              style={{ backgroundColor: 'white' }}
               className={classes.image}
               src={artist.image ? artist.image.url : null}
               alt={artist.displayName}
@@ -175,6 +179,12 @@ export function Artist({ artist, prevNext }) {
               >
                 <FacebookIcon />
               </IconButton>
+              <IconButton
+                onClick={event => handleArtistSiteClick(event, 'search')}
+                aria-label="search for artist"
+              >
+                <SearchIcon />
+              </IconButton>
             </CardActions>
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">
@@ -182,14 +192,6 @@ export function Artist({ artist, prevNext }) {
               </Typography>
             </CardContent>
           </CardActionArea>
-          <CardActions>
-            <Button size="small" color="primary">
-              Share
-            </Button>
-            <Button size="small" color="primary">
-              Learn More
-            </Button>
-          </CardActions>
           {/* <Divider />
           <CardActions>
             <IconButton
