@@ -56,17 +56,24 @@ export function* getArtists(options) {
 
     let cursor: Cursor = yield select(selectCursor);
 
+    // const user: User = yield select(selectUser);
+    // const userId = user.id || user.sub || 0;
+
     let tempCursor = { ...cursor };
     console.log({ tempCursor });
 
-    let requestURL = `${API_ROOT}/artists/cursor/${tempCursor._id}/`;
+    let requestURL = `${API_ROOT}/artists/cursor/${tempCursor._id}`;
+    // let requestURL = `${API_ROOT}/artists/user/${userId}/cursor/${tempCursor._id}/`;
+
+    // let requestURL = `${API_ROOT}/artists/cursor/0`;
+    // let requestURL = `${API_ROOT}/artists/`;
     console.log({ requestURL });
 
-    // const results = yield call(request, requestURL);
-    const results = {
-      artists: [],
-      nextKey: { _id: '' },
-    };
+    const results = yield call(request, requestURL);
+    // const results = {
+    //   artists: [],
+    //   nextKey: { _id: '' },
+    // };
     // results.artists = [];
     const artists = [...results.artists];
 
@@ -78,9 +85,9 @@ export function* getArtists(options) {
 
     tempCursor =
       results.artists.length < 20
-        ? { _id: 0 }
+        ? { ...tempCursor, _id: 0 }
         : Object.assign({}, tempCursor, results.nextKey);
-    // yield put(artistsActions.artistsLoaded({ artists, cursor: tempCursor }));
+    yield put(artistsActions.artistsLoaded({ artists, cursor: tempCursor }));
     // yield put(artistsActions.artistsFilterSort());
   } catch (err) {
     console.error(err);

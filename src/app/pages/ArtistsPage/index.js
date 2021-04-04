@@ -133,7 +133,7 @@ export function ArtistsPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlArtistId]);
+  }, [urlArtistId, hasNextPage, loading]);
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);

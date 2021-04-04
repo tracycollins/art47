@@ -58,10 +58,10 @@ export function App() {
       <Header />
 
       <Switch>
-        <Route path="/artworks/:id" component={ArtworksPage} />
-        <Route path="/artworks" component={ArtworksPage} />
         <Route path="/artists/:id" component={ArtistsPage} />
         <Route path="/artists" component={ArtistsPage} />
+        <Route path="/artworks/:id" component={ArtworksPage} />
+        <Route path="/artworks" component={ArtworksPage} />
         <Route path="/authorize" component={HomePage} />
         <Route path="/login/callback" component={HomePage} />
         <Route path="/login" component={HomePage} />

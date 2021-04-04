@@ -123,6 +123,9 @@ export function* getArtworks(options) {
         tempCursor[tempCursor.sort] || 999
       }/`;
     }
+
+    console.log({ requestURL });
+
     const results = yield call(request, requestURL);
     const artworks = [...results.artworks];
 

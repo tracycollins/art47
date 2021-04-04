@@ -32,6 +32,7 @@ const slice = createSlice({
       state.error = null;
     },
     getArtists(state) {
+      console.log(`getArtists`);
       state.loading = true;
       state.error = null;
     },
