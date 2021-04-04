@@ -124,8 +124,6 @@ export function* getArtworks(options) {
       }/`;
     }
 
-    console.log({ requestURL });
-
     const results = yield call(request, requestURL);
     const artworks = [...results.artworks];
 

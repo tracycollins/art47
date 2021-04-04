@@ -66,8 +66,6 @@ const useStyles = makeStyles(theme => ({
 export function ArtistsPage() {
   let history = useHistory();
 
-  console.log({ history });
-
   const artistIdRegex = /\/artists\/(\w+)/;
   const urlArtistId =
     history.location &&
@@ -75,8 +73,6 @@ export function ArtistsPage() {
     history.location.pathname.match(artistIdRegex)
       ? parseInt(history.location.pathname.match(artistIdRegex)[1], 10)
       : false;
-
-  console.log({ urlArtistId });
 
   const { actions } = useArtistsSlice();
 
@@ -133,7 +129,7 @@ export function ArtistsPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlArtistId, hasNextPage, loading]);
+  }, [artists, urlArtistId, loading, hasNextPage]);
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);
@@ -178,7 +174,6 @@ export function ArtistsPage() {
     }
     console.log({ newArtistId });
     history.push(`/artists/${newArtistId}`);
-    // dispatch(actions.setCurrentArtist(artist_id));
   };
 
   const artistsDisplay = () => {
@@ -192,63 +187,10 @@ export function ArtistsPage() {
 
   const content = displayCurrentArtist ? (
     <div className={classes.artistRoot}>
-      <Artist
-        artist={currentArtist}
-        prevNext={handlePrevNext}
-        // handleUpdateRating={handleUpdateRating}
-      />
+      <Artist artist={currentArtist} prevNext={handlePrevNext} />
     </div>
   ) : (
     <>
-      {/* <AppBar className={classes.appBar} elevation={0} position="fixed">
-        <Toolbar className={classes.toolBar}>
-          <Button
-            className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('topRecs')}
-            onClick={() =>
-              toggleFilter({
-                topRecs: true,
-                topRated: false,
-                unrated: false,
-              })
-            }
-            variant="contained"
-            color={topRecs ? 'secondary' : 'primary'}
-          >
-            REC SORT
-          </Button>
-          <Button
-            className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('topRated')}
-            onClick={() =>
-              toggleFilter({
-                topRecs: false,
-                topRated: true,
-                unrated: false,
-              })
-            }
-            variant="contained"
-            color={topRated ? 'secondary' : 'primary'}
-          >
-            RATING SORT
-          </Button>
-          <Button
-            className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('unrated')}
-            onClick={() =>
-              toggleFilter({
-                topRecs: false,
-                topRated: false,
-                unrated: true,
-              })
-            }
-            variant="contained"
-            color={unrated ? 'secondary' : 'primary'}
-          >
-            YOUR UNRATED
-          </Button>
-        </Toolbar>
-      </AppBar> */}
       <div className={classes.artistListRoot}>
         <div className={classes.artistList}>
           {artists.length === 0 ? (

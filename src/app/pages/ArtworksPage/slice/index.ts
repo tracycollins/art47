@@ -1,6 +1,4 @@
 import { PayloadAction, current } from '@reduxjs/toolkit';
-// import { Artwork } from 'types/Artwork';
-// import { Cursor } from 'types/Cursor';
 import { createSlice } from 'utils/@reduxjs/toolkit';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { artworksSaga } from './saga';
@@ -54,9 +52,7 @@ const slice = createSlice({
     },
     artworksFilterSort(state) {
       const allArtworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
-      // const artworksDisplayIds = current(state).artworksDisplayIds;
       const filter = current(state).filter;
-      console.log(filter);
 
       if (filter.topRated) {
         allArtworks.sort((a, b) => {
@@ -67,7 +63,6 @@ const slice = createSlice({
           return 0;
         });
         state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
-        // state.artworks = [...allArtworks];
       } else if (filter.topRecs) {
         allArtworks.sort((a, b) => {
           const aScore = a.recommendationUser ? a.recommendationUser.score : 0;
@@ -96,8 +91,6 @@ const slice = createSlice({
       }
     },
     artworksLoaded(state, action) {
-      // const user = action.payload.user;
-      console.log({ action });
       const artworks = [...current(state).artworks]; // need to use RTK current to avoid proxy
       const newArtworks = [...action.payload.artworks];
       let tempArtworks = artworks.filter(
@@ -112,7 +105,7 @@ const slice = createSlice({
       });
 
       state.artworks = tempArtworks;
-      // }
+
       if (action.payload.cursor) {
         const cursor = action.payload.cursor;
         state.cursor = cursor;
@@ -134,15 +127,3 @@ export const useArtworksSlice = () => {
   useInjectSaga({ key: slice.name, saga: artworksSaga });
   return { actions: slice.actions };
 };
-
-/**
- * Example Usage:
- *
- * export function MyComponentNeedingThisSlice() {
- *  const { actions } = useArtworksSlice();
- *
- *  const onButtonClick = (evt) => {
- *    dispatch(actions.someAction());
- *   };
- * }
- */

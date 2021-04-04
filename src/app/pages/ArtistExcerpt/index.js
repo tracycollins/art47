@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-// import PropTypes from 'prop-types';
-
 import { Link } from 'react-router-dom';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-import Rating from '@material-ui/lab/Rating';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-// import { selectArtistById } from "./artistsSlice";
 
 const useStyles = makeStyles(theme => ({
   gridListTile: {
     padding: theme.spacing(1),
-    // margin: theme.spacing(1),
   },
   image: {
     width: '200px',
@@ -44,19 +39,10 @@ export function ArtistExcerpt({ key, user, artist }) {
   const title = display =>
     display ? (
       <GridListTileBar
-        title={artist.title}
+        title={artist.displayName}
         subtitle={
           <>
-            <Typography variant="subtitle2">
-              {artist.artist.displayName}
-            </Typography>
-            <Rating
-              readOnly
-              precision={0.5}
-              size="small"
-              name="rate"
-              value={artist.ratingAverage ? artist.ratingAverage : 0}
-            />
+            <Typography variant="subtitle2">{artist.userName}</Typography>
           </>
         }
       />
@@ -77,7 +63,7 @@ export function ArtistExcerpt({ key, user, artist }) {
           <img
             className={classes.image}
             src={artistImageUrl}
-            alt={artist.title}
+            alt={artist.displayName}
           />
           {title(displayTitle)}
         </Link>

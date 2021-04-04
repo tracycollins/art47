@@ -1,6 +1,4 @@
 import { PayloadAction, current } from '@reduxjs/toolkit';
-// import { Artist } from 'types/Artist';
-// import { Cursor } from 'types/Cursor';
 import { createSlice } from 'utils/@reduxjs/toolkit';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { artistsSaga } from './saga';
@@ -40,9 +38,17 @@ const slice = createSlice({
       state.loading = true;
       state.error = null;
     },
+    artistsFilterSort(state) {
+      const allArtists = [...current(state).artists]; // need to use RTK current to avoid proxy
+
+      allArtists.sort((a, b) => {
+        if (a._id < b._id) return -1;
+        if (a._id > b._id) return 1;
+        return 0;
+      });
+      state.artistsDisplayIds = allArtists.map(artist => artist.id);
+    },
     artistsLoaded(state, action) {
-      // const user = action.payload.user;
-      console.log({ action });
       const artists = [...current(state).artists]; // need to use RTK current to avoid proxy
       const newArtists = [...action.payload.artists];
       let tempArtists = artists.filter(
@@ -56,7 +62,7 @@ const slice = createSlice({
       });
 
       state.artists = tempArtists;
-      // }
+
       if (action.payload.cursor) {
         const cursor = action.payload.cursor;
         state.cursor = cursor;

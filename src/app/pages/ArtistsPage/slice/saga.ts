@@ -41,7 +41,7 @@ export function* getArtistById(action) {
 
     console.log(`ArtistsPage | FETCHED ARTIST | ID: ${artistId}`);
 
-    yield put(artistsActions.artistsLoaded({ artists: [artist], user }));
+    yield put(artistsActions.artistsLoaded({ artists: [artist] }));
     yield put(artistsActions.setCurrentArtistId(artist.id));
   } catch (err) {
     console.error(err);
@@ -63,18 +63,10 @@ export function* getArtists(options) {
     console.log({ tempCursor });
 
     let requestURL = `${API_ROOT}/artists/cursor/${tempCursor._id}`;
-    // let requestURL = `${API_ROOT}/artists/user/${userId}/cursor/${tempCursor._id}/`;
-
-    // let requestURL = `${API_ROOT}/artists/cursor/0`;
-    // let requestURL = `${API_ROOT}/artists/`;
     console.log({ requestURL });
 
     const results = yield call(request, requestURL);
-    // const results = {
-    //   artists: [],
-    //   nextKey: { _id: '' },
-    // };
-    // results.artists = [];
+
     const artists = [...results.artists];
 
     console.log(
@@ -88,7 +80,7 @@ export function* getArtists(options) {
         ? { ...tempCursor, _id: 0 }
         : Object.assign({}, tempCursor, results.nextKey);
     yield put(artistsActions.artistsLoaded({ artists, cursor: tempCursor }));
-    // yield put(artistsActions.artistsFilterSort());
+    yield put(artistsActions.artistsFilterSort());
   } catch (err) {
     console.error(err);
 

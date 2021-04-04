@@ -4,16 +4,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
-// import { selectArtworks, selectLoading, selectError } from './slice/selectors';
 import {
   selectArtworks,
   selectArtworksDisplayIds,
   selectCurrentArtwork,
   selectLoading,
   selectCursor,
-  // selectFilter,
 } from './slice/selectors';
-// import { ArtworkErrorType } from './slice/types';
 
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -80,8 +77,6 @@ export function ArtworksPage() {
       ? parseInt(history.location.pathname.match(artworkIdRegex)[1], 10)
       : false;
 
-  // const currentArtworkIdRef = useRef(currentArtworkId);
-
   const useToggle = (initialValue = false) => {
     const [value, setValue] = useState(initialValue);
     const toggle = useCallback(n => {
@@ -104,8 +99,6 @@ export function ArtworksPage() {
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  // const filter = useSelector(selectFilter);
-  // const error = useSelector(selectError);
 
   const [hasNextPage, setHasNextPage] = useState(true);
   const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
@@ -122,9 +115,7 @@ export function ArtworksPage() {
 
   useEffect(() => {
     const options = { user };
-    // if (artworks.length === 0) {
-    //   dispatch(actions.getArtworkById(options));
-    // }
+
     if (urlArtworkId) {
       console.log(
         `ArtworksPage | getArtworks` +
@@ -273,7 +264,6 @@ export function ArtworksPage() {
     }
     console.log({ newArtworkId });
     history.push(`/artworks/${newArtworkId}`);
-    // dispatch(actions.setCurrentArtwork(artwork_id));
   };
 
   const handleUpdateRating = rating => {
@@ -305,7 +295,6 @@ export function ArtworksPage() {
         <Toolbar className={classes.toolBar}>
           <Button
             className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('topRecs')}
             onClick={() =>
               toggleFilter({
                 topRecs: true,
@@ -320,7 +309,6 @@ export function ArtworksPage() {
           </Button>
           <Button
             className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('topRated')}
             onClick={() =>
               toggleFilter({
                 topRecs: false,
@@ -335,7 +323,6 @@ export function ArtworksPage() {
           </Button>
           <Button
             className={classes.toolBarButton}
-            // onClick={() => handleSetFilter('unrated')}
             onClick={() =>
               toggleFilter({
                 topRecs: false,
