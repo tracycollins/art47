@@ -4,7 +4,7 @@ import { Cursor } from 'types/Cursor';
 /* --- STATE --- */
 export interface ArtistsState {
   artists: Artist[];
-  artistsDisplayIds: number[];
+  artistsDisplayIds: string[];
   currentArtistId?: string | null;
   loading: boolean;
   cursor: Cursor;

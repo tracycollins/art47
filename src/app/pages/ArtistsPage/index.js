@@ -1,10 +1,9 @@
 /* eslint-disable indent */
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtistsSlice } from './slice';
-// import { selectArtists, selectLoading, selectError } from './slice/selectors';
 import {
   selectArtists,
   selectArtistsDisplayIds,
@@ -13,15 +12,11 @@ import {
   selectCursor,
   // selectFilter,
 } from './slice/selectors';
-// import { ArtistErrorType } from './slice/types';
 
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import {} from './slice/selectors';
 import { ArtistExcerpt } from 'app/pages/ArtistExcerpt/Loadable';
@@ -32,7 +27,6 @@ const useStyles = makeStyles(theme => ({
   root: {},
   artistRoot: {
     marginRight: theme.spacing(10),
-    // marginTop: theme.spacing(10),
     width: '100%',
   },
   artistList: {
@@ -82,19 +76,7 @@ export function ArtistsPage() {
       ? parseInt(history.location.pathname.match(artistIdRegex)[1], 10)
       : false;
 
-  // const currentArtistIdRef = useRef(currentArtistId);
-
-  const useToggle = (initialValue = false) => {
-    const [value, setValue] = useState(initialValue);
-    const toggle = useCallback(n => {
-      if (n !== undefined) {
-        setValue(v => n);
-      } else {
-        setValue(v => !v);
-      }
-    }, []);
-    return [value, toggle];
-  };
+  console.log({ urlArtistId });
 
   const { actions } = useArtistsSlice();
 
@@ -106,15 +88,9 @@ export function ArtistsPage() {
   const currentArtist = useSelector(selectCurrentArtist);
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
-  // const filter = useSelector(selectFilter);
-  // const error = useSelector(selectError);
 
   const [hasNextPage, setHasNextPage] = useState(true);
   const [displayCurrentArtist, setDisplayCurrentArtist] = useState(false);
-
-  const [topRated, toogleTopRated] = useToggle();
-  const [topRecs, toogleTopRecs] = useToggle();
-  const [unrated, toogleUnrated] = useToggle();
 
   const classes = useStyles();
 
@@ -124,9 +100,7 @@ export function ArtistsPage() {
 
   useEffect(() => {
     const options = { user };
-    // if (artists.length === 0) {
-    //   dispatch(actions.getArtistById(options));
-    // }
+
     if (urlArtistId) {
       console.log(
         `ArtistsPage | getArtists` +
@@ -159,78 +133,7 @@ export function ArtistsPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artists, urlArtistId, loading, hasNextPage]);
-
-  const updateFilterSort = useCallback(
-    newFilter => {
-      console.log(`UPDATE FILTER SORT`);
-      console.log({ newFilter });
-      dispatch(actions.updateFilterSort({ filter: newFilter }));
-      dispatch(actions.artistsFilterSort());
-
-      if (newFilter.unrated) {
-        console.log(`UPDATE UNRATED SORT`);
-        dispatch(
-          actions.setCursor({
-            cursor: {
-              _id: 0,
-              sortType: 'none',
-              subDoc: 'none',
-              sort: 'none',
-              rate: 0,
-              score: 0,
-              value: 0,
-            },
-          }),
-        );
-      }
-    },
-    [actions, dispatch],
-  );
-
-  const toggleFilter = useCallback(
-    toggle => {
-      if (toggle.topRated) {
-        toogleTopRated();
-        toogleTopRecs(false);
-        toogleUnrated(false);
-        updateFilterSort({
-          topRated: !topRated,
-          topRecs: false,
-          unrated: false,
-        });
-      }
-      if (toggle.topRecs) {
-        toogleTopRated(false);
-        toogleTopRecs();
-        toogleUnrated(false);
-        updateFilterSort({
-          topRecs: !topRecs,
-          topRated: false,
-          unrated: false,
-        });
-      }
-      if (toggle.unrated) {
-        toogleTopRated(false);
-        toogleTopRecs(false);
-        toogleUnrated();
-        updateFilterSort({
-          unrated: !unrated,
-          topRecs: false,
-          topRated: false,
-        });
-      }
-    },
-    [
-      updateFilterSort,
-      topRated,
-      topRecs,
-      unrated,
-      toogleTopRated,
-      toogleTopRecs,
-      toogleUnrated,
-    ],
-  );
+  }, [urlArtistId]);
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);
@@ -278,12 +181,6 @@ export function ArtistsPage() {
     // dispatch(actions.setCurrentArtist(artist_id));
   };
 
-  const handleUpdateRating = rating => {
-    console.log({ rating });
-    dispatch(actions.updateRating({ rating }));
-    dispatch(actions.setCurrentArtistId(urlArtistId));
-  };
-
   const artistsDisplay = () => {
     const displayArtists = artistsDisplayIds.map(id =>
       artists.find(artist => artist.id === id),
@@ -298,12 +195,12 @@ export function ArtistsPage() {
       <Artist
         artist={currentArtist}
         prevNext={handlePrevNext}
-        handleUpdateRating={handleUpdateRating}
+        // handleUpdateRating={handleUpdateRating}
       />
     </div>
   ) : (
     <>
-      <AppBar className={classes.appBar} elevation={0} position="fixed">
+      {/* <AppBar className={classes.appBar} elevation={0} position="fixed">
         <Toolbar className={classes.toolBar}>
           <Button
             className={classes.toolBarButton}
@@ -351,7 +248,7 @@ export function ArtistsPage() {
             YOUR UNRATED
           </Button>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
       <div className={classes.artistListRoot}>
         <div className={classes.artistList}>
           {artists.length === 0 ? (
