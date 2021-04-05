@@ -57,8 +57,6 @@ export function Artist({ artist, prevNext }) {
   const history = useHistory();
   const classes = useStyles();
 
-  console.log(`artist.image.url: ${artist.image.url}`);
-
   useHotkeys('up', () => history.push(`/artists`), [artist]);
   useHotkeys('left', () => prevNext('prev', artist.id), [artist]);
   useHotkeys('right', () => prevNext('next', artist.id), [artist]);
