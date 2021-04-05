@@ -4407,7 +4407,7 @@ connect-history-api-fallback@^1.6.0:
 
 connected-react-router@6.9.1:
   version "6.9.1"
-  resolved "https://registry.npmjs.org/connected-react-router/-/connected-react-router-6.9.1.tgz"
+  resolved "https://registry.yarnpkg.com/connected-react-router/-/connected-react-router-6.9.1.tgz#d842eebaa15b9920e2e45fc03d74e41110e94e4c"
   integrity sha512-BbtB6t0iqAwGwygDenJl9zmlk7vpKWIRSycULmkAOn2RUaF6+bqETprl0qcIqQmY5CTqSwKanaxkLXYWiffAfQ==
   dependencies:
     lodash.isequalwith "^4.4.0"
@@ -11486,6 +11486,11 @@ react-app-polyfill@^2.0.0:
     raf "^3.4.1"
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
+
+react-app@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-app/-/react-app-1.1.2.tgz#ae608159bdbdb166bc5fcc9c0d97b2219365dc1f"
+  integrity sha1-rmCBWb29sWa8X8ycDZeyIZNl3B8=
 
 react-dev-utils@^11.0.3:
   version "11.0.4"
