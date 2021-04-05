@@ -29,7 +29,9 @@
     "connected-react-router": "6.9.1",
     "cross-env": "7.0.2",
     "dotprop": "1.2.1",
+    "eslint": "7.23.0",
     "fontfaceobserver": "2.1.0",
+    "history": "5.0.0",
     "husky": "4.2.5",
     "i18next": "19.7.0",
     "i18next-browser-languagedetector": "6.0.1",
@@ -40,6 +42,7 @@
     "material-ui-image": "3.3.1",
     "node-plop": "0.26.2",
     "plop": "2.7.4",
+    "prettier": "2.1.1",
     "react": "16.13.1",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.1",
@@ -47,10 +50,13 @@
     "react-hotkeys-hook": "3.2.1",
     "react-i18next": "11.7.2",
     "react-infinite-scroll-hook": "3.0.0",
+    "react-is": "17.0.2",
     "react-redux": "7.2.1",
+    "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.3",
     "react-test-renderer": "16.13.1",
+    "redux": "4.0.5",
     "redux-injectors": "1.3.0",
     "redux-saga": "1.1.3",
     "rimraf": "3.0.2",
@@ -64,14 +70,13 @@
     "stylelint-processor-styled-components": "1.10.0",
     "ts-node": "9.0.0",
     "typescript": "4.1.3",
-    "web-vitals": "0.2.4",
-    "prettier": "2.1.1"
+    "web-vitals": "0.2.4"
   },
   "devDependencies": {
-    "lint-staged": "10.3.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.4",
-    "eslint-plugin-react-hooks": "4.1.0"
+    "eslint-plugin-react-hooks": "4.1.0",
+    "lint-staged": "10.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
