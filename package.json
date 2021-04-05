@@ -1,7 +1,7 @@
 {
   "name": "art47",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@auth0/auth0-react": "1.4.0",
     "@fontsource/bungee": "4.2.2",
@@ -133,5 +133,10 @@
         "statements": 90
       }
     }
-  }
+  },
+  "description": "AI-powered art recommendation app",
+  "main": "index.js",
+  "repository": "https://github.com/tracycollins/art47.git",
+  "author": "tracycollins <tc@threeceemedia.com>",
+  "license": "MIT"
 }
