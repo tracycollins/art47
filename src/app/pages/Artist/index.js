@@ -4,18 +4,12 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 import { makeStyles } from '@material-ui/core/styles';
-// import { useSelector } from 'react-redux';
-// import { selectUser } from 'app/pages/UserPage/slice/selectors';
-
 import { useHotkeys } from 'react-hotkeys-hook';
-// import { Link } from 'react-router-dom';
-// import { useAuth0 } from '@auth0/auth0-react';
 import Image from 'material-ui-image';
 import IconButton from '@material-ui/core/IconButton';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
-// import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import InstagramIcon from '@material-ui/icons/Instagram';
@@ -25,8 +19,6 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-// import CardMedia from '@material-ui/core/CardMedia';
-// import Divider from '@material-ui/core/Divider';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
@@ -63,7 +55,6 @@ const useStyles = makeStyles(theme => ({
 
 export function Artist({ artist, prevNext }) {
   const history = useHistory();
-
   const classes = useStyles();
 
   console.log(`artist.image.url: ${artist.image.url}`);
@@ -129,13 +120,6 @@ export function Artist({ artist, prevNext }) {
       >
         <Card style={{ backgroundColor: 'white' }} className={classes.info}>
           <CardActionArea>
-            {/* <CardMedia
-              component="img"
-              className={classes.media}
-              height={0.65 * window.innerHeight}
-              src={artist.image ? artist.image.url : null}
-              title={artist.displayName}
-            /> */}
             <Image
               style={{ backgroundColor: 'white' }}
               className={classes.image}
@@ -192,23 +176,6 @@ export function Artist({ artist, prevNext }) {
               </Typography>
             </CardContent>
           </CardActionArea>
-          {/* <Divider />
-          <CardActions>
-            <IconButton
-              size="medium"
-              value="prev"
-              onClick={() => prevNext('prev', artist.id)}
-            >
-              <ArrowBackIosRoundedIcon />
-            </IconButton>
-            <IconButton
-              size="medium"
-              value="next"
-              onClick={() => prevNext('next', artist.id)}
-            >
-              <ArrowForwardIosRoundedIcon />
-            </IconButton>
-          </CardActions> */}
         </Card>
         <AppBar className={classes.appBar} elevation={0} position="fixed">
           <Toolbar className={classes.toolBar}>
