@@ -29,6 +29,7 @@ export function* getArtistById(action) {
   const artistId = action.payload;
   console.log(`artistId | API_ROOT: ${API_ROOT} | ARTIST ID: ${artistId}`);
   try {
+    yield put(artistsActions.loadArtists());
     yield delay(100);
 
     const user: User = yield select(selectUser);
@@ -43,6 +44,7 @@ export function* getArtistById(action) {
 
     yield put(artistsActions.artistsLoaded({ artists: [artist] }));
     yield put(artistsActions.setCurrentArtistId(artist.id));
+    yield put(artistsActions.loadArtistsComplete());
   } catch (err) {
     console.error(err);
     // yield put(artistsLoadingError(err));
@@ -52,6 +54,7 @@ export function* getArtistById(action) {
 export function* getArtists(options) {
   console.log(`getArtists | API_ROOT: ${API_ROOT}`);
   try {
+    yield put(artistsActions.loadArtists());
     yield delay(500);
 
     let cursor: Cursor = yield select(selectCursor);
@@ -81,10 +84,11 @@ export function* getArtists(options) {
         : Object.assign({}, tempCursor, results.nextKey);
     yield put(artistsActions.artistsLoaded({ artists, cursor: tempCursor }));
     yield put(artistsActions.artistsFilterSort());
+    yield put(artistsActions.loadArtistsComplete());
   } catch (err) {
     console.error(err);
 
-    // yield put(artistsLoadingError(err));
+    yield put(artistsActions.artistsError(err));
   }
 }
 

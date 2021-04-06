@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
@@ -37,18 +37,7 @@ export function ArtistExcerpt({ key, user, artist }) {
   linkParams.pathname = `/artists/${artist.id}`;
 
   const title = display =>
-    display ? (
-      <GridListTileBar
-        title={artist.displayName}
-        subtitle={
-          <>
-            <Typography variant="subtitle2">{artist.userName}</Typography>
-          </>
-        }
-      />
-    ) : (
-      <></>
-    );
+    display ? <GridListTileBar title={artist.displayName} /> : <></>;
 
   return (
     <>

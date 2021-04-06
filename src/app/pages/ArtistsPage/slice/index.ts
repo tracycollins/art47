@@ -38,6 +38,9 @@ const slice = createSlice({
       state.loading = true;
       state.error = null;
     },
+    loadArtistsComplete(state) {
+      state.loading = false;
+    },
     artistsFilterSort(state) {
       const allArtists = [...current(state).artists]; // need to use RTK current to avoid proxy
 
@@ -68,7 +71,7 @@ const slice = createSlice({
         state.cursor = cursor;
       }
       state.error = null;
-      state.loading = false;
+      // state.loading = false;
     },
     artistsError(state, action: PayloadAction<ArtistErrorType>) {
       state.error = action.payload;

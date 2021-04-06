@@ -1,10 +1,3 @@
-/**
- *
- * App
- *
- * This component is the skeleton around the actual pages, and should only
- * contain code that should be seen on all pages. (e.g. navigation bar)
- */
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useUserSlice } from 'app/pages/UserPage/slice';
@@ -19,6 +12,8 @@ import { ArtworksPage } from './pages/ArtworksPage/Loadable';
 import { ArtistsPage } from './pages/ArtistsPage/Loadable';
 import { UserPage } from './pages/UserPage/Loadable';
 import { HomePage } from './pages/HomePage/Loadable';
+import { InfoPage } from './pages/InfoPage/Loadable';
+import { ThanksPage } from './pages/ThanksPage/Loadable';
 import { Header } from './components/Header';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +61,8 @@ export function App() {
         <Route path="/login/callback" component={HomePage} />
         <Route path="/login" component={HomePage} />
         <Route path="/profile" component={UserPage} />
+        <Route path="/info" component={InfoPage} />
+        <Route path="/thanks" component={ThanksPage} />
         <Route path="/logout" />
         <Route path="/" component={HomePage} />
         <Route path="" component={NotFoundPage} />

@@ -72,14 +72,14 @@ export function* getArtworkById(action) {
     yield put(artworksActions.setCurrentArtworkId(artwork.id));
   } catch (err) {
     console.error(err);
-
-    // yield put(artworksLoadingError(err));
+    yield put(artworksActions.artworksError(err));
   }
 }
 
 export function* getArtworks(options) {
   console.log(`getArtworks | API_ROOT: ${API_ROOT}`);
   try {
+    yield put(artworksActions.loadArtworks());
     yield delay(500);
 
     const user: User = yield select(selectUser);
@@ -167,8 +167,7 @@ export function* getArtworks(options) {
     yield put(artworksActions.artworksFilterSort());
   } catch (err) {
     console.error(err);
-
-    // yield put(artworksLoadingError(err));
+    yield put(artworksActions.artworksError(err));
   }
 }
 
