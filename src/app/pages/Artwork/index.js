@@ -29,8 +29,6 @@ import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounde
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
 
-// import getProp from 'dotprop';
-
 const useStyles = makeStyles(theme => ({
   root: {
     width: '50%',
@@ -71,10 +69,8 @@ const useStyles = makeStyles(theme => ({
 
 export function Artwork({ artwork, handleUpdateRating, prevNext }) {
   const history = useHistory();
-
   const { isAuthenticated } = useAuth0();
   const currentUser = useSelector(selectUser);
-
   const classes = useStyles();
 
   const handleSetRating = ratingInput => {
@@ -105,30 +101,6 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
   useHotkeys('3', () => handleSetRating(3), depArray);
   useHotkeys('4', () => handleSetRating(4), depArray);
   useHotkeys('5', () => handleSetRating(5), depArray);
-
-  // useEffect(() => {
-  //   console.log(`Artwork ID: ${artwork.id}`);
-
-  //   if (artwork.ratingUser) {
-  //     if (
-  //       artwork.ratingUser.user &&
-  //       artwork.ratingUser.user === currentUser._id
-  //     ) {
-  //       rateRef.current = artwork.ratingUser.rate;
-  //       return;
-  //     }
-  //     if (
-  //       artwork.ratingUser.user &&
-  //       artwork.ratingUser.user._id &&
-  //       artwork.ratingUser.user._id === currentUser._id
-  //     ) {
-  //       rateRef.current = artwork.ratingUser.rate;
-  //       return;
-  //     }
-  //   }
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [artwork, rate]);
 
   const content = () =>
     artwork ? (
