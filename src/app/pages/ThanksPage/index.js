@@ -110,25 +110,27 @@ export function ThanksPage() {
           <h1>THANK YOU, INAUGURAL ARTISTS!</h1>
         </Typography>
       </ThemeProvider>
-      <div className={classes.artistListRoot}>
-        <div className={classes.artistList}>
-          {artists.length === 0 ? (
-            <CircularProgress />
-          ) : (
-            <GridList
-              component={'div'}
-              cellHeight={160}
-              className={classes.gridList}
-              spacing={50}
-            >
-              {artistsDisplay()}
-              <div className={classes.progress}>
-                {loading ? <CircularProgress /> : <></>}
-              </div>
-            </GridList>
-          )}
+      <ThemeProvider theme={themeBungee}>
+        <div className={classes.artistListRoot}>
+          <div className={classes.artistList}>
+            {artists.length === 0 ? (
+              <CircularProgress />
+            ) : (
+              <GridList
+                component={'div'}
+                cellHeight={160}
+                className={classes.gridList}
+                spacing={50}
+              >
+                {artistsDisplay()}
+                <div className={classes.progress}>
+                  {loading ? <CircularProgress /> : <></>}
+                </div>
+              </GridList>
+            )}
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     </div>
   );
 }
