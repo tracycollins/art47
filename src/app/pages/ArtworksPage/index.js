@@ -177,6 +177,10 @@ export function ArtworksPage() {
     [actions, dispatch],
   );
 
+  useEffect(() => {
+    updateFilterSort({ topRated, topRecs, unrated });
+  }, [updateFilterSort, displayCurrentArtwork, topRated, topRecs, unrated]);
+
   const toggleFilter = useCallback(
     toggle => {
       if (toggle.topRated) {
@@ -305,7 +309,7 @@ export function ArtworksPage() {
             variant="contained"
             color={topRecs ? 'secondary' : 'primary'}
           >
-            REC SORT
+            TOP RECS
           </Button>
           <Button
             className={classes.toolBarButton}
@@ -319,7 +323,7 @@ export function ArtworksPage() {
             variant="contained"
             color={topRated ? 'secondary' : 'primary'}
           >
-            RATING SORT
+            TOP RATED
           </Button>
           <Button
             className={classes.toolBarButton}
@@ -333,7 +337,7 @@ export function ArtworksPage() {
             variant="contained"
             color={unrated ? 'secondary' : 'primary'}
           >
-            YOUR UNRATED
+            UNRATED
           </Button>
         </Toolbar>
       </AppBar>
