@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+// import TextArea from '@material-ui/core/TextArea';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -32,6 +34,15 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     objectFit: 'cover',
     overflow: 'hidden',
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+  },
+  textField: {
+    // marginLeft: theme.spacing(1),
+    // marginRight: theme.spacing(1),
+    margin: theme.spacing(1),
+    width: '25ch',
   },
   appBar: {
     flexGrow: 1,
@@ -39,6 +50,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   profile: {
+    width: 400,
+  },
+  profileForm: {
     width: 400,
   },
   media: {
@@ -83,8 +97,13 @@ export function Header() {
 
   const classes = useStyles();
   const [profile, setProfile] = React.useState(false);
+  const [editProfile, setEditProfile] = React.useState(false);
   const [displayHelp, setDisplayHelp] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState(1);
+
+  const handleClose = () => {
+    setProfile(false);
+  };
 
   const handleMenuClick = (event, value) => {
     setSelectedTab(value);
@@ -111,6 +130,31 @@ export function Header() {
     }
 
     setProfile(open);
+  };
+
+  const toggleProfileForm = open => event => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setEditProfile(open);
+  };
+
+  const handleEditUser = () => {
+    console.log(`handleEditUser`);
+    setEditProfile(true);
+  };
+
+  const handleFormSubmit = () => {
+    console.log(`handleFormSubmit`);
+    setEditProfile(false);
+  };
+  const handleFormCancel = () => {
+    console.log(`handleFormCancel`);
+    setEditProfile(false);
   };
 
   const listIcon = (menuText, index) => {
@@ -216,10 +260,22 @@ export function Header() {
           </Typography>
         </CardContent>
         <CardActions>
+          <Button onClick={handleClose} variant="contained">
+            CLOSE
+          </Button>
           {user && isAuthenticated ? (
-            <Button onClick={logout} variant="contained" color="secondary">
-              LOGOUT
-            </Button>
+            <>
+              <Button
+                onClick={handleEditUser}
+                variant="contained"
+                color="primary"
+              >
+                UPDATE
+              </Button>
+              <Button onClick={logout} variant="contained" color="secondary">
+                LOGOUT
+              </Button>
+            </>
           ) : (
             <Button
               onClick={loginWithRedirect}
@@ -231,6 +287,73 @@ export function Header() {
           )}
         </CardActions>
       </Card>
+    </Container>
+  );
+
+  const userProfileForm = () => (
+    <Container>
+      <form className={classes.profileForm} noValidate autoComplete="off">
+        <TextField
+          className={classes.textField}
+          id="user-name-first"
+          label="first name"
+          value={user.firstName}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-name-last"
+          label="last name"
+          value={user.lastName}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-nickname"
+          label="nickname"
+          value={user.nickname}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-email"
+          label="email"
+          value={user.email}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-location"
+          label="location"
+          value={user.location}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-website"
+          label="website"
+          value={user.website}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-twitter"
+          label="twitter"
+          value={user.twitter}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-facebook"
+          label="facebook"
+          value={user.facebook}
+        />
+        <TextField
+          className={classes.textField}
+          id="user-instagram"
+          label="instagram"
+          value={user.instagram}
+        />
+      </form>
+      <Button onClick={handleFormSubmit} variant="contained" color="primary">
+        SAVE
+      </Button>
+      <Button onClick={handleFormCancel} variant="contained">
+        CANCEL
+      </Button>
     </Container>
   );
 
@@ -295,6 +418,13 @@ export function Header() {
       </Drawer>
       <Drawer anchor="right" open={profile} onClose={toggleProfile(false)}>
         {userProfile()}
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={editProfile}
+        onClose={toggleProfileForm(false)}
+      >
+        {userProfileForm()}
       </Drawer>
       <Drawer anchor="left" open={displayHelp} onClose={toggleHelp(false)}>
         {help()}

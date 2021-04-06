@@ -38,6 +38,7 @@ export const INITIAL_STATE = {
 
 export const GET_USER = 'user/getUser';
 export const SET_USER = 'user/setUser';
+export const UPDATE_USER = 'user/updateUser';
 
 export const SET_ARTISTS = 'artists/setArtists';
 export const GET_ARTISTS = 'artists/getArtists';
@@ -51,12 +52,3 @@ export const SET_CURSOR_ARTWORKS = 'artworks/setCursor';
 
 export const UPDATE_FILTER_SORT = 'artworks/updateFilterSort';
 export const UPDATE_RATING = 'artworks/updateRating';
-
-// export const UPDATE_RATING_SUCCESS = 'artworks/UPDATE_RATING_SUCCESS';
-// export const UPDATE_RATING_ERROR = 'artworks/UPDATE_RATING_ERROR';
-// export const SET_CURRENT_USER_SUCCESS = 'artworks/SET_CURRENT_USER_SUCCESS';
-// export const SET_CURRENT_USER_ERROR = 'artworks/SET_CURRENT_USER_ERROR';
-// export const SET_CURRENT_ARTWORK = 'artworks/SET_CURRENT_ARTWORK';
-// export const GET_ARTWORKS_SUCCESS = 'artworks/GET_ARTWORKS_SUCCESS';
-// export const GET_ARTWORKS_ERROR = 'artworks/GET_ARTWORKS_ERROR';
-// export const ARTWORKS_FILTER_SORT = 'artworks/ARTWORKS_FILTER_SORT';

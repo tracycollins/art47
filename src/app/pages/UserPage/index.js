@@ -49,6 +49,10 @@ export function UserPage() {
   console.log({ isLoading });
   console.log({ user });
 
+  const handleEditUser = () => {
+    console.log(`handleEditUser`);
+  };
+
   const content = () => (
     <Container>
       <Card>
@@ -76,9 +80,18 @@ export function UserPage() {
         </CardContent>
         <CardActions>
           {isAuthenticated ? (
-            <Button onClick={logout} variant="contained" color="secondary">
-              LOGOUT
-            </Button>
+            <>
+              <Button onClick={logout} variant="contained" color="secondary">
+                LOGOUT
+              </Button>
+              <Button
+                onClick={handleEditUser}
+                variant="contained"
+                color="primary"
+              >
+                EDIT
+              </Button>
+            </>
           ) : (
             <Button
               onClick={loginWithRedirect}
