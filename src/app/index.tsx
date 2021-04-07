@@ -33,7 +33,7 @@ export function App() {
     );
     if (!isLoading) {
       if (isAuthenticated && user) {
-        dispatch(actions.getUser(user));
+        dispatch(actions.authenticatedUser(user));
       } else {
         dispatch(actions.setUser(user));
       }

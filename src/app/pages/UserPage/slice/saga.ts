@@ -2,7 +2,12 @@ import { put, call, takeLeading, delay, select } from 'redux-saga/effects';
 import request from 'utils/request';
 import { selectUser } from './selectors';
 import { User } from 'types/User';
-import { GET_USER, SET_USER, UPDATE_USER } from 'app/constants';
+import {
+  GET_USER,
+  SET_USER,
+  UPDATE_USER,
+  AUTHENTICATED_USER,
+} from 'app/constants';
 import { userActions as actions } from '.';
 
 const developmentAppApiUrl =
@@ -90,8 +95,43 @@ export function* updateUser(action) {
   }
 }
 
+export function* authenticatedUser(action) {
+  console.log(`authenticatedUser | API_ROOT: ${API_ROOT}`);
+  const user = action.payload;
+  console.log(
+    `authenticatedUser` +
+      ` | ID: ${user.id}` +
+      ` | _ID: ${user._id}` +
+      ` | SUB: ${user.sub}`,
+  );
+
+  try {
+    const requestURL = `${API_ROOT}/authenticated`;
+
+    const options = {
+      ...POST_OPTIONS,
+      body: JSON.stringify(user),
+    };
+
+    const result = yield call(request, requestURL, options);
+    console.log({ result });
+
+    const currentUser: User = yield select(selectUser);
+    console.log({ currentUser });
+    const updatedUser = { ...currentUser, ...result.user };
+    console.log({ updatedUser });
+    yield put(actions.setUser(updatedUser));
+    yield put(actions.userLoaded(updatedUser));
+  } catch (err) {
+    console.error(err);
+
+    // yield put(userUpdateError(err));
+  }
+}
+
 export function* userSaga() {
   yield takeLeading(SET_USER, setCurrentUser);
   yield takeLeading(GET_USER, getUser);
   yield takeLeading(UPDATE_USER, updateUser);
+  yield takeLeading(AUTHENTICATED_USER, authenticatedUser);
 }

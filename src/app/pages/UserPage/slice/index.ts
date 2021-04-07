@@ -15,6 +15,11 @@ const slice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    authenticatedUser(state, action: PayloadAction<User>) {
+      const user = action.payload;
+      state.user = user;
+      state.loading = false;
+    },
     setUser(state, action: PayloadAction<User>) {
       // console.log(`setUser`);
       const user = Object.assign({}, action.payload);
