@@ -30,7 +30,7 @@ export const INITIAL_STATE = {
   filter: {
     topRated: false,
     topRecs: false,
-    unrated: true,
+    unrated: false,
   },
   artworks: [],
   artists: [],

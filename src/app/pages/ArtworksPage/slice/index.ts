@@ -75,9 +75,10 @@ const slice = createSlice({
         // state.artworks = [...allArtworks];
       } else if (filter.unrated) {
         const filteredArtworks = allArtworks.filter(artwork => {
-          // console.log({ artwork });
+          // console.log(artwork.ratings);
           return artwork.ratingUser === undefined;
         });
+        console.log(`unrated filteredArtworks ${filteredArtworks.length}`);
         state.artworksDisplayIds = filteredArtworks.map(artwork => artwork.id);
         // state.artworks = [...tempArtworks];
       } else {

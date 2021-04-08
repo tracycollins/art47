@@ -100,7 +100,7 @@ export function ArtworksPage() {
   const loading = useSelector(selectLoading);
   const cursor = useSelector(selectCursor);
 
-  const [hasNextPage, setHasNextPage] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(cursor && cursor._id !== null);
   const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
 
   const [topRated, toogleTopRated] = useToggle();
@@ -110,8 +110,12 @@ export function ArtworksPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    setHasNextPage(cursor && cursor._id !== null);
-  }, [cursor]);
+    if (!loading) {
+      setHasNextPage(cursor && cursor._id !== null);
+    } else {
+      setHasNextPage(false);
+    }
+  }, [cursor, loading]);
 
   useEffect(() => {
     const options = { user };
@@ -132,17 +136,16 @@ export function ArtworksPage() {
       dispatch(actions.setCurrentArtworkId(urlArtworkId));
       setDisplayCurrentArtwork(true);
     } else {
-      console.log(
-        `ArtworksPage | getArtworks` +
-          ` | ${artworks ? artworks.length : 0} ARTWORKS` +
-          ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
-          ` | loading: ${loading}` +
-          ` | hasNextPage: ${hasNextPage}` +
-          ` | urlArtworkId: ${urlArtworkId}`,
-      );
-
       setDisplayCurrentArtwork(false);
       if (artworks.length === 0 && hasNextPage && !loading) {
+        console.log(
+          `ArtworksPage | getArtworks` +
+            ` | ${artworks ? artworks.length : 0} ARTWORKS` +
+            ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
+            ` | loading: ${loading}` +
+            ` | hasNextPage: ${hasNextPage}` +
+            ` | urlArtworkId: ${urlArtworkId}`,
+        );
         dispatch(actions.setCurrentArtworkId(null));
         dispatch(actions.getArtworks(options));
       }
@@ -158,13 +161,17 @@ export function ArtworksPage() {
       dispatch(actions.artworksFilterSort());
 
       if (newFilter.unrated) {
-        console.log(`UPDATE UNRATED SORT`);
+        const lastArtwork_id =
+          artworks.length > 0 ? artworks[artworks.length - 1]._id : '0';
+        console.log(
+          `UPDATE UNRATED SORT | artworks: ${artworks.length} | LAST ART _ID: ${lastArtwork_id}`,
+        );
         dispatch(
           actions.setCursor({
             cursor: {
-              _id: 0,
+              _id: lastArtwork_id,
               sortType: 'none',
-              subDoc: 'none',
+              subDoc: 'unrated',
               sort: 'none',
               rate: 0,
               score: 0,
@@ -174,7 +181,7 @@ export function ArtworksPage() {
         );
       }
     },
-    [actions, dispatch],
+    [actions, dispatch, artworks],
   );
 
   useEffect(() => {
