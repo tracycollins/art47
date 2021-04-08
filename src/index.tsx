@@ -40,7 +40,8 @@ ReactDOM.render(
           domain="wild-disk-7982.us.auth0.com"
           clientId="Utmgokd22lCluIMbM2WzmAVgyjCsHPxB"
           redirectUri={
-            process.env.REACT_APP_AUTH0_REDIRECT_URI || `http://localhost:3000`
+            process.env.REACT_APP_AUTH0_REDIRECT_URI ||
+            `http://localhost:3000/profile`
           }
         >
           <App />

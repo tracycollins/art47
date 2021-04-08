@@ -71,6 +71,8 @@ export function* updateUser(action) {
       ` | SUB: ${user.sub}`,
   );
 
+  console.log({ user });
+
   try {
     const requestURL = `${API_ROOT}/users/update/`;
 
@@ -84,7 +86,7 @@ export function* updateUser(action) {
 
     const currentUser: User = yield select(selectUser);
     console.log({ currentUser });
-    const updatedUser = { ...currentUser, ...result.user };
+    const updatedUser = Object.assign({}, currentUser, result);
     console.log({ updatedUser });
     yield put(actions.setUser(updatedUser));
     yield put(actions.userLoaded(updatedUser));
