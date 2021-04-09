@@ -138,14 +138,16 @@ export function Artist({ artist, prevNext }) {
         break;
     }
   };
+  const defaultArtworkImageUrl = '/art47_logo.png';
 
   const artworksDisplay = () => {
     if (!artist || !artist.artworks || artist.artworks.length === 0) {
-      return <></>;
+      return <img key={0} alt="default" src={defaultArtworkImageUrl} />;
     }
-    return artist.artworks.map(artwork => (
-      <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
-    ));
+    return artist.artworks.map(artwork => {
+      // console.log({ artwork });
+      return <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />;
+    });
   };
 
   const content = () =>

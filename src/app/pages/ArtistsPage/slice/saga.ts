@@ -8,6 +8,7 @@ import {
   takeLeading,
 } from 'redux-saga/effects';
 import { artistsActions } from '.';
+import { artworksActions } from 'app/pages/ArtworksPage/slice/index';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { selectCursor } from './selectors';
 import request from 'utils/request';
@@ -48,6 +49,8 @@ export function* getArtistById(action) {
     );
 
     yield put(artistsActions.artistsLoaded({ artists: [artist] }));
+    yield put(artworksActions.artworksLoaded({ artworks: artist.artworks }));
+
     yield put(artistsActions.setCurrentArtistId(artist.id));
     yield put(artistsActions.loadArtistsComplete());
   } catch (err) {
