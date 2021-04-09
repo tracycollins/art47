@@ -21,9 +21,7 @@ const slice = createSlice({
       state.loading = false;
     },
     setUser(state, action: PayloadAction<User>) {
-      // console.log(`setUser`);
       const user = Object.assign({}, action.payload);
-      console.log({ user });
       if (user && user.picture && user.image === null) {
         user.image = user.picture;
       }

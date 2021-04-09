@@ -2,10 +2,14 @@
 /* eslint-disable no-console */
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
+import { useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Image from 'material-ui-image';
+import Grid from '@material-ui/core/Grid';
+import GridList from '@material-ui/core/GridList';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,10 +26,45 @@ import CardContent from '@material-ui/core/CardContent';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
+import { selectUser } from 'app/pages/UserPage/slice/selectors';
+import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
+import { selectLoading } from 'app/pages/ArtworksPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: '50%',
+    margin: 'auto',
+  },
+  grid: {
+    margin: theme.spacing(1),
+    display: 'flex',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  gridItem: {
+    flex: 3,
+    margin: theme.spacing(1),
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  gridItemArtworks: {
+    flex: 5,
+  },
+  artworkList: {
+    alignItems: 'top',
+    justifyContent: 'top',
+  },
+  artworkListRoot: {
+    display: 'flex',
+    margin: theme.spacing(1),
+  },
+  gridList: {
+    display: 'flex',
+    // width: '100%',
+    alignItems: 'top',
+    justifyContent: 'top',
+    marginTop: theme.spacing(1),
+    maxHeight: 0.85 * window.innerHeight,
+    // height: 0.5 * window.innerHeight,
   },
   appBar: {
     top: 'auto',
@@ -36,26 +75,21 @@ const useStyles = makeStyles(theme => ({
   toolBar: {
     justifyContent: 'flex-end',
   },
-
   title: {},
-  image: {
-    // height: 0.25 * window.innerHeight,
-  },
+  image: {},
   recommendation: {
     marginBottom: theme.spacing(1),
   },
   info: {
-    backgroundColor: 'transparent',
-    width: 0.35 * window.innerWidth,
-  },
-  artistInfo: {
-    marginBottom: theme.spacing(1),
+    margin: theme.spacing(1),
   },
 }));
 
 export function Artist({ artist, prevNext }) {
   const history = useHistory();
   const classes = useStyles();
+  const user = useSelector(selectUser);
+  const loading = useSelector(selectLoading);
 
   useHotkeys('up', () => history.push(`/artists`), [artist]);
   useHotkeys('left', () => prevNext('prev', artist.id), [artist]);
@@ -65,7 +99,6 @@ export function Artist({ artist, prevNext }) {
 
   const handleArtistSiteClick = (event, name) => {
     event.preventDefault();
-    console.log(`handleArtistSiteClick name: ${name}`);
     switch (name) {
       case 'artist':
         if (artist.artistUrl) window.open(artist.artistUrl, '_blank');
@@ -106,75 +139,115 @@ export function Artist({ artist, prevNext }) {
     }
   };
 
+  const artworksDisplay = () => {
+    if (!artist || !artist.artworks || artist.artworks.length === 0) {
+      return <></>;
+    }
+    return artist.artworks.map(artwork => (
+      <ArtworkExcerpt key={artwork.id} user={user} artwork={artwork} />
+    ));
+  };
+
   const content = () =>
     artist ? (
       <Container
-        xl={12}
-        lg={12}
-        md={12}
-        sm={12}
-        xs={12}
+        // xl={12}
+        // lg={12}
+        // md={12}
+        // sm={12}
+        // xs={12}
         className={classes.root}
       >
-        <Card style={{ backgroundColor: 'white' }} className={classes.info}>
-          <CardActionArea>
-            <Image
-              style={{ backgroundColor: 'white' }}
-              className={classes.image}
-              src={artist.image ? artist.image.url : null}
-              alt={artist.displayName}
-              imageStyle={{
-                objectFit: 'contain',
-              }}
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                {artist.displayName}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <IconButton
-                disabled={artist.artistUrl === undefined}
-                onClick={event => handleArtistSiteClick(event, 'artist')}
-                aria-label="artist's web site"
-              >
-                <AccountBoxIcon />
-              </IconButton>
-              <IconButton
-                disabled={artist.instagramUsername === undefined}
-                onClick={event => handleArtistSiteClick(event, 'instagram')}
-                aria-label="artist's instagram"
-              >
-                <InstagramIcon />
-              </IconButton>
-              <IconButton
-                disabled={artist.twitterUsername === undefined}
-                onClick={event => handleArtistSiteClick(event, 'twitter')}
-                aria-label="artist's twitter"
-              >
-                <TwitterIcon />
-              </IconButton>
-              <IconButton
-                disabled={artist.facebookUrl === undefined}
-                onClick={event => handleArtistSiteClick(event, 'facebook')}
-                aria-label="artist's facebook"
-              >
-                <FacebookIcon />
-              </IconButton>
-              <IconButton
-                onClick={event => handleArtistSiteClick(event, 'search')}
-                aria-label="search for artist"
-              >
-                <SearchIcon />
-              </IconButton>
-            </CardActions>
-            <CardContent>
-              <Typography variant="body2" color="textSecondary" component="p">
-                {artist.bio}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
+        <Grid container className={classes.grid}>
+          <Grid item className={classes.gridItem}>
+            <Card style={{ backgroundColor: 'white' }} className={classes.info}>
+              <CardActionArea>
+                <Image
+                  style={{ backgroundColor: 'white' }}
+                  className={classes.image}
+                  src={artist.image ? artist.image.url : null}
+                  alt={artist.displayName}
+                  imageStyle={{
+                    objectFit: 'contain',
+                  }}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {artist.displayName}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <IconButton
+                    disabled={artist.artistUrl === undefined}
+                    onClick={event => handleArtistSiteClick(event, 'artist')}
+                    aria-label="artist's web site"
+                  >
+                    <AccountBoxIcon />
+                  </IconButton>
+                  <IconButton
+                    disabled={artist.instagramUsername === undefined}
+                    onClick={event => handleArtistSiteClick(event, 'instagram')}
+                    aria-label="artist's instagram"
+                  >
+                    <InstagramIcon />
+                  </IconButton>
+                  <IconButton
+                    disabled={artist.twitterUsername === undefined}
+                    onClick={event => handleArtistSiteClick(event, 'twitter')}
+                    aria-label="artist's twitter"
+                  >
+                    <TwitterIcon />
+                  </IconButton>
+                  <IconButton
+                    disabled={artist.facebookUrl === undefined}
+                    onClick={event => handleArtistSiteClick(event, 'facebook')}
+                    aria-label="artist's facebook"
+                  >
+                    <FacebookIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={event => handleArtistSiteClick(event, 'search')}
+                    aria-label="search for artist"
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </CardActions>
+                <CardContent>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    {artist.bio}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item className={classes.gridItemArtworks}>
+            {artist.artworks.length === 0 ? (
+              <></>
+            ) : (
+              <div className={classes.artworkListRoot}>
+                <div className={classes.artworkList}>
+                  <GridList
+                    className={classes.gridList}
+                    component={'div'}
+                    cellHeight={200}
+                    spacing={5}
+                    cols={5}
+                  >
+                    {artworksDisplay()}
+                    <div className={classes.progress}>
+                      {loading ? <CircularProgress /> : <></>}
+                    </div>
+                  </GridList>
+                </div>
+              </div>
+            )}
+          </Grid>
+        </Grid>
+
         <AppBar className={classes.appBar} elevation={0} position="fixed">
           <Toolbar className={classes.toolBar}>
             <IconButton
@@ -198,5 +271,6 @@ export function Artist({ artist, prevNext }) {
       <>what</>
     );
 
-  return <div>{content(artist)}</div>;
+  // return <div>{content(artist)}</div>;
+  return content(artist);
 }

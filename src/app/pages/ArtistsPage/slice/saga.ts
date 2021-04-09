@@ -35,12 +35,17 @@ export function* getArtistById(action) {
     const user: User = yield select(selectUser);
     const userId = user.id || user.sub || 0;
 
-    const requestURL = `${API_ROOT}/artists/user/${userId}/id/${artistId}/`;
+    const requestURL = `${API_ROOT}/artists/user/${userId}/id/${artistId}/artworks`;
 
     const results = yield call(request, requestURL);
     const artist = results.artist;
 
-    console.log(`ArtistsPage | FETCHED ARTIST | ID: ${artistId}`);
+    console.log(
+      `ArtistsPage | FETCHED ARTIST` +
+        ` | ID: ${artistId}` +
+        ` | _ID: ${artist._id}` +
+        ` | ${artist.artworks.length} ARTWORKS`,
+    );
 
     yield put(artistsActions.artistsLoaded({ artists: [artist] }));
     yield put(artistsActions.setCurrentArtistId(artist.id));

@@ -37,8 +37,6 @@ export function* getUser(params) {
     const user = params.payload;
     console.log(`SAGA | getUser | USER SUB: ${user.sub} API_ROOT: ${API_ROOT}`);
 
-    console.log({ user });
-
     const requestURL = `${API_ROOT}/users/${user.sub}/`;
 
     const dbUser = yield call(request, requestURL);
@@ -62,16 +60,13 @@ const POST_OPTIONS = {
 };
 
 export function* updateUser(action) {
-  console.log(`updateUser | API_ROOT: ${API_ROOT}`);
   const user = action.payload.user;
   console.log(
     `updateUser` +
-      ` | ID: ${user.id}` +
-      ` | _ID: ${user._id}` +
+      // ` | ID: ${user.id}` +
+      // ` | _ID: ${user._id}` +
       ` | SUB: ${user.sub}`,
   );
-
-  console.log({ user });
 
   try {
     const requestURL = `${API_ROOT}/users/update/`;
@@ -82,12 +77,12 @@ export function* updateUser(action) {
     };
 
     const result = yield call(request, requestURL, options);
-    console.log({ result });
+    // console.log({ result });
 
     const currentUser: User = yield select(selectUser);
-    console.log({ currentUser });
+    // console.log({ currentUser });
     const updatedUser = Object.assign({}, currentUser, result);
-    console.log({ updatedUser });
+    // console.log({ updatedUser });
     yield put(actions.setUser(updatedUser));
     yield put(actions.userLoaded(updatedUser));
   } catch (err) {
@@ -98,14 +93,8 @@ export function* updateUser(action) {
 }
 
 export function* authenticatedUser(action) {
-  console.log(`authenticatedUser | API_ROOT: ${API_ROOT}`);
   const user = action.payload;
-  console.log(
-    `authenticatedUser` +
-      ` | ID: ${user.id}` +
-      ` | _ID: ${user._id}` +
-      ` | SUB: ${user.sub}`,
-  );
+  console.log(`authenticatedUser | SUB: ${user.sub}`);
 
   try {
     const requestURL = `${API_ROOT}/authenticated`;
@@ -116,12 +105,10 @@ export function* authenticatedUser(action) {
     };
 
     const result = yield call(request, requestURL, options);
-    console.log({ result });
 
     const currentUser: User = yield select(selectUser);
-    console.log({ currentUser });
     const updatedUser = { ...currentUser, ...result.user };
-    console.log({ updatedUser });
+
     yield put(actions.setUser(updatedUser));
     yield put(actions.userLoaded(updatedUser));
   } catch (err) {

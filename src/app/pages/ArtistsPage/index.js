@@ -156,7 +156,7 @@ export function ArtistsPage() {
   });
 
   const handlePrevNext = (prevNext, artistId) => {
-    console.log(`handlePrevNext | ${prevNext} | ARTIST ID: ${artistId}`);
+    // console.log(`handlePrevNext | ${prevNext} | ARTIST ID: ${artistId}`);
     const currentIndex = artistsDisplayIds.findIndex(id => artistId === id);
 
     let newArtistId = '';
@@ -172,7 +172,7 @@ export function ArtistsPage() {
           ? artistsDisplayIds[artistsDisplayIds.length - 1]
           : artistsDisplayIds[currentIndex - 1];
     }
-    console.log({ newArtistId });
+    // console.log({ newArtistId });
     history.push(`/artists/${newArtistId}`);
   };
 

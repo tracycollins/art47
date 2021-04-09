@@ -15,18 +15,20 @@ const useStyles = makeStyles(theme => ({
     // margin: theme.spacing(1),
   },
   image: {
-    width: '200px',
-    height: '200px',
+    width: '160px',
+    height: '160px',
   },
 }));
 
-export function ArtworkExcerpt({ key, user, artwork }) {
+export function ArtworkExcerpt({ key, user, artwork, cols }) {
   const defaultArtworkImageUrl = '/art47_logo.png';
   const classes = useStyles();
 
   const artworkImageUrl =
     artwork && artwork.image && artwork.image.url
       ? artwork.image.url.replace(/\.(jpeg|jpg|png)/, '-small.$1')
+      : artwork && artwork.url
+      ? artwork.url.replace(/\.(jpeg|jpg|png)/, '-small.$1')
       : defaultArtworkImageUrl;
 
   const [displayTitle, setDisplayTitle] = useState(false);
@@ -48,7 +50,7 @@ export function ArtworkExcerpt({ key, user, artwork }) {
         subtitle={
           <>
             <Typography variant="subtitle2">
-              {artwork.artist.displayName}
+              {artwork.artist ? artwork.artist.displayName : ''}
             </Typography>
             <Rating
               readOnly
@@ -68,7 +70,7 @@ export function ArtworkExcerpt({ key, user, artwork }) {
     <>
       <GridListTile
         key={artwork.id}
-        // cols={cols}
+        cols={cols || 1}
         className={classes.gridListTile}
         onMouseEnter={handleTitleShow}
         onMouseLeave={handleTitleHide}
