@@ -98,7 +98,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Header() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
   let history = useHistory();
   const classes = useStyles();
 
@@ -107,6 +107,12 @@ export function Header() {
 
   const handleMenuClick = (event, value) => {
     setSelectedTab(value);
+    if (value === 'profile') {
+      if (!isAuthenticated) {
+        loginWithRedirect();
+        return;
+      }
+    }
     history.push(`/${value}`);
   };
 

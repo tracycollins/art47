@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 // import React, { useRef, useEffect, useState, useCallback } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useUserSlice } from 'app/pages/UserPage/slice';
@@ -10,18 +10,24 @@ import { useUserSlice } from 'app/pages/UserPage/slice';
 import { useAuth0 } from '@auth0/auth0-react';
 import { makeStyles } from '@material-ui/core/styles';
 // import { selectUser } from './slice/selectors';
-
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import InstagramIcon from '@material-ui/icons/Instagram';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import TwitterIcon from '@material-ui/icons/Twitter';
 import CardMedia from '@material-ui/core/CardMedia';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import TextField from '@material-ui/core/TextField';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
+
+const DEBUG_MODE = false;
 
 const useStyles = makeStyles(theme => ({
   // root: {
@@ -67,13 +73,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function UserPage() {
-  const {
-    loginWithRedirect,
-    // user,
-    logout,
-    isAuthenticated,
-    isLoading,
-  } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const user = useSelector(selectUser);
 
   const form = useRef(null);
@@ -81,41 +81,92 @@ export function UserPage() {
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  console.log({ isLoading });
-  console.log({ user });
-
   const [editProfile, setEditProfile] = React.useState(false);
 
   const handleEditUser = () => {
-    console.log(`handleEditUser`);
     setEditProfile(true);
   };
 
   const handleFormSubmit = e => {
     e.preventDefault();
-    console.log(`handleFormSubmit`);
     const formData = new FormData(form.current);
     const formUser = {};
     formData.forEach(
       (value, key) => (formUser[key] = value !== '' ? value : null),
     );
-    console.log({ formUser });
     const newUser = Object.assign({}, user, formUser);
-    console.log({ newUser });
     dispatch(actions.updateUser({ user: newUser }));
     setEditProfile(false);
   };
 
   const handleFormCancel = () => {
-    console.log(`handleFormCancel`);
     setEditProfile(false);
   };
 
   const handleFormDelete = () => {
-    console.log(`handleFormDelete`);
     // need confirmation modal
     setEditProfile(false);
   };
+
+  const createLink = ({ user, linkType }) => {
+    let url = '';
+    let text = '';
+    let icon;
+    switch (linkType) {
+      case 'userUrl':
+        if (user.userUrl) {
+          if (user.userUrl.startsWith('http')) {
+            url = user.userUrl;
+          } else {
+            url = `https://${user.userUrl}`;
+          }
+          text = user.userUrl;
+          icon = <AccountBoxIcon />;
+        }
+        break;
+
+      case 'instagram':
+        if (user.instagramUsername) {
+          url = `https://instagram.com/${user.instagramUsername}`;
+          text = `${user.instagramUsername}`;
+          icon = <InstagramIcon />;
+        }
+        break;
+
+      case 'twitter':
+        if (user.twitterUsername) {
+          url = `https://twitter.com/${user.twitterUsername}`;
+          text = `${user.twitterUsername}`;
+          icon = <TwitterIcon />;
+        }
+        break;
+
+      case 'facebook':
+        if (user.facebookUsername) {
+          url = `https://facebook.com/${user.facebookUsername}`;
+          text = `${user.facebookUsername}`;
+          icon = <FacebookIcon />;
+        }
+        break;
+
+      default:
+        return <div key={linkType}> </div>;
+    }
+    return (
+      <Typography color="textSecondary" key={linkType}>
+        {icon}
+        <Link href={url} target="_blank" rel="noreferrer">
+          {text}
+        </Link>
+      </Typography>
+    );
+  };
+
+  const userLinkTypes = ['userUrl', 'twitter', 'instagram', 'facebook'];
+  const userLinks = () =>
+    userLinkTypes.map(linkType => {
+      return createLink({ user, linkType });
+    });
 
   const userProfile = () => (
     <Container>
@@ -129,11 +180,8 @@ export function UserPage() {
           <Typography variant="h5" component="h2">
             {user ? `${user.firstName} ${user.lastName}` : ''}
           </Typography>
-          {/* <Typography variant="h5" component="h2">
-            {user ? `name: ${user.name}` : ''}
-          </Typography>{' '} */}
-          <Typography variant="h5" component="h3">
-            {user ? `nickname: ${user.nickname}` : ''}
+          <Typography variant="h6" component="h3">
+            {user ? `aka: ${user.nickname}` : ''}
           </Typography>
           <Typography color="textSecondary">
             {user ? user.email : ''}
@@ -141,26 +189,13 @@ export function UserPage() {
           <Typography color="textSecondary">
             {user ? user.location : ''}
           </Typography>
+          <Typography color="textSecondary">{user ? user.bio : ''}</Typography>
+          {userLinks()}
           <Typography color="textSecondary">
-            {user ? `website: ${user.userUrl}` : ''}
-          </Typography>{' '}
-          <Typography color="textSecondary">
-            {user ? `bio: ${user.bio}` : ''}
+            {user && DEBUG_MODE ? `ID: ${user.id}` : ''}
           </Typography>
           <Typography color="textSecondary">
-            {user ? `twitter: @${user.twitterUsername}` : ''}
-          </Typography>
-          <Typography color="textSecondary">
-            {user ? `instagram: ${user.instagramUsername}` : ''}
-          </Typography>
-          <Typography color="textSecondary">
-            {user ? `facebook: ${user.facebookUrl}` : ''}
-          </Typography>
-          <Typography color="textSecondary">
-            {user ? `ID: ${user.id}` : ''}
-          </Typography>
-          <Typography color="textSecondary">
-            {user ? `DB ID: ${user._id}` : ''}
+            {user && DEBUG_MODE ? `DB ID: ${user._id}` : ''}
           </Typography>
         </CardContent>
         <CardActions>
@@ -258,10 +293,10 @@ export function UserPage() {
         />
         <TextField
           className={classes.textField}
-          id="user-facebook-url"
-          label="facebook url"
-          name="facebookUrl"
-          defaultValue={user.facebookUrl}
+          id="user-facebook"
+          label="facebook username"
+          name="facebookUsername"
+          defaultValue={user.facebookUsername}
         />
         <TextField
           className={classes.textField}
@@ -302,11 +337,6 @@ export function UserPage() {
 
   const content = editProfile =>
     editProfile ? userProfileForm() : userProfile();
-
-  useEffect(() => {
-    console.log({ user });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isLoading, isAuthenticated]);
 
   return (
     <Container style={{ marginTop: '3em' }}>{content(editProfile)}</Container>

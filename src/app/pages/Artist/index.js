@@ -124,7 +124,11 @@ export function Artist({ artist, prevNext }) {
         break;
 
       case 'facebook':
-        if (artist.facebookUrl) window.open(artist.facebookUrl, '_blank');
+        if (artist.facebookUsername)
+          window.open(
+            `https://facebook.com/${artist.facebookUsername}`,
+            '_blank',
+          );
         break;
 
       case 'search':
@@ -201,7 +205,7 @@ export function Artist({ artist, prevNext }) {
                     <TwitterIcon />
                   </IconButton>
                   <IconButton
-                    disabled={artist.facebookUrl === undefined}
+                    disabled={artist.facebookUsername === undefined}
                     onClick={event => handleArtistSiteClick(event, 'facebook')}
                     aria-label="artist's facebook"
                   >
