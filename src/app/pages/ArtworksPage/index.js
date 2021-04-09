@@ -179,6 +179,29 @@ export function ArtworksPage() {
             },
           }),
         );
+      } else if (
+        !newFilter.topRated &&
+        !newFilter.topRecs &&
+        !newFilter.unrated
+      ) {
+        const lastArtwork_id =
+          artworks.length > 0 ? artworks[artworks.length - 1]._id : '0';
+        console.log(
+          `UPDATE CURDSOR | artworks: ${artworks.length} | LAST ART _ID: ${lastArtwork_id}`,
+        );
+        dispatch(
+          actions.setCursor({
+            cursor: {
+              _id: lastArtwork_id,
+              sortType: 'none',
+              subDoc: 'none',
+              sort: 'none',
+              rate: 0,
+              score: 0,
+              value: 0,
+            },
+          }),
+        );
       }
     },
     [actions, dispatch, artworks],
@@ -241,6 +264,9 @@ export function ArtworksPage() {
     }
     console.log(
       `infiniteHandleLoadMore` +
+        ` | LAST ARTWORK _ID: ${
+          artworks.length > 0 ? artworks[artworks.length - 1]._id : null
+        }` +
         ` | LAST ARTWORK ID: ${
           artworks.length > 0 ? artworks[artworks.length - 1].id : null
         }` +
