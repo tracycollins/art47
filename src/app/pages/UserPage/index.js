@@ -218,8 +218,8 @@ export function UserPage() {
           className={classes.textField}
           id="user-nickname"
           label="nickname"
-          name="nickName"
-          defaultValue={user.nickName}
+          name="nickname"
+          defaultValue={user.nickname}
         />
         <TextField
           className={classes.textField}

@@ -98,25 +98,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Header() {
-  // const { actions } = useUserSlice();
-  // const dispatch = useDispatch();
-
   const { isAuthenticated } = useAuth0();
   let history = useHistory();
-  // const user = useSelector(selectUser);
-
   const classes = useStyles();
-  // const [profile, setProfile] = React.useState(false);
-  // const [editProfile, setEditProfile] = React.useState(false);
+
   const [displayHelp, setDisplayHelp] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState(1);
-  // const [user, setUser] = React.useState(currentUser);
-
-  // const form = useRef(null);
-
-  // const handleClose = () => {
-  //   setProfile(false);
-  // };
 
   const handleMenuClick = (event, value) => {
     setSelectedTab(value);
@@ -133,59 +120,6 @@ export function Header() {
 
     setDisplayHelp(open);
   };
-
-  // const toggleProfile = open => event => {
-  //   if (
-  //     event.type === 'keydown' &&
-  //     (event.key === 'Tab' || event.key === 'Shift')
-  //   ) {
-  //     return;
-  //   }
-
-  //   setProfile(open);
-  // };
-
-  // const toggleProfileForm = open => event => {
-  //   if (
-  //     event.type === 'keydown' &&
-  //     (event.key === 'Tab' || event.key === 'Shift')
-  //   ) {
-  //     return;
-  //   }
-
-  //   setEditProfile(open);
-  // };
-
-  // const handleEditUser = () => {
-  //   console.log(`handleEditUser`);
-  //   setEditProfile(true);
-  // };
-
-  // const handleFormSubmit = e => {
-  //   e.preventDefault();
-  //   console.log(`handleFormSubmit`);
-  //   const formData = new FormData(form.current);
-  //   const formUser = {};
-  //   formData.forEach(
-  //     (value, key) => (formUser[key] = value !== '' ? value : null),
-  //   );
-  //   console.log({ formUser });
-  //   const newUser = Object.assign({}, user, formUser);
-  //   console.log({ newUser });
-  //   dispatch(actions.updateUser({ user: newUser }));
-
-  //   setEditProfile(false);
-  // };
-  // const handleFormCancel = () => {
-  //   console.log(`handleFormCancel`);
-  //   setEditProfile(false);
-  // };
-
-  // const handleFormDelete = () => {
-  //   console.log(`handleFormDelete`);
-  //   // need confirmation modal
-  //   setEditProfile(false);
-  // };
 
   const listIcon = (menuText, index) => {
     let currentIcon = <HomeRoundedIcon />;
@@ -262,192 +196,6 @@ export function Header() {
     );
   };
 
-  // const userProfile = () => (
-  //   <Container>
-  //     <Card className={classes.profile}>
-  //       <CardMedia
-  //         className={classes.media}
-  //         image={user ? user.picture : '/art47_logo.png'}
-  //         title={user ? user.name : ''}
-  //       />
-  //       <CardContent>
-  //         <Typography variant="h5" component="h2">
-  //           {user ? user.name : ''}
-  //         </Typography>{' '}
-  //         <Typography variant="h5" component="h2">
-  //           {user ? `${user.firstName} ${user.lastName}` : ''}
-  //         </Typography>
-  //         <Typography variant="h5" component="h3">
-  //           {user ? user.nickname : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? user.email : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? user.location : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `website: ${user.userUrl}` : ''}
-  //         </Typography>{' '}
-  //         <Typography color="textSecondary">
-  //           {user ? `bio: ${user.bio}` : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `twitter: @${user.twitterUsername}` : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `instagram: ${user.instagramUsername}` : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `facebook: ${user.facebookUrl}` : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `ID: ${user.id}` : ''}
-  //         </Typography>
-  //         <Typography color="textSecondary">
-  //           {user ? `DB ID: ${user._id}` : ''}
-  //         </Typography>
-  //       </CardContent>
-  //       <CardActions>
-  //         <Button onClick={handleClose} variant="contained">
-  //           CLOSE
-  //         </Button>
-  //         {user && isAuthenticated ? (
-  //           <>
-  //             <Button
-  //               onClick={handleEditUser}
-  //               variant="contained"
-  //               color="primary"
-  //             >
-  //               UPDATE
-  //             </Button>
-  //             <Button onClick={logout} variant="contained" color="secondary">
-  //               LOGOUT
-  //             </Button>
-  //           </>
-  //         ) : (
-  //           <Button
-  //             onClick={loginWithRedirect}
-  //             variant="contained"
-  //             color="primary"
-  //           >
-  //             LOGIN
-  //           </Button>
-  //         )}
-  //       </CardActions>
-  //     </Card>
-  //   </Container>
-  // );
-
-  // const userProfileForm = () => (
-  //   <Container>
-  //     <form
-  //       ref={form}
-  //       className={classes.profileForm}
-  //       noValidate
-  //       autoComplete="off"
-  //       onSubmit={handleFormSubmit}
-  //     >
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-name-first"
-  //         label="first name"
-  //         name="firstName"
-  //         defaultValue={user.firstName}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-name-last"
-  //         label="last name"
-  //         name="lastName"
-  //         defaultValue={user.lastName}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-nickname"
-  //         label="nickname"
-  //         name="nickName"
-  //         defaultValue={user.nickName}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-email"
-  //         label="email"
-  //         name="email"
-  //         defaultValue={user.email}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-location"
-  //         label="location"
-  //         name="location"
-  //         defaultValue={user.location}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-bio"
-  //         label="bio"
-  //         name="bio"
-  //         defaultValue={user.bio}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-url"
-  //         label="user-url"
-  //         name="userUrl"
-  //         defaultValue={user.userUrl}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-twitter"
-  //         label="twitter username"
-  //         name="twitterUsername"
-  //         defaultValue={user.twitterUsername}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-facebook-url"
-  //         label="facebook url"
-  //         name="facebookUrl"
-  //         defaultValue={user.facebookUrl}
-  //       />
-  //       <TextField
-  //         className={classes.textField}
-  //         id="user-instagram-username"
-  //         label="instagram username"
-  //         name="instagramUsername"
-  //         defaultValue={user.instagramUsername}
-  //       />
-  //       <Divider />
-  //       <ButtonGroup>
-  //         <Button
-  //           className={classes.button}
-  //           type="submit"
-  //           variant="contained"
-  //           color="primary"
-  //         >
-  //           SAVE
-  //         </Button>
-  //         <Button
-  //           className={classes.button}
-  //           onClick={handleFormCancel}
-  //           variant="contained"
-  //         >
-  //           CANCEL
-  //         </Button>
-  //         <Button
-  //           className={classes.button}
-  //           onClick={handleFormDelete}
-  //           variant="contained"
-  //           color="secondary"
-  //         >
-  //           DELETE
-  //         </Button>
-  //       </ButtonGroup>
-  //     </form>
-  //   </Container>
-  // );
-
   const help = () => (
     <Container className={classes.help}>
       <Typography variant="h3" color="textSecondary">
@@ -507,16 +255,6 @@ export function Header() {
       >
         {drawerList()}
       </Drawer>
-      {/* <Drawer anchor="right" open={profile} onClose={toggleProfile(false)}>
-        {userProfile()}
-      </Drawer>
-      <Drawer
-        anchor="right"
-        open={editProfile}
-        onClose={toggleProfileForm(false)}
-      >
-        {userProfileForm()}
-      </Drawer> */}
       <Drawer anchor="left" open={displayHelp} onClose={toggleHelp(false)}>
         {help()}
       </Drawer>
