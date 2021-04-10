@@ -9,6 +9,7 @@ import {
   selectArtistsDisplayIds,
   selectCurrentArtist,
   selectLoading,
+  selectLoaded,
   selectCursor,
   // selectFilter,
 } from './slice/selectors';
@@ -83,6 +84,7 @@ export function ArtistsPage() {
   const artistsDisplayIds = useSelector(selectArtistsDisplayIds);
   const currentArtist = useSelector(selectCurrentArtist);
   const loading = useSelector(selectLoading);
+  const loaded = useSelector(selectLoaded);
   const cursor = useSelector(selectCursor);
 
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -102,6 +104,7 @@ export function ArtistsPage() {
         `ArtistsPage | getArtists` +
           ` | ${artists ? artists.length : 0} ARTISTS` +
           ` | displayCurrentArtist: ${displayCurrentArtist}` +
+          ` | loaded: ${loaded}` +
           ` | loading: ${loading}` +
           ` | hasNextPage: ${hasNextPage}` +
           ` | urlArtistId: ${urlArtistId}`,
@@ -117,6 +120,7 @@ export function ArtistsPage() {
         `ArtistsPage | getArtists` +
           ` | ${artists ? artists.length : 0} ARTISTS` +
           ` | displayCurrentArtist: ${displayCurrentArtist}` +
+          ` | loaded: ${loaded}` +
           ` | loading: ${loading}` +
           ` | hasNextPage: ${hasNextPage}` +
           ` | urlArtistId: ${urlArtistId}`,
@@ -129,7 +133,7 @@ export function ArtistsPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artists, urlArtistId, loading, hasNextPage]);
+  }, [artists, urlArtistId, loading, loaded, hasNextPage]);
 
   function infiniteHandleLoadMore() {
     setHasNextPage(false);
@@ -144,6 +148,7 @@ export function ArtistsPage() {
           artists.length > 0 ? artists[artists.length - 1].id : null
         }` +
         ` | cursor._id: ${cursor && cursor._id ? cursor._id : null}` +
+        ` | loaded: ${loaded}` +
         ` | loading: ${loading}` +
         ` | hasNextPage: ${hasNextPage}`,
     );

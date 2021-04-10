@@ -6,6 +6,7 @@ export interface ArtistsState {
   artists: Artist[];
   artistsDisplayIds: string[];
   currentArtistId?: string | null;
+  loaded: number | null;
   loading: boolean;
   cursor: Cursor;
   error?: ArtistErrorType | null;

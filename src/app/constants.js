@@ -14,6 +14,7 @@ export const DAEMON = '@@saga-injector/daemon';
 export const ONCE_TILL_UNMOUNT = '@@saga-injector/once-till-unmount';
 
 export const INITIAL_STATE = {
+  loaded: null,
   loading: false,
   error: false,
   currentUser: { sub: '0' },

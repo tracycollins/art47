@@ -9,6 +9,7 @@ import {
   selectArtworksDisplayIds,
   selectCurrentArtwork,
   selectLoading,
+  selectLoaded,
   selectCursor,
 } from './slice/selectors';
 
@@ -98,6 +99,7 @@ export function ArtworksPage() {
   const artworksDisplayIds = useSelector(selectArtworksDisplayIds);
   const currentArtwork = useSelector(selectCurrentArtwork);
   const loading = useSelector(selectLoading);
+  const loaded = useSelector(selectLoaded);
   const cursor = useSelector(selectCursor);
 
   const [hasNextPage, setHasNextPage] = useState(cursor && cursor._id !== null);
@@ -111,11 +113,12 @@ export function ArtworksPage() {
 
   useEffect(() => {
     if (!loading) {
+      console.log({ loaded });
       setHasNextPage(cursor && cursor._id !== null);
     } else {
       setHasNextPage(false);
     }
-  }, [cursor, loading]);
+  }, [cursor, loaded, loading]);
 
   useEffect(() => {
     const options = { user };

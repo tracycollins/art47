@@ -5,6 +5,7 @@ import { artworksSaga } from './saga';
 import { ArtworksState, ArtworkErrorType } from './types';
 
 export const initialState: ArtworksState = {
+  loaded: null,
   loading: false,
   error: null,
   artworks: [],
@@ -22,31 +23,35 @@ const slice = createSlice({
       state.cursor = action.payload.cursor;
     },
     updateRating(state, action) {
+      state.loaded = null;
       state.loading = true;
       state.error = null;
     },
     ratingLoaded(state, action) {
       const rating = action.payload.rating;
       console.log({ rating });
+      state.loaded = 1;
       state.loading = false;
     },
     updateFilterSort(state, action) {
       state.filter = action.payload.filter;
     },
     setCurrentArtworkId(state, action) {
-      state.loading = false;
       state.currentArtworkId = action.payload;
     },
     getArtworkById(state, action) {
       state.currentArtworkId = action.payload;
+      state.loaded = null;
       state.loading = true;
       state.error = null;
     },
     getArtworks(state) {
+      state.loaded = null;
       state.loading = true;
       state.error = null;
     },
     loadArtworks(state) {
+      state.loaded = null;
       state.loading = true;
       state.error = null;
     },
@@ -112,10 +117,12 @@ const slice = createSlice({
         state.cursor = cursor;
       }
       state.error = null;
+      state.loaded = newArtworks.length;
       state.loading = false;
     },
     artworksError(state, action: PayloadAction<ArtworkErrorType>) {
       state.error = action.payload;
+      state.loaded = null;
       state.loading = false;
     },
   },

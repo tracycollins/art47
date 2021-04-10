@@ -5,6 +5,7 @@ import { artistsSaga } from './saga';
 import { ArtistsState, ArtistErrorType } from './types';
 
 export const initialState: ArtistsState = {
+  loaded: null,
   loading: false,
   error: null,
   artists: [],

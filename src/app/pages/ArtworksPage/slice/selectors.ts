@@ -38,6 +38,11 @@ export const selectLoading = createSelector(
   artworksState => artworksState.loading,
 );
 
+export const selectLoaded = createSelector(
+  [selectDomain],
+  artworksState => artworksState.loaded,
+);
+
 export const selectError = createSelector(
   [selectDomain],
   artworksState => artworksState.error,

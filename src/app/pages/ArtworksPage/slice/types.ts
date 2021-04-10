@@ -7,6 +7,7 @@ export interface ArtworksState {
   artworks: Artwork[];
   artworksDisplayIds: string[];
   currentArtworkId?: string | null;
+  loaded: number | null;
   loading: boolean;
   filter: Filter;
   cursor: Cursor;

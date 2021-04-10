@@ -3,6 +3,7 @@ import { User } from 'types/User';
 /* --- STATE --- */
 export interface UserState {
   user: User;
+  loaded: number | null;
   loading: boolean;
   error?: UserErrorType | null;
 }

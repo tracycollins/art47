@@ -33,6 +33,11 @@ export const selectLoading = createSelector(
   artistsState => artistsState.loading,
 );
 
+export const selectLoaded = createSelector(
+  [selectDomain],
+  artistsState => artistsState.loaded,
+);
+
 export const selectError = createSelector(
   [selectDomain],
   artistsState => artistsState.error,

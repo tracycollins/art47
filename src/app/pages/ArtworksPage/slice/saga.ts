@@ -165,6 +165,7 @@ export function* getArtworks(options) {
       artworksActions.artworksLoaded({ artworks, cursor: tempCursor, user }),
     );
     yield put(artworksActions.artworksFilterSort());
+    return 'here';
   } catch (err) {
     console.error(err);
     yield put(artworksActions.artworksError(err));
