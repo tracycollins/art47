@@ -5,13 +5,22 @@ import { artistsSaga } from './saga';
 import { ArtistsState, ArtistErrorType } from './types';
 
 export const initialState: ArtistsState = {
-  loaded: null,
+  loaded: false,
   loading: false,
+  hasNextPage: false,
   error: null,
   artists: [],
   artistsDisplayIds: [],
   currentArtistId: null,
-  cursor: { id: 0, subDoc: 'none', sort: 'none' },
+  cursor: {
+    id: 0,
+    subDoc: 'none',
+    sort: 'none',
+    value: 999,
+    rate: 5,
+    score: 100,
+  },
+  filter: { topRated: false, topRecs: false, unrated: false },
 };
 
 const slice = createSlice({
@@ -35,19 +44,18 @@ const slice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    loadArtists(state) {
+    startLoadArtists(state) {
+      state.loaded = false;
       state.loading = true;
+      state.hasNextPage = false;
       state.error = null;
-    },
-    loadArtistsComplete(state) {
-      state.loading = false;
     },
     artistsFilterSort(state) {
       const allArtists = [...current(state).artists]; // need to use RTK current to avoid proxy
 
       allArtists.sort((a, b) => {
-        if (a._id < b._id) return -1;
-        if (a._id > b._id) return 1;
+        if (a.id < b.id) return -1;
+        if (a.id > b.id) return 1;
         return 0;
       });
       state.artistsDisplayIds = allArtists.map(artist => artist.id);
@@ -60,8 +68,8 @@ const slice = createSlice({
       );
       tempArtists = [...tempArtists, ...newArtists];
       tempArtists.sort((a, b) => {
-        if (a._id < b._id) return -1;
-        if (a._id > b._id) return 1;
+        if (a.id < b.id) return -1;
+        if (a.id > b.id) return 1;
         return 0;
       });
 
@@ -70,12 +78,23 @@ const slice = createSlice({
       if (action.payload.cursor) {
         const cursor = action.payload.cursor;
         state.cursor = cursor;
+        state.hasNextPage = true;
+      } else {
+        state.hasNextPage = false;
       }
+    },
+    endLoadArtists(state) {
+      state.loaded = true;
+      state.loading = false;
       state.error = null;
-      // state.loading = false;
+    },
+    setHasNextPage(state, action) {
+      state.hasNextPage = action.payload;
     },
     artistsError(state, action: PayloadAction<ArtistErrorType>) {
       state.error = action.payload;
+      state.hasNextPage = false;
+      state.loaded = false;
       state.loading = false;
     },
   },

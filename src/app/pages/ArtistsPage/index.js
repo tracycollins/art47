@@ -4,20 +4,24 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtistsSlice } from './slice';
+// import { initialState } from './slice';
 import {
   selectArtists,
   selectArtistsDisplayIds,
   selectCurrentArtist,
+  selectHasNextPage,
   selectLoading,
   selectLoaded,
+  selectError,
   selectCursor,
-  // selectFilter,
 } from './slice/selectors';
 
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import {} from './slice/selectors';
 import { ArtistExcerpt } from 'app/pages/ArtistExcerpt/Loadable';
@@ -83,21 +87,18 @@ export function ArtistsPage() {
   const artists = useSelector(selectArtists);
   const artistsDisplayIds = useSelector(selectArtistsDisplayIds);
   const currentArtist = useSelector(selectCurrentArtist);
+  const hasNextPage = useSelector(selectHasNextPage);
   const loading = useSelector(selectLoading);
   const loaded = useSelector(selectLoaded);
+  const error = useSelector(selectError);
   const cursor = useSelector(selectCursor);
 
-  const [hasNextPage, setHasNextPage] = useState(true);
   const [displayCurrentArtist, setDisplayCurrentArtist] = useState(false);
 
   const classes = useStyles();
 
   useEffect(() => {
-    setHasNextPage(cursor && cursor.id !== null);
-  }, [cursor]);
-
-  useEffect(() => {
-    const options = { user };
+    console.log({ hasNextPage });
 
     if (urlArtistId) {
       console.log(
@@ -116,48 +117,46 @@ export function ArtistsPage() {
       dispatch(actions.setCurrentArtistId(urlArtistId));
       setDisplayCurrentArtist(true);
     } else {
-      console.log(
-        `ArtistsPage | getArtists` +
-          ` | ${artists ? artists.length : 0} ARTISTS` +
-          ` | displayCurrentArtist: ${displayCurrentArtist}` +
-          ` | loaded: ${loaded}` +
-          ` | loading: ${loading}` +
-          ` | hasNextPage: ${hasNextPage}` +
-          ` | urlArtistId: ${urlArtistId}`,
-      );
-
       setDisplayCurrentArtist(false);
-      if (artists.length === 0 && hasNextPage && !loading) {
-        dispatch(actions.setCurrentArtistId(null));
-        dispatch(actions.getArtists(options));
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [artists, urlArtistId, loading, loaded, hasNextPage]);
 
+  useEffect(() => {
+    dispatch(actions.getArtists());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function infiniteHandleLoadMore() {
-    setHasNextPage(false);
     const options = { user };
-    if (hasNextPage && !loading) {
+    if (!loading) {
+      console.log(
+        `infiniteHandleLoadMore | DISPATCH | hasNextPage: ${hasNextPage} | loading: ${loading}`,
+      );
       dispatch(actions.getArtists(options));
-      setHasNextPage(cursor && cursor.id !== null);
     }
     console.log(
       `infiniteHandleLoadMore` +
-        ` | LAST ARTIST ID: ${
+        ` | LAST ARTWORK ID: ${
           artists.length > 0 ? artists[artists.length - 1].id : null
         }` +
-        ` | cursor._id: ${cursor && cursor.id ? cursor.id : null}` +
-        ` | loaded: ${loaded}` +
+        ` | cursor.id: ${cursor && cursor.id ? cursor.id : null}` +
         ` | loading: ${loading}` +
         ` | hasNextPage: ${hasNextPage}`,
     );
   }
 
-  const infiniteRef = useInfiniteScroll({
+  const [infiniteRef] = useInfiniteScroll({
     loading,
     hasNextPage,
     onLoadMore: infiniteHandleLoadMore,
+    // When there is an error, we stop infinite loading.
+    // It can be reactivated by setting "error" state as undefined.
+    disabled: !!error,
+    // `rootMargin` is passed to `IntersectionObserver`.
+    // We can use it to trigger 'onLoadMore' when the sentry comes near to become
+    // visible, instead of becoming fully visible on the screen.
+    rootMargin: '0px 0px 400px 0px',
   });
 
   const handlePrevNext = (prevNext, artistId) => {
@@ -196,6 +195,13 @@ export function ArtistsPage() {
     </div>
   ) : (
     <>
+      <AppBar className={classes.appBar} elevation={0} position="fixed">
+        <Toolbar className={classes.toolBar}>
+          <div className={classes.toolBarButton}>
+            {loading ? <CircularProgress /> : <></>}
+          </div>
+        </Toolbar>
+      </AppBar>
       <div className={classes.artistListRoot}>
         <div className={classes.artistList}>
           {artists.length === 0 ? (
@@ -203,15 +209,12 @@ export function ArtistsPage() {
           ) : (
             <GridList
               component={'div'}
-              ref={infiniteRef}
               cellHeight={160}
               className={classes.gridList}
               spacing={50}
             >
               {artistsDisplay()}
-              <div className={classes.progress}>
-                {loading ? <CircularProgress /> : <></>}
-              </div>
+              <div className={classes.gridList} ref={infiniteRef}></div>
             </GridList>
           )}
         </div>

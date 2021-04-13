@@ -13,7 +13,14 @@ export const initialState: ArtworksState = {
   artworks: [],
   artworksDisplayIds: [],
   currentArtworkId: null,
-  cursor: { id: 0, subDoc: 'none', sort: 'none', value: 999 },
+  cursor: {
+    id: 0,
+    subDoc: 'none',
+    sort: 'none',
+    value: 999,
+    rate: 5,
+    score: 100,
+  },
   filter: { topRated: false, topRecs: false, unrated: false },
 };
 
@@ -104,7 +111,6 @@ const slice = createSlice({
           return 0;
         });
         state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
-        // state.artworks = [...artworks];
       }
     },
     artworksLoaded(state, action) {

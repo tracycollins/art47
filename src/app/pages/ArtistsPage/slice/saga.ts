@@ -8,6 +8,7 @@ import {
   takeLeading,
 } from 'redux-saga/effects';
 import { artistsActions } from '.';
+import { initialState } from '.';
 import { artworksActions } from 'app/pages/ArtworksPage/slice/index';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { selectCursor } from './selectors';
@@ -30,13 +31,13 @@ export function* getArtistById(action) {
   const artistId = action.payload;
   console.log(`artistId | API_ROOT: ${API_ROOT} | ARTIST ID: ${artistId}`);
   try {
-    yield put(artistsActions.loadArtists());
     yield delay(100);
 
     const user: User = yield select(selectUser);
     const userId = user.id || user.sub || 0;
 
     const requestURL = `${API_ROOT}/artists/user/${userId}/id/${artistId}/artworks`;
+    console.log(`getArtistById | ARTIST ID: ${artistId} | ${requestURL}`);
 
     const results = yield call(request, requestURL);
     const artist = results.artist;
@@ -48,36 +49,40 @@ export function* getArtistById(action) {
         ` | ${artist.artworks.length} ARTWORKS`,
     );
 
-    yield put(artistsActions.artistsLoaded({ artists: [artist] }));
+    yield put(artistsActions.artistsLoaded({ artists: [artist], user }));
     yield put(artworksActions.artworksLoaded({ artworks: artist.artworks }));
     yield put(artworksActions.endLoadArtworks());
+    yield put(artworksActions.setHasNextPage(false));
     yield put(artistsActions.setCurrentArtistId(artist.id));
-    yield put(artistsActions.loadArtistsComplete());
+    yield put(artistsActions.endLoadArtists());
+    yield put(artistsActions.setHasNextPage(false));
   } catch (err) {
     console.error(err);
-    // yield put(artistsLoadingError(err));
+    yield put(artistsActions.artistsError(err));
   }
 }
 
 export function* getArtists(options) {
-  console.log(`getArtists | API_ROOT: ${API_ROOT}`);
   try {
-    yield put(artistsActions.loadArtists());
-    yield delay(500);
+    console.log(`getArtists`);
 
+    yield put(artistsActions.startLoadArtists());
+    yield put(artistsActions.setHasNextPage(false));
+
+    const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
+    // const filter: Filter = yield select(selectFilter);
 
-    // const user: User = yield select(selectUser);
     // const userId = user.id || user.sub || 0;
 
     let tempCursor = { ...cursor };
     console.log({ tempCursor });
 
     let requestURL = `${API_ROOT}/artists/cursor/${tempCursor.id}`;
-    console.log({ requestURL });
+
+    console.log(`getArtists | FETCH | URL: ${requestURL}`);
 
     const results = yield call(request, requestURL);
-
     const artists = [...results.artists];
 
     console.log(
@@ -86,16 +91,29 @@ export function* getArtists(options) {
       } ARTISTS | CURSOR ID: ${results.nextKey ? results.nextKey.id : null}`,
     );
 
-    tempCursor =
-      results.artists.length < 20
-        ? { ...tempCursor, id: 0 }
-        : Object.assign({}, tempCursor, results.nextKey);
-    yield put(artistsActions.artistsLoaded({ artists, cursor: tempCursor }));
+    const nextKey = results.nextKey;
+
+    if (nextKey) {
+      console.log(
+        `getArtists | NEXTKEY | ID: ${nextKey.id} | URL: ${requestURL}`,
+      );
+    } else {
+      console.log(`getArtists | XXX CURSOR END | URL: ${requestURL}`);
+    }
+
+    tempCursor = results.nextKey
+      ? Object.assign({}, tempCursor, results.nextKey)
+      : initialState.cursor;
+
+    console.log({ tempCursor });
+    yield put(artistsActions.artistsLoaded({ artists, user }));
     yield put(artistsActions.artistsFilterSort());
-    yield put(artistsActions.loadArtistsComplete());
+    yield put(artistsActions.setCursor({ cursor: tempCursor }));
+    yield put(artistsActions.endLoadArtists());
+    yield put(artistsActions.setHasNextPage(results.nextKey !== undefined));
+    return;
   } catch (err) {
     console.error(err);
-
     yield put(artistsActions.artistsError(err));
   }
 }

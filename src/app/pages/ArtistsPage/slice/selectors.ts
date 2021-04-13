@@ -38,6 +38,11 @@ export const selectLoaded = createSelector(
   artistsState => artistsState.loaded,
 );
 
+export const selectHasNextPage = createSelector(
+  [selectDomain],
+  artworksState => artworksState.hasNextPage,
+);
+
 export const selectError = createSelector(
   [selectDomain],
   artistsState => artistsState.error,

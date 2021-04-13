@@ -11,7 +11,6 @@ import { initialState } from '.';
 import { artworksActions } from '.';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { selectCursor, selectFilter, selectCurrentArtwork } from './selectors';
-// import { selectArtworks } from './selectors';
 import request from 'utils/request';
 import { Artwork } from 'types/Artwork';
 import { User } from 'types/User';
@@ -85,7 +84,6 @@ export function* getArtworks(options) {
 
     yield put(artworksActions.startLoadArtworks());
     yield put(artworksActions.setHasNextPage(false));
-    yield delay(100);
 
     const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
@@ -94,7 +92,7 @@ export function* getArtworks(options) {
     const userId = user.id || user.sub || 0;
 
     let tempCursor = { ...cursor };
-    let value = 0;
+    let value = 100;
 
     if (filter.topRated) {
       tempCursor.subDoc = 'rating';
@@ -158,15 +156,24 @@ export function* getArtworks(options) {
     }
 
     console.log(
-      `getArtworks | FETCHED ${
-        artworks ? artworks.length : 0
-      } ARTWORKS | CURSOR ID: ${results.nextKey ? results.nextKey.id : null}`,
+      `getArtworks | FETCHED ${artworks ? artworks.length : 0} ARTWORKS` +
+        ` | CURSOR ID: ${results.nextKey ? results.nextKey.id : null}`,
     );
 
-    // tempCursor =
-    //   results.artworks.length < 20
-    //     ? { id: 0 }
-    //     : Object.assign({}, tempCursor, results.nextKey);
+    const nextKey = results.nextKey;
+
+    if (nextKey) {
+      console.log(
+        `getArtworks | URL: ${requestURL}` +
+          ` | NEXTKEY` +
+          ` | ID: ${nextKey.id}` +
+          ` | RATE: ${nextKey.rate}` +
+          ` | RATE AVE: ${nextKey.ratingAverage}` +
+          ` | SCORE: ${nextKey.score}`,
+      );
+    } else {
+      console.log(`getArtworks | XXX CURSOR END | URL: ${requestURL}`);
+    }
 
     tempCursor = results.nextKey
       ? Object.assign({}, tempCursor, results.nextKey)
@@ -178,7 +185,7 @@ export function* getArtworks(options) {
     yield put(artworksActions.setCursor({ cursor: tempCursor }));
     yield put(artworksActions.endLoadArtworks());
     yield put(artworksActions.setHasNextPage(results.nextKey !== undefined));
-    return 'here';
+    return;
   } catch (err) {
     console.error(err);
     yield put(artworksActions.artworksError(err));

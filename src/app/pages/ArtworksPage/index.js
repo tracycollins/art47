@@ -5,7 +5,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
 import { initialState } from './slice';
-
 import {
   selectArtworks,
   selectArtworksDisplayIds,
@@ -13,6 +12,7 @@ import {
   selectHasNextPage,
   selectLoading,
   // selectLoaded,
+  selectError,
   selectCursor,
 } from './slice/selectors';
 
@@ -104,6 +104,7 @@ export function ArtworksPage() {
   const hasNextPage = useSelector(selectHasNextPage);
   const loading = useSelector(selectLoading);
   // const loaded = useSelector(selectLoaded);
+  const error = useSelector(selectError);
   const cursor = useSelector(selectCursor);
 
   const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
@@ -115,7 +116,6 @@ export function ArtworksPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    // const options = { user };
     console.log({ hasNextPage });
 
     if (urlArtworkId) {
@@ -149,13 +149,15 @@ export function ArtworksPage() {
 
   const updateFilterSort = useCallback(
     newFilter => {
+      const options = { user };
       console.log(`UPDATE FILTER SORT`);
       console.log({ newFilter });
       dispatch(actions.setCursor({ cursor: initialState.cursor }));
       dispatch(actions.updateFilterSort({ filter: newFilter }));
+      dispatch(actions.getArtworks(options));
       dispatch(actions.artworksFilterSort());
     },
-    [actions, dispatch],
+    [actions, dispatch, user],
   );
 
   useEffect(() => {
@@ -173,38 +175,22 @@ export function ArtworksPage() {
         toogleTopRated();
         toogleTopRecs(false);
         toogleUnrated(false);
-        // updateFilterSort({
-        //   topRated: !topRated,
-        //   topRecs: false,
-        //   unrated: false,
-        // });
       }
       if (toggle.topRecs) {
         toogleTopRated(false);
         toogleTopRecs();
         toogleUnrated(false);
-        // updateFilterSort({
-        //   topRecs: !topRecs,
-        //   topRated: false,
-        //   unrated: false,
-        // });
       }
       if (toggle.unrated) {
         toogleTopRated(false);
         toogleTopRecs(false);
         toogleUnrated();
-        // updateFilterSort({
-        //   unrated: !unrated,
-        //   topRecs: false,
-        //   topRated: false,
-        // });
       }
     },
     [toogleTopRated, toogleTopRecs, toogleUnrated],
   );
 
   function infiniteHandleLoadMore() {
-    // setHasNextPage(false);
     const options = { user };
     if (!loading) {
       console.log(
@@ -223,10 +209,17 @@ export function ArtworksPage() {
     );
   }
 
-  const infiniteRef = useInfiniteScroll({
+  const [infiniteRef] = useInfiniteScroll({
     loading,
     hasNextPage,
     onLoadMore: infiniteHandleLoadMore,
+    // When there is an error, we stop infinite loading.
+    // It can be reactivated by setting "error" state as undefined.
+    disabled: !!error,
+    // `rootMargin` is passed to `IntersectionObserver`.
+    // We can use it to trigger 'onLoadMore' when the sentry comes near to become
+    // visible, instead of becoming fully visible on the screen.
+    rootMargin: '0px 0px 400px 0px',
   });
 
   const handlePrevNext = (prevNext, artworkId) => {
@@ -277,6 +270,9 @@ export function ArtworksPage() {
     <>
       <AppBar className={classes.appBar} elevation={0} position="fixed">
         <Toolbar className={classes.toolBar}>
+          <div className={classes.toolBarButton}>
+            {loading ? <CircularProgress /> : <></>}
+          </div>
           <Button
             className={classes.toolBarButton}
             onClick={() =>
@@ -322,24 +318,15 @@ export function ArtworksPage() {
         </Toolbar>
       </AppBar>
       <div className={classes.artworkListRoot}>
-        <div className={classes.artworkList}>
-          {artworks.length === 0 ? (
-            <CircularProgress />
-          ) : (
-            <GridList
-              component={'div'}
-              ref={infiniteRef}
-              cellHeight={160}
-              className={classes.gridList}
-              spacing={50}
-            >
-              {artworksDisplay()}
-              <div className={classes.progress}>
-                {loading ? <CircularProgress /> : <></>}
-              </div>
-            </GridList>
-          )}
-        </div>
+        <GridList
+          component={'div'}
+          cellHeight={160}
+          className={classes.gridList}
+          spacing={50}
+        >
+          {artworksDisplay()}
+          <div className={classes.gridList} ref={infiniteRef}></div>
+        </GridList>
       </div>
     </>
   );
