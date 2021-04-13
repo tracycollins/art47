@@ -4,6 +4,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useArtworksSlice } from './slice';
+import { initialState } from './slice';
+
 import {
   selectArtworks,
   selectArtworksDisplayIds,
@@ -134,66 +136,26 @@ export function ArtworksPage() {
     } else {
       setDisplayCurrentArtwork(false);
     }
-    // else {
-    //   setDisplayCurrentArtwork(false);
-    //   if (!loading && hasNextPage) {
-    //     console.log(
-    //       `ArtworksPage | getArtworks` +
-    //         ` | ${artworks ? artworks.length : 0} ARTWORKS` +
-    //         ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
-    //         ` | loading: ${loading}` +
-    //         ` | hasNextPage: ${hasNextPage}` +
-    //         ` | urlArtworkId: ${urlArtworkId}`,
-    //     );
-    //     dispatch(actions.setCurrentArtworkId(null));
-    //     dispatch(actions.getArtworks(options));
-    //   }
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artworks, urlArtworkId, loading, hasNextPage, cursor]);
+  }, [
+    artworks,
+    currentArtwork,
+    displayCurrentArtwork,
+    urlArtworkId,
+    loading,
+    hasNextPage,
+    cursor,
+  ]);
 
   const updateFilterSort = useCallback(
     newFilter => {
       console.log(`UPDATE FILTER SORT`);
       console.log({ newFilter });
+      dispatch(actions.setCursor({ cursor: initialState.cursor }));
       dispatch(actions.updateFilterSort({ filter: newFilter }));
       dispatch(actions.artworksFilterSort());
-
-      if (newFilter.unrated) {
-        const lastArtworkId =
-          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
-        const lastRatingId =
-          artworks.length > 0 && artworks[artworks.length - 1].ratingUser
-            ? artworks[artworks.length - 1].ratingUser.id
-            : '0';
-        console.log(
-          `UPDATE UNRATED SORT | artworks: ${artworks.length} | LAST RATING ID: ${lastRatingId} | LAST ART ID: ${lastArtworkId}`,
-        );
-      } else if (newFilter.topRated) {
-        const lastArtworkId =
-          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
-        console.log(
-          `UPDATE TOP RATED SORT | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
-        );
-      } else if (newFilter.topRecs) {
-        const lastArtworkId =
-          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
-        console.log(
-          `UPDATE TOP RECS SORT | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
-        );
-      } else if (
-        !newFilter.topRated &&
-        !newFilter.topRecs &&
-        !newFilter.unrated
-      ) {
-        const lastArtworkId =
-          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
-        console.log(
-          `UPDATE CURSOR | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
-        );
-      }
     },
-    [actions, dispatch, artworks],
+    [actions, dispatch],
   );
 
   useEffect(() => {

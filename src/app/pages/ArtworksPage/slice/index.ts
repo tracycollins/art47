@@ -2,6 +2,7 @@ import { PayloadAction, current } from '@reduxjs/toolkit';
 import { createSlice } from 'utils/@reduxjs/toolkit';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { artworksSaga } from './saga';
+
 import { ArtworksState, ArtworkErrorType } from './types';
 
 export const initialState: ArtworksState = {
@@ -12,7 +13,7 @@ export const initialState: ArtworksState = {
   artworks: [],
   artworksDisplayIds: [],
   currentArtworkId: null,
-  cursor: { id: 0, subDoc: 'none', sort: 'none' },
+  cursor: { id: 0, subDoc: 'none', sort: 'none', value: 999 },
   filter: { topRated: false, topRecs: false, unrated: false },
 };
 

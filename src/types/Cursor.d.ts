@@ -4,4 +4,5 @@ export interface Cursor {
   sort: string;
   rate?: number;
   score?: number;
+  value?: number;
 }
