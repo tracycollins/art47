@@ -7,6 +7,7 @@ import {
   delay,
   takeLeading,
 } from 'redux-saga/effects';
+import { initialState } from '.';
 import { artworksActions } from '.';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { selectCursor, selectFilter, selectCurrentArtwork } from './selectors';
@@ -35,7 +36,6 @@ const API_ROOT = productionAppApiUrl || developmentAppApiUrl;
 
 export function* getArtworkById(action) {
   const artworkId = action.payload;
-  console.log(`artworkId | API_ROOT: ${API_ROOT} | ARTWORK ID: ${artworkId}`);
   try {
     yield delay(100);
 
@@ -43,6 +43,7 @@ export function* getArtworkById(action) {
     const userId = user.id || user.sub || 0;
 
     const requestURL = `${API_ROOT}/artworks/user/${userId}/id/${artworkId}/`;
+    console.log(`getArtworkById | ARTWORK ID: ${artworkId} | ${requestURL}`);
 
     const results = yield call(request, requestURL);
     const artwork = results.artwork;
@@ -66,10 +67,12 @@ export function* getArtworkById(action) {
       }
     }
 
-    console.log(`ArtworksPage | FETCHED ARTWORK | ID: ${artworkId}`);
+    console.log(`getArtworkById | FETCHED ARTWORK | ID: ${artworkId}`);
 
     yield put(artworksActions.artworksLoaded({ artworks: [artwork], user }));
     yield put(artworksActions.setCurrentArtworkId(artwork.id));
+    yield put(artworksActions.endLoadArtworks());
+    yield put(artworksActions.setHasNextPage(false));
   } catch (err) {
     console.error(err);
     yield put(artworksActions.artworksError(err));
@@ -77,10 +80,12 @@ export function* getArtworkById(action) {
 }
 
 export function* getArtworks(options) {
-  console.log(`getArtworks | API_ROOT: ${API_ROOT}`);
   try {
-    yield put(artworksActions.loadArtworks());
-    yield delay(500);
+    console.log(`getArtworks`);
+
+    yield put(artworksActions.startLoadArtworks());
+    yield put(artworksActions.setHasNextPage(false));
+    yield delay(100);
 
     const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
@@ -89,21 +94,25 @@ export function* getArtworks(options) {
     const userId = user.id || user.sub || 0;
 
     let tempCursor = { ...cursor };
+    let value = 0;
 
     if (filter.topRated) {
       tempCursor.subDoc = 'rating';
       tempCursor.sort = 'rate';
+      value = tempCursor.rate || value;
     }
 
-    if (filter.topRated) {
-      tempCursor.subDoc = 'rating';
-      tempCursor.sort = 'rate';
+    if (filter.topRecs) {
+      tempCursor.subDoc = 'recommendation';
+      tempCursor.sort = 'score';
+      value = tempCursor.score || value;
     }
 
     if (filter.unrated) {
       tempCursor.subDoc = 'unrated';
     }
 
+    console.log({ tempCursor });
     let requestURL = '';
 
     if (
@@ -112,17 +121,14 @@ export function* getArtworks(options) {
       cursor.subDoc === null ||
       cursor.subDoc === 'none'
     ) {
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor._id}/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor.id}/`;
     } else if (filter.unrated) {
-      // '/artworks/user/:userId/cursor/:cursorid/(:subdoc)?(.:sort.:value)?',
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor._id}/${tempCursor.subDoc}/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor.id}/${tempCursor.subDoc}/`;
     } else {
-      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${
-        tempCursor._id
-      }/${tempCursor.subDoc}.${tempCursor.sort}.${
-        tempCursor[tempCursor.sort] || 999
-      }/`;
+      requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor.id}/${tempCursor.subDoc}.${tempCursor.sort}.${value}/`;
     }
+
+    console.log(`getArtworks | FETCH | URL: ${requestURL}`);
 
     const results = yield call(request, requestURL);
     const artworks = [...results.artworks];
@@ -131,7 +137,7 @@ export function* getArtworks(options) {
       for (let i = 0; i < artworks.length; i += 1) {
         if (artworks[i].ratings && artworks[i].ratings.length > 0) {
           artworks[i].ratings.forEach(rating => {
-            if (rating.user._id === user._id) {
+            if (rating.user === user._id) {
               artworks[i].ratingUser = rating;
               artworks[i].ratingUser.user = user;
             }
@@ -142,7 +148,7 @@ export function* getArtworks(options) {
           artworks[i].recommendations.length > 0
         ) {
           for (let j = 0; j < artworks[i].recommendations.length; j += 1) {
-            if (artworks[i].recommendations[j].user._id === user._id) {
+            if (artworks[i].recommendations[j].user === user._id) {
               artworks[i].recommendationUser = artworks[i].recommendations[j];
               artworks[i].recommendationUser.user = user;
             }
@@ -152,19 +158,26 @@ export function* getArtworks(options) {
     }
 
     console.log(
-      `ArtworksPage | FETCHED ${
+      `getArtworks | FETCHED ${
         artworks ? artworks.length : 0
-      } ARTWORKS | CURSOR ID: ${results.nextKey ? results.nextKey._id : null}`,
+      } ARTWORKS | CURSOR ID: ${results.nextKey ? results.nextKey.id : null}`,
     );
 
-    tempCursor =
-      results.artworks.length < 20
-        ? { _id: 0 }
-        : Object.assign({}, tempCursor, results.nextKey);
-    yield put(
-      artworksActions.artworksLoaded({ artworks, cursor: tempCursor, user }),
-    );
+    // tempCursor =
+    //   results.artworks.length < 20
+    //     ? { id: 0 }
+    //     : Object.assign({}, tempCursor, results.nextKey);
+
+    tempCursor = results.nextKey
+      ? Object.assign({}, tempCursor, results.nextKey)
+      : initialState.cursor;
+
+    console.log({ tempCursor });
+    yield put(artworksActions.artworksLoaded({ artworks, user }));
     yield put(artworksActions.artworksFilterSort());
+    yield put(artworksActions.setCursor({ cursor: tempCursor }));
+    yield put(artworksActions.endLoadArtworks());
+    yield put(artworksActions.setHasNextPage(results.nextKey !== undefined));
     return 'here';
   } catch (err) {
     console.error(err);
@@ -182,7 +195,6 @@ const POST_OPTIONS = {
 };
 
 export function* updateRating(action) {
-  console.log(`updateRating | API_ROOT: ${API_ROOT}`);
   const rating = action.payload.rating;
   console.log(
     `updateRating` +
@@ -205,10 +217,8 @@ export function* updateRating(action) {
     console.log({ result });
 
     const currentArtwork: Artwork = yield select(selectCurrentArtwork);
-    // const updatedArtwork = Object.assign({}, currentArtwork);
     const updatedArtwork = { ...currentArtwork };
     updatedArtwork.ratingUser = result.rating;
-    // yield put(ratingUpdated(rating));
     yield put(
       artworksActions.artworksLoaded({
         artworks: [updatedArtwork],
@@ -216,16 +226,14 @@ export function* updateRating(action) {
       }),
     );
     yield put(artworksActions.setCurrentArtworkId(updatedArtwork.id));
+    yield put(artworksActions.endLoadArtworks());
   } catch (err) {
     console.error(err);
-
-    // yield put(ratingUpdateError(err));
   }
 }
 
 export function* updateFilterSort(action) {
   const filter = action.payload.filter;
-  console.log(`updateFilterSort | API_ROOT: ${API_ROOT}`);
   console.log(
     `updateFilterSort` +
       ` | TOP RATED: ${filter.topRated}` +
@@ -235,7 +243,6 @@ export function* updateFilterSort(action) {
 
   try {
     yield put(artworksActions.updateFilterSort({ filter }));
-    // yield put(artworksActions.artworksFilterSort());
   } catch (err) {
     throw err;
   }

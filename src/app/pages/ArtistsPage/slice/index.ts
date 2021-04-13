@@ -11,7 +11,7 @@ export const initialState: ArtistsState = {
   artists: [],
   artistsDisplayIds: [],
   currentArtistId: null,
-  cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
+  cursor: { id: 0, subDoc: 'none', sort: 'none' },
 };
 
 const slice = createSlice({

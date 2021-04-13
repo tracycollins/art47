@@ -1,6 +1,5 @@
 export interface Cursor {
-  _id: number;
-  sortType: string;
+  id: number | null;
   subDoc: string;
   sort: string;
   rate?: number;

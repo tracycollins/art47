@@ -8,8 +8,9 @@ import {
   selectArtworks,
   selectArtworksDisplayIds,
   selectCurrentArtwork,
+  selectHasNextPage,
   selectLoading,
-  selectLoaded,
+  // selectLoaded,
   selectCursor,
 } from './slice/selectors';
 
@@ -98,11 +99,11 @@ export function ArtworksPage() {
   const artworks = useSelector(selectArtworks);
   const artworksDisplayIds = useSelector(selectArtworksDisplayIds);
   const currentArtwork = useSelector(selectCurrentArtwork);
+  const hasNextPage = useSelector(selectHasNextPage);
   const loading = useSelector(selectLoading);
-  const loaded = useSelector(selectLoaded);
+  // const loaded = useSelector(selectLoaded);
   const cursor = useSelector(selectCursor);
 
-  const [hasNextPage, setHasNextPage] = useState(cursor && cursor._id !== null);
   const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
 
   const [topRated, toogleTopRated] = useToggle();
@@ -112,16 +113,8 @@ export function ArtworksPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    if (!loading) {
-      console.log({ loaded });
-      setHasNextPage(cursor && cursor._id !== null);
-    } else {
-      setHasNextPage(false);
-    }
-  }, [cursor, loaded, loading]);
-
-  useEffect(() => {
-    const options = { user };
+    // const options = { user };
+    console.log({ hasNextPage });
 
     if (urlArtworkId) {
       console.log(
@@ -140,21 +133,24 @@ export function ArtworksPage() {
       setDisplayCurrentArtwork(true);
     } else {
       setDisplayCurrentArtwork(false);
-      if (artworks.length === 0 && hasNextPage && !loading) {
-        console.log(
-          `ArtworksPage | getArtworks` +
-            ` | ${artworks ? artworks.length : 0} ARTWORKS` +
-            ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
-            ` | loading: ${loading}` +
-            ` | hasNextPage: ${hasNextPage}` +
-            ` | urlArtworkId: ${urlArtworkId}`,
-        );
-        dispatch(actions.setCurrentArtworkId(null));
-        dispatch(actions.getArtworks(options));
-      }
     }
+    // else {
+    //   setDisplayCurrentArtwork(false);
+    //   if (!loading && hasNextPage) {
+    //     console.log(
+    //       `ArtworksPage | getArtworks` +
+    //         ` | ${artworks ? artworks.length : 0} ARTWORKS` +
+    //         ` | displayCurrentArtwork: ${displayCurrentArtwork}` +
+    //         ` | loading: ${loading}` +
+    //         ` | hasNextPage: ${hasNextPage}` +
+    //         ` | urlArtworkId: ${urlArtworkId}`,
+    //     );
+    //     dispatch(actions.setCurrentArtworkId(null));
+    //     dispatch(actions.getArtworks(options));
+    //   }
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artworks, urlArtworkId, loading, hasNextPage]);
+  }, [artworks, urlArtworkId, loading, hasNextPage, cursor]);
 
   const updateFilterSort = useCallback(
     newFilter => {
@@ -164,46 +160,36 @@ export function ArtworksPage() {
       dispatch(actions.artworksFilterSort());
 
       if (newFilter.unrated) {
-        const lastArtwork_id =
-          artworks.length > 0 ? artworks[artworks.length - 1]._id : '0';
+        const lastArtworkId =
+          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
+        const lastRatingId =
+          artworks.length > 0 && artworks[artworks.length - 1].ratingUser
+            ? artworks[artworks.length - 1].ratingUser.id
+            : '0';
         console.log(
-          `UPDATE UNRATED SORT | artworks: ${artworks.length} | LAST ART _ID: ${lastArtwork_id}`,
+          `UPDATE UNRATED SORT | artworks: ${artworks.length} | LAST RATING ID: ${lastRatingId} | LAST ART ID: ${lastArtworkId}`,
         );
-        dispatch(
-          actions.setCursor({
-            cursor: {
-              _id: lastArtwork_id,
-              sortType: 'none',
-              subDoc: 'unrated',
-              sort: 'none',
-              rate: 0,
-              score: 0,
-              value: 0,
-            },
-          }),
+      } else if (newFilter.topRated) {
+        const lastArtworkId =
+          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
+        console.log(
+          `UPDATE TOP RATED SORT | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
+        );
+      } else if (newFilter.topRecs) {
+        const lastArtworkId =
+          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
+        console.log(
+          `UPDATE TOP RECS SORT | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
         );
       } else if (
         !newFilter.topRated &&
         !newFilter.topRecs &&
         !newFilter.unrated
       ) {
-        const lastArtwork_id =
-          artworks.length > 0 ? artworks[artworks.length - 1]._id : '0';
+        const lastArtworkId =
+          artworks.length > 0 ? artworks[artworks.length - 1].id : '0';
         console.log(
-          `UPDATE CURDSOR | artworks: ${artworks.length} | LAST ART _ID: ${lastArtwork_id}`,
-        );
-        dispatch(
-          actions.setCursor({
-            cursor: {
-              _id: lastArtwork_id,
-              sortType: 'none',
-              subDoc: 'none',
-              sort: 'none',
-              rate: 0,
-              score: 0,
-              value: 0,
-            },
-          }),
+          `UPDATE CURSOR | artworks: ${artworks.length} | LAST ART ID: ${lastArtworkId}`,
         );
       }
     },
@@ -214,66 +200,62 @@ export function ArtworksPage() {
     updateFilterSort({ topRated, topRecs, unrated });
   }, [updateFilterSort, displayCurrentArtwork, topRated, topRecs, unrated]);
 
+  useEffect(() => {
+    dispatch(actions.getArtworks());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleFilter = useCallback(
     toggle => {
       if (toggle.topRated) {
         toogleTopRated();
         toogleTopRecs(false);
         toogleUnrated(false);
-        updateFilterSort({
-          topRated: !topRated,
-          topRecs: false,
-          unrated: false,
-        });
+        // updateFilterSort({
+        //   topRated: !topRated,
+        //   topRecs: false,
+        //   unrated: false,
+        // });
       }
       if (toggle.topRecs) {
         toogleTopRated(false);
         toogleTopRecs();
         toogleUnrated(false);
-        updateFilterSort({
-          topRecs: !topRecs,
-          topRated: false,
-          unrated: false,
-        });
+        // updateFilterSort({
+        //   topRecs: !topRecs,
+        //   topRated: false,
+        //   unrated: false,
+        // });
       }
       if (toggle.unrated) {
         toogleTopRated(false);
         toogleTopRecs(false);
         toogleUnrated();
-        updateFilterSort({
-          unrated: !unrated,
-          topRecs: false,
-          topRated: false,
-        });
+        // updateFilterSort({
+        //   unrated: !unrated,
+        //   topRecs: false,
+        //   topRated: false,
+        // });
       }
     },
-    [
-      updateFilterSort,
-      topRated,
-      topRecs,
-      unrated,
-      toogleTopRated,
-      toogleTopRecs,
-      toogleUnrated,
-    ],
+    [toogleTopRated, toogleTopRecs, toogleUnrated],
   );
 
   function infiniteHandleLoadMore() {
-    setHasNextPage(false);
+    // setHasNextPage(false);
     const options = { user };
-    if (hasNextPage && !loading) {
+    if (!loading) {
+      console.log(
+        `infiniteHandleLoadMore | DISPATCH | hasNextPage: ${hasNextPage} | loading: ${loading}`,
+      );
       dispatch(actions.getArtworks(options));
-      setHasNextPage(cursor && cursor._id !== null);
     }
     console.log(
       `infiniteHandleLoadMore` +
-        ` | LAST ARTWORK _ID: ${
-          artworks.length > 0 ? artworks[artworks.length - 1]._id : null
-        }` +
         ` | LAST ARTWORK ID: ${
           artworks.length > 0 ? artworks[artworks.length - 1].id : null
         }` +
-        ` | cursor._id: ${cursor && cursor._id ? cursor._id : null}` +
+        ` | cursor.id: ${cursor && cursor.id ? cursor.id : null}` +
         ` | loading: ${loading}` +
         ` | hasNextPage: ${hasNextPage}`,
     );
@@ -345,7 +327,7 @@ export function ArtworksPage() {
             variant="contained"
             color={topRecs ? 'secondary' : 'primary'}
           >
-            TOP RECS
+            RECS
           </Button>
           <Button
             className={classes.toolBarButton}
@@ -359,7 +341,7 @@ export function ArtworksPage() {
             variant="contained"
             color={topRated ? 'secondary' : 'primary'}
           >
-            TOP RATED
+            RATED
           </Button>
           <Button
             className={classes.toolBarButton}

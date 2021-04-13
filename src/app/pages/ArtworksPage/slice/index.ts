@@ -5,13 +5,14 @@ import { artworksSaga } from './saga';
 import { ArtworksState, ArtworkErrorType } from './types';
 
 export const initialState: ArtworksState = {
-  loaded: null,
+  loaded: false,
   loading: false,
+  hasNextPage: false,
   error: null,
   artworks: [],
   artworksDisplayIds: [],
   currentArtworkId: null,
-  cursor: { _id: 0, subDoc: 'none', sortType: 'none', sort: 'none' },
+  cursor: { id: 0, subDoc: 'none', sort: 'none' },
   filter: { topRated: false, topRecs: false, unrated: false },
 };
 
@@ -23,14 +24,14 @@ const slice = createSlice({
       state.cursor = action.payload.cursor;
     },
     updateRating(state, action) {
-      state.loaded = null;
+      state.loaded = false;
       state.loading = true;
       state.error = null;
     },
     ratingLoaded(state, action) {
       const rating = action.payload.rating;
       console.log({ rating });
-      state.loaded = 1;
+      state.loaded = true;
       state.loading = false;
     },
     updateFilterSort(state, action) {
@@ -41,18 +42,19 @@ const slice = createSlice({
     },
     getArtworkById(state, action) {
       state.currentArtworkId = action.payload;
-      state.loaded = null;
+      state.loaded = false;
       state.loading = true;
       state.error = null;
     },
     getArtworks(state) {
-      state.loaded = null;
+      state.loaded = false;
       state.loading = true;
       state.error = null;
     },
-    loadArtworks(state) {
-      state.loaded = null;
+    startLoadArtworks(state) {
+      state.loaded = false;
       state.loading = true;
+      state.hasNextPage = false;
       state.error = null;
     },
     artworksFilterSort(state) {
@@ -65,31 +67,39 @@ const slice = createSlice({
           const bRate = b.ratingUser ? b.ratingUser.rate : 0;
           if (aRate < bRate) return 1;
           if (aRate > bRate) return -1;
+          if (a.id > b.id) return 1;
+          if (a.id < b.id) return 11;
           return 0;
         });
-        state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
+        state.artworksDisplayIds = allArtworks
+          .filter(artwork => artwork.ratingUser && artwork.ratingUser.rate > 0)
+          .map(artwork => artwork.id);
       } else if (filter.topRecs) {
         allArtworks.sort((a, b) => {
           const aScore = a.recommendationUser ? a.recommendationUser.score : 0;
           const bScore = b.recommendationUser ? b.recommendationUser.score : 0;
           if (aScore < bScore) return 1;
           if (aScore > bScore) return -1;
+          if (a.id > b.id) return 1;
+          if (a.id < b.id) return -1;
           return 0;
         });
         state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
-        // state.artworks = [...allArtworks];
       } else if (filter.unrated) {
         const filteredArtworks = allArtworks.filter(artwork => {
-          // console.log(artwork.ratings);
           return artwork.ratingUser === undefined;
         });
         console.log(`unrated filteredArtworks ${filteredArtworks.length}`);
+        filteredArtworks.sort((a, b) => {
+          if (a.id > b.id) return 1;
+          if (a.id < b.id) return -1;
+          return 0;
+        });
         state.artworksDisplayIds = filteredArtworks.map(artwork => artwork.id);
-        // state.artworks = [...tempArtworks];
       } else {
         allArtworks.sort((a, b) => {
-          if (a._id < b._id) return -1;
-          if (a._id > b._id) return 1;
+          if (a.id > b.id) return 1;
+          if (a.id < b.id) return -1;
           return 0;
         });
         state.artworksDisplayIds = allArtworks.map(artwork => artwork.id);
@@ -104,25 +114,29 @@ const slice = createSlice({
           !newArtworks.find(newArtwork => newArtwork._id === artwork._id),
       );
       tempArtworks = [...tempArtworks, ...newArtworks];
-      tempArtworks.sort((a, b) => {
-        if (a._id < b._id) return -1;
-        if (a._id > b._id) return 1;
-        return 0;
-      });
 
       state.artworks = tempArtworks;
 
       if (action.payload.cursor) {
         const cursor = action.payload.cursor;
         state.cursor = cursor;
+        state.hasNextPage = true;
+      } else {
+        state.hasNextPage = false;
       }
-      state.error = null;
-      state.loaded = newArtworks.length;
+    },
+    endLoadArtworks(state) {
+      state.loaded = true;
       state.loading = false;
+      state.error = null;
+    },
+    setHasNextPage(state, action) {
+      state.hasNextPage = action.payload;
     },
     artworksError(state, action: PayloadAction<ArtworkErrorType>) {
       state.error = action.payload;
-      state.loaded = null;
+      state.hasNextPage = false;
+      state.loaded = false;
       state.loading = false;
     },
   },

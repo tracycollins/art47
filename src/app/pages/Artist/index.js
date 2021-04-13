@@ -28,7 +28,10 @@ import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
-import { selectLoading } from 'app/pages/ArtworksPage/slice/selectors';
+import {
+  // selectLoaded,
+  selectLoading,
+} from 'app/pages/ArtworksPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -90,6 +93,7 @@ export function Artist({ artist, prevNext }) {
   const classes = useStyles();
   const user = useSelector(selectUser);
   const loading = useSelector(selectLoading);
+  // const loaded = useSelector(selectLoaded);
 
   useHotkeys('up', () => history.push(`/artists`), [artist]);
   useHotkeys('left', () => prevNext('prev', artist.id), [artist]);

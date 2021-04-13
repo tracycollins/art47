@@ -20,8 +20,7 @@ export const INITIAL_STATE = {
   currentUser: { sub: '0' },
   currentArtwork: false,
   cursor: {
-    _id: 0,
-    sortType: 'none',
+    id: 0,
     subDoc: 'none',
     sort: 'none',
     rate: 0,

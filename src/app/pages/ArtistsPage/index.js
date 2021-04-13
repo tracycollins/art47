@@ -93,7 +93,7 @@ export function ArtistsPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    setHasNextPage(cursor && cursor._id !== null);
+    setHasNextPage(cursor && cursor.id !== null);
   }, [cursor]);
 
   useEffect(() => {
@@ -140,14 +140,14 @@ export function ArtistsPage() {
     const options = { user };
     if (hasNextPage && !loading) {
       dispatch(actions.getArtists(options));
-      setHasNextPage(cursor && cursor._id !== null);
+      setHasNextPage(cursor && cursor.id !== null);
     }
     console.log(
       `infiniteHandleLoadMore` +
         ` | LAST ARTIST ID: ${
           artists.length > 0 ? artists[artists.length - 1].id : null
         }` +
-        ` | cursor._id: ${cursor && cursor._id ? cursor._id : null}` +
+        ` | cursor._id: ${cursor && cursor.id ? cursor.id : null}` +
         ` | loaded: ${loaded}` +
         ` | loading: ${loading}` +
         ` | hasNextPage: ${hasNextPage}`,

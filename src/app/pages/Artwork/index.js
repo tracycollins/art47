@@ -140,7 +140,7 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
                 <Typography color="textSecondary">
                   {`RECOMMENDATION: ${parseInt(
                     artwork.recommendationUser
-                      ? 100 * artwork.recommendationUser.score
+                      ? artwork.recommendationUser.score
                       : 0,
                     10,
                   )}`}
@@ -150,7 +150,7 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
                     variant="determinate"
                     value={
                       artwork.recommendationUser
-                        ? 100 * artwork.recommendationUser.score
+                        ? artwork.recommendationUser.score
                         : 0
                     }
                   />
