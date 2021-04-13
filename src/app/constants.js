@@ -39,6 +39,7 @@ export const INITIAL_STATE = {
 export const GET_USER = 'user/getUser';
 export const SET_USER = 'user/setUser';
 export const UPDATE_USER = 'user/updateUser';
+export const UPLOAD_FILE = 'user/uploadFile';
 export const AUTHENTICATED_USER = 'user/authenticatedUser';
 
 export const SET_ARTISTS = 'artists/setArtists';

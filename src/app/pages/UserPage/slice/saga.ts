@@ -6,6 +6,7 @@ import {
   GET_USER,
   SET_USER,
   UPDATE_USER,
+  UPLOAD_FILE,
   AUTHENTICATED_USER,
 } from 'app/constants';
 import { userActions as actions } from '.';
@@ -92,6 +93,33 @@ export function* updateUser(action) {
   }
 }
 
+export function* uploadFile(action) {
+  try {
+    const requestURL = `${API_ROOT}/users/upload/`;
+    const user: User = yield select(selectUser);
+
+    const uploadObj = action.payload;
+    uploadObj.user = user;
+
+    console.log(
+      `uploadFile | TYPE: ${uploadObj.type} | DATA TYPE: ${uploadObj.dataType} | DATA SIZE: ${uploadObj.data.byteLength}`,
+    );
+    console.log({ uploadObj });
+
+    const options = {
+      ...POST_OPTIONS,
+      body: JSON.stringify(uploadObj),
+    };
+    const result = yield call(request, requestURL, options);
+
+    console.log({ result });
+  } catch (err) {
+    console.error(err);
+
+    // yield put(userUpdateError(err));
+  }
+}
+
 export function* authenticatedUser(action) {
   const user = action.payload;
   console.log(`authenticatedUser | SUB: ${user.sub}`);
@@ -122,5 +150,6 @@ export function* userSaga() {
   yield takeLeading(SET_USER, setCurrentUser);
   yield takeLeading(GET_USER, getUser);
   yield takeLeading(UPDATE_USER, updateUser);
+  yield takeLeading(UPLOAD_FILE, uploadFile);
   yield takeLeading(AUTHENTICATED_USER, authenticatedUser);
 }

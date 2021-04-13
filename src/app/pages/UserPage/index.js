@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 // import React, { useRef, useEffect, useState, useCallback } from 'react';
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDropzone } from 'react-dropzone';
 
 import { useUserSlice } from 'app/pages/UserPage/slice';
 // import { useHistory } from 'react-router-dom';
@@ -34,17 +35,25 @@ const useStyles = makeStyles(theme => ({
   //   maxWidth: 345,
   // },
   root: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    overflow: 'hidden',
+    // width: '100%',
+    // height: '100%',
+    // objectFit: 'cover',
+    // overflow: 'hidden',
     display: 'flex',
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    // flexWrap: 'wrap',
+    // flexDirection: 'row',
   },
   media: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
+    margin: theme.spacing(1),
+  },
+  dropZone: {
+    margin: theme.spacing(1),
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // align: 'center',
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -62,6 +71,10 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     width: '25ch',
   },
+  profile: {
+    width: '50%',
+    margin: theme.spacing(1),
+  },
   profileForm: {
     width: '50%',
     margin: theme.spacing(1),
@@ -75,6 +88,33 @@ const useStyles = makeStyles(theme => ({
 export function UserPage() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const user = useSelector(selectUser);
+
+  const onDrop = useCallback(acceptedFiles => {
+    console.log(`DROPPED FILES: ${acceptedFiles.length}`);
+    acceptedFiles.forEach(file => {
+      const reader = new FileReader();
+
+      reader.onabort = () => console.log('file reading was aborted');
+      reader.onerror = () => console.log('file reading has failed');
+      reader.onload = () => {
+        // Do whatever you want with the file contents
+        const binaryStr = reader.result;
+        console.log(binaryStr);
+        dispatch(
+          actions.uploadFile({
+            dataType: 'image',
+            type: 'profileImage',
+            fileName: 'profile.jpg',
+            data: binaryStr,
+          }),
+        );
+      };
+      reader.readAsArrayBuffer(file);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const form = useRef(null);
   const { actions } = useUserSlice();
@@ -228,6 +268,32 @@ export function UserPage() {
 
   const userProfileForm = () => (
     <Container>
+      <Card className={classes.profile}>
+        <CardMedia
+          className={classes.media}
+          image={user ? user.picture : '/art47_logo.png'}
+        />
+        <CardMedia
+          className={classes.media}
+          image={'/art47_logo.png'}
+          {...getRootProps()}
+        >
+          <input {...getInputProps()} />
+          {isDragActive ? (
+            <Typography
+              className={classes.dropZone}
+              variant="h5"
+              component="h2"
+            >
+              {`DROP HERE!`}
+            </Typography>
+          ) : (
+            <Typography className={classes.dropZone}>
+              {`Drag 'n' drop a profile image here, or click to select files`}
+            </Typography>
+          )}
+        </CardMedia>
+      </Card>
       <form
         ref={form}
         className={classes.profileForm}

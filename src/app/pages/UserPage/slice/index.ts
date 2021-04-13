@@ -42,6 +42,10 @@ const slice = createSlice({
       state.loading = true;
       state.loaded = null;
     },
+    uploadFile(state, action) {
+      const uploadObj = action.payload;
+      console.log({ uploadObj });
+    },
     loadUser(state, action) {
       state.error = null;
       state.user = {};
