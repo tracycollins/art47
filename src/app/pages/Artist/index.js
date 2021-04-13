@@ -52,6 +52,11 @@ const useStyles = makeStyles(theme => ({
   gridItemArtworks: {
     flex: 5,
   },
+  progress: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   artworkList: {
     alignItems: 'top',
     justifyContent: 'top',
@@ -278,7 +283,9 @@ export function Artist({ artist, prevNext }) {
         </AppBar>
       </Container>
     ) : (
-      <>what</>
+      <div className={classes.progress}>
+        <CircularProgress />
+      </div>
     );
 
   // return <div>{content(artist)}</div>;

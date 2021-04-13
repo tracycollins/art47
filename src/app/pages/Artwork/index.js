@@ -25,6 +25,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useHistory } from 'react-router-dom';
@@ -198,7 +199,9 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
         </AppBar>
       </Container>
     ) : (
-      <>what</>
+      <div className={classes.progress}>
+        <CircularProgress />
+      </div>
     );
 
   return <div>{content(artwork)}</div>;
