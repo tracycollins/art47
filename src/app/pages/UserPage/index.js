@@ -137,7 +137,7 @@ export function UserPage() {
 
   const rowsUserStats = [
     createData('Rated', user.rated),
-    createData('Unrated', user.unrated.length),
+    createData('Unrated', user.unrated ? user.unrated.length : ''),
   ];
 
   const onDrop = useCallback(acceptedFiles => {
