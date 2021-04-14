@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 // import React, { useRef, useEffect, useState, useCallback } from 'react';
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDropzone } from 'react-dropzone';
 
@@ -218,12 +218,16 @@ export function UserPage() {
       return createLink({ user, linkType });
     });
 
-  let profileImage = '/art47_logo.png';
-  if (user.image && user.image.url) {
-    profileImage = user.image.url;
-  } else if (user && user.picture) {
-    profileImage = user.picture;
-  }
+  let profileImage =
+    user.image && user.image.url ? user.image.url : '/art47_logo.png';
+
+  useEffect(() => {
+    if (user.image && user.image.url) {
+      profileImage = user.image.url;
+    } else if (user && user.picture) {
+      profileImage = user.picture;
+    }
+  }, [user]);
 
   const userProfile = () => (
     <Container>
