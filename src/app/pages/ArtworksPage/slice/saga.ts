@@ -208,7 +208,14 @@ export function* updateRating(action) {
 
     const result = yield call(request, requestURL, options);
     console.log({ result });
-
+    console.log(
+      `+++ RATING UPDATED | updateRating` +
+        ` | ID: ${result.rating.id}` +
+        ` | USER ID: ${result.rating.user.id}` +
+        ` | ARTWORK ID: ${result.rating.artwork.id}` +
+        ` | ARTWORK _ID: ${result.rating.artwork._id}` +
+        ` | RATE: ${result.rating.rate}`,
+    );
     const currentArtwork: Artwork = yield select(selectCurrentArtwork);
     const updatedArtwork = { ...currentArtwork };
     updatedArtwork.ratingUser = result.rating;

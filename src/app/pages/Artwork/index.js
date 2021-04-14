@@ -81,8 +81,8 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
     }
 
     const ratingInstance = {
-      user: currentUser,
-      artwork,
+      user: { id: currentUser.id, _id: currentUser._id },
+      artwork: { id: artwork.id, _id: artwork._id },
       rate: ratingInput,
     };
 
