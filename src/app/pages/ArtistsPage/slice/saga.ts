@@ -64,19 +64,12 @@ export function* getArtistById(action) {
 
 export function* getArtists(options) {
   try {
-    console.log(`getArtists`);
-
     yield put(artistsActions.startLoadArtists());
     yield put(artistsActions.setHasNextPage(false));
 
     const user: User = yield select(selectUser);
     let cursor: Cursor = yield select(selectCursor);
-    // const filter: Filter = yield select(selectFilter);
-
-    // const userId = user.id || user.sub || 0;
-
     let tempCursor = { ...cursor };
-    console.log({ tempCursor });
 
     let requestURL = `${API_ROOT}/artists/cursor/${tempCursor.id}`;
 
@@ -105,7 +98,6 @@ export function* getArtists(options) {
       ? Object.assign({}, tempCursor, results.nextKey)
       : initialState.cursor;
 
-    console.log({ tempCursor });
     yield put(artistsActions.artistsLoaded({ artists, user }));
     yield put(artistsActions.artistsFilterSort());
     yield put(artistsActions.setCursor({ cursor: tempCursor }));

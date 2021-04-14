@@ -110,7 +110,6 @@ export function* getArtworks(options) {
       tempCursor.subDoc = 'unrated';
     }
 
-    console.log({ tempCursor });
     let requestURL = '';
 
     if (
@@ -179,7 +178,6 @@ export function* getArtworks(options) {
       ? Object.assign({}, tempCursor, results.nextKey)
       : initialState.cursor;
 
-    console.log({ tempCursor });
     yield put(artworksActions.artworksLoaded({ artworks, user }));
     yield put(artworksActions.artworksFilterSort());
     yield put(artworksActions.setCursor({ cursor: tempCursor }));

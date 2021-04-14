@@ -116,8 +116,6 @@ export function ArtworksPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log({ hasNextPage });
-
     if (urlArtworkId) {
       console.log(
         `ArtworksPage | getArtworks` +

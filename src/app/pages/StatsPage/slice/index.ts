@@ -41,7 +41,6 @@ const slice = createSlice({
       state.loaded = null;
     },
     getStats(state, action) {
-      console.log(`getStats | action: ${action}`);
       state.error = null;
       state.loading = true;
       state.loaded = null;

@@ -126,8 +126,6 @@ export function UserPage() {
   const user = useSelector(selectUser);
   const stats = useSelector(selectStats);
 
-  console.log({ stats });
-
   const rowsGlobalStats = [
     createData('Artists', stats.artists.total),
     createData('Artworks', stats.artworks.total),
@@ -246,7 +244,6 @@ export function UserPage() {
     });
 
   useEffect(() => {
-    console.log(`dispatch getStats`);
     dispatch(statsActions.getStats());
   }, [dispatch]);
 

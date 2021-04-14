@@ -106,11 +106,7 @@ export function StatsPage() {
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  console.log({ stats });
-  console.log({ user });
-
   useEffect(() => {
-    console.log(`dispatch getStats`);
     dispatch(actions.getStats());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -98,8 +98,6 @@ export function ArtistsPage() {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log({ hasNextPage });
-
     if (urlArtistId) {
       console.log(
         `ArtistsPage | getArtists` +

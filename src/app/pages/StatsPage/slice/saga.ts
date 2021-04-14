@@ -1,7 +1,5 @@
 import { put, call, takeLeading } from 'redux-saga/effects';
 import request from 'utils/request';
-// import { selectStats } from './selectors';
-// import { Stats } from 'types/Stats';
 import { GET_STATS } from 'app/constants';
 import { statsActions as actions } from '.';
 
@@ -15,10 +13,8 @@ export function* getStats() {
   try {
     const requestURL = `${API_ROOT}/stats/`;
     console.log(`SAGA | getStats | ${requestURL}`);
-
     const { stats } = yield call(request, requestURL);
-    console.log(`SAGA | getStats | STATS`);
-    console.log({ stats });
+
     yield put(actions.setStats(stats));
     yield put(actions.statsLoaded(stats));
   } catch (err) {
