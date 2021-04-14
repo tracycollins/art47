@@ -1,51 +1,56 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
-// import React, { useRef, useEffect, useState, useCallback } from 'react';
+
 import React, { useRef, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDropzone } from 'react-dropzone';
-
-import { useUserSlice } from 'app/pages/UserPage/slice';
-// import { useHistory } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
+// import { useUserSlice } from 'app/pages/UserPage/slice';
 import { useAuth0 } from '@auth0/auth0-react';
 import { makeStyles } from '@material-ui/core/styles';
-// import { selectUser } from './slice/selectors';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import CardMedia from '@material-ui/core/CardMedia';
 import Container from '@material-ui/core/Container';
-import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
+import { selectStats } from 'app/pages/StatsPage/slice/selectors';
+import { userActions } from 'app/pages/UserPage/slice';
+import { statsActions } from 'app/pages/StatsPage/slice';
 
 const DEBUG_MODE = false;
 
 const useStyles = makeStyles(theme => ({
-  // root: {
-  //   maxWidth: 345,
-  // },
   root: {
-    // width: '100%',
-    // height: '100%',
-    // objectFit: 'cover',
-    // overflow: 'hidden',
+    // display: 'flex',
+    width: '100%',
+  },
+  stats: {
     display: 'flex',
-    // flexWrap: 'wrap',
-    // flexDirection: 'row',
+    width: '50%',
+    margin: theme.spacing(1),
+  },
+  table: {
+    // minWidth: 650,
+    maxWidth: 200,
   },
   media: {
-    width: 200,
-    height: 200,
+    width: 240,
+    height: 240,
     margin: theme.spacing(1),
   },
   dropZone: {
@@ -53,7 +58,6 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    // align: 'center',
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -66,72 +70,95 @@ const useStyles = makeStyles(theme => ({
     transform: 'rotate(180deg)',
   },
   textField: {
-    // marginLeft: theme.spacing(1),
-    // marginRight: theme.spacing(1),
     margin: theme.spacing(1),
-    width: '25ch',
+    width: '40ch',
   },
   profile: {
-    width: '50%',
-    margin: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'flex-end',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   profileForm: {
-    width: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'left',
+    // justifyContent: 'right',
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  profileFormInput: {
+    // backgroundColor: '#eeeeee',
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  profileImage: {
+    width: 0.25 * window.innerHeight,
+    height: 0.25 * window.innerHeight,
     margin: theme.spacing(1),
+    // marginTop: theme.spacing(1),
+    // marginBottom: theme.spacing(1),
   },
   button: {
+    marginRight: theme.spacing(1),
+    // marginBottom: theme.spacing(1),
+  },
+  buttonGroup: {
+    // width: '100%',
     margin: theme.spacing(1),
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   avatar: {},
 }));
 
+function createData(entity, total) {
+  return { entity, total };
+}
+
 export function UserPage() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const form = useRef(null);
+  const dispatch = useDispatch();
+  const classes = useStyles();
   const user = useSelector(selectUser);
+  const stats = useSelector(selectStats);
+
+  console.log({ stats });
+
+  const rowsGlobalStats = [
+    createData('Artists', stats.artists.total),
+    createData('Artworks', stats.artworks.total),
+    createData('Users', stats.users.total),
+    createData('Ratings', stats.ratings.total),
+  ];
+
+  const rowsUserStats = [
+    createData('Rated', user.rated),
+    createData('Unrated', user.unrated.length),
+  ];
 
   const onDrop = useCallback(acceptedFiles => {
     console.log(`DROPPED FILES: ${acceptedFiles.length}`);
-    // acceptedFiles.forEach(file => {
     const file = acceptedFiles[0];
     dispatch(
-      actions.uploadFile({
+      userActions.uploadFile({
         dataType: 'image',
         type: 'profileImage',
         file: file,
       }),
     );
-
-    // reader.onabort = () => console.log('file reading was aborted');
-    // reader.onerror = () => console.log('file reading has failed');
-    // reader.onload = () => {
-    //   // Do whatever you want with the file contents
-    //   const binaryStr = reader.result;
-    //   // console.log(binaryStr);
-    //   dispatch(
-    //     actions.uploadFile({
-    //       dataType: 'image',
-    //       type: 'profileImage',
-    //       file: file,
-    //       fileName: 'profile.jpg',
-    //       filePath: file.path,
-    //       fileSize: file.size,
-    //       data: binaryStr,
-    //     }),
-    //   );
-    // };
-    // reader.readAsArrayBuffer(file);
-    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const form = useRef(null);
-  const { actions } = useUserSlice();
-  const dispatch = useDispatch();
-  const classes = useStyles();
-
   const [editProfile, setEditProfile] = React.useState(false);
+  const [profileImage, setProfileImage] = React.useState(
+    user.image && user.image.url ? user.image.url : '/art47_logo.png',
+  );
 
   const handleEditUser = () => {
     setEditProfile(true);
@@ -145,7 +172,7 @@ export function UserPage() {
       (value, key) => (formUser[key] = value !== '' ? value : null),
     );
     const newUser = Object.assign({}, user, formUser);
-    dispatch(actions.updateUser({ user: newUser }));
+    dispatch(userActions.updateUser({ user: newUser }));
     setEditProfile(false);
   };
 
@@ -203,7 +230,7 @@ export function UserPage() {
         return <div key={linkType}> </div>;
     }
     return (
-      <Typography color="textSecondary" key={linkType}>
+      <Typography key={linkType}>
         {icon}
         <Link href={url} target="_blank" rel="noreferrer">
           {text}
@@ -218,20 +245,85 @@ export function UserPage() {
       return createLink({ user, linkType });
     });
 
-  let profileImage =
-    user.image && user.image.url ? user.image.url : '/art47_logo.png';
+  useEffect(() => {
+    console.log(`dispatch getStats`);
+    dispatch(statsActions.getStats());
+  }, [dispatch]);
 
   useEffect(() => {
     if (user.image && user.image.url) {
-      profileImage = user.image.url;
+      setProfileImage(user.image.url);
     } else if (user && user.picture) {
-      profileImage = user.picture;
+      setProfileImage(user.picture);
+    } else {
+      setProfileImage(`/art47_logo.png`);
     }
   }, [user]);
 
+  const userStats = () => (
+    <div className={classes.stats}>
+      <TableContainer elevation={0} component={Paper}>
+        <Table
+          className={classes.table}
+          size="small"
+          aria-label="a dense table"
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                User Stats
+              </TableCell>
+              <TableCell component="th" scope="row" align="right">
+                total
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rowsUserStats.map(row => (
+              <TableRow key={row.entity}>
+                <TableCell component="th" scope="row">
+                  {row.entity}
+                </TableCell>
+                <TableCell align="right">{row.total}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TableContainer elevation={0} component={Paper}>
+        <Table
+          className={classes.table}
+          size="small"
+          aria-label="a dense table"
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                Global Stats
+              </TableCell>
+              <TableCell component="th" scope="row" align="right">
+                total
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rowsGlobalStats.map(row => (
+              <TableRow key={row.entity}>
+                <TableCell component="th" scope="row">
+                  {row.entity}
+                </TableCell>
+                <TableCell align="right">{row.total}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
+
   const userProfile = () => (
     <Container>
-      <Card className={classes.profile}>
+      <div className={classes.profile}>
         <CardMedia
           className={classes.media}
           image={profileImage}
@@ -242,20 +334,14 @@ export function UserPage() {
             {user ? `${user.firstName} ${user.lastName}` : ''}
           </Typography>
           <Typography variant="h6" component="h3">
-            {user ? `aka: ${user.nickname}` : ''}
+            {user ? `username: ${user.userName}` : ''}
           </Typography>
-          <Typography color="textSecondary">
-            {user ? user.email : ''}
-          </Typography>
-          <Typography color="textSecondary">
-            {user ? user.location : ''}
-          </Typography>
-          <Typography color="textSecondary">{user ? user.bio : ''}</Typography>
+          <Typography>{user ? user.email : ''}</Typography>
+          <Typography>{user ? user.location : ''}</Typography>
+          <Typography>{user ? user.bio : ''}</Typography>
           {userLinks()}
-          <Typography color="textSecondary">
-            {user && DEBUG_MODE ? `ID: ${user.id}` : ''}
-          </Typography>
-          <Typography color="textSecondary">
+          <Typography>{user && DEBUG_MODE ? `ID: ${user.id}` : ''}</Typography>
+          <Typography>
             {user && DEBUG_MODE ? `DB ID: ${user._id}` : ''}
           </Typography>
         </CardContent>
@@ -283,18 +369,15 @@ export function UserPage() {
             </Button>
           )}
         </CardActions>
-      </Card>
+      </div>
+      {userStats()}
     </Container>
   );
 
   const userProfileForm = () => (
     <Container>
-      <Card className={classes.profile}>
-        <CardMedia
-          className={classes.media}
-          // image={user ? user.picture : '/art47_logo.png'}
-          image={profileImage}
-        />
+      <div className={classes.profile}>
+        <CardMedia className={classes.profileImage} image={profileImage} />
         <CardMedia
           className={classes.media}
           image={'/art47_logo.png'}
@@ -311,11 +394,11 @@ export function UserPage() {
             </Typography>
           ) : (
             <Typography className={classes.dropZone}>
-              {`Drag 'n' drop a profile image here, or click to select files`}
+              {`Drag 'n' drop a profile image here(jpg or png), or click to select a file`}
             </Typography>
           )}
         </CardMedia>
-      </Card>
+      </div>
       <form
         ref={form}
         className={classes.profileForm}
@@ -323,78 +406,85 @@ export function UserPage() {
         autoComplete="off"
         onSubmit={handleFormSubmit}
       >
-        <TextField
-          className={classes.textField}
-          id="user-name-first"
-          label="first name"
-          name="firstName"
-          defaultValue={user.firstName}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-name-last"
-          label="last name"
-          name="lastName"
-          defaultValue={user.lastName}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-nickname"
-          label="nickname"
-          name="nickname"
-          defaultValue={user.nickname}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-email"
-          label="email"
-          name="email"
-          defaultValue={user.email}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-location"
-          label="location"
-          name="location"
-          defaultValue={user.location}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-bio"
-          label="bio"
-          name="bio"
-          defaultValue={user.bio}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-url"
-          label="user-url"
-          name="userUrl"
-          defaultValue={user.userUrl}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-twitter"
-          label="twitter username"
-          name="twitterUsername"
-          defaultValue={user.twitterUsername}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-facebook"
-          label="facebook username"
-          name="facebookUsername"
-          defaultValue={user.facebookUsername}
-        />
-        <TextField
-          className={classes.textField}
-          id="user-instagram-username"
-          label="instagram username"
-          name="instagramUsername"
-          defaultValue={user.instagramUsername}
-        />
-        <Divider />
-        <ButtonGroup>
+        <div className={classes.profileFormInput}>
+          <TextField
+            className={classes.textField}
+            id="user-name-first"
+            label="first name"
+            name="firstName"
+            defaultValue={user.firstName}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-name-last"
+            label="last name"
+            name="lastName"
+            defaultValue={user.lastName}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-username"
+            label="userName"
+            name="userName"
+            defaultValue={user.userName}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-email"
+            label="email"
+            name="email"
+            defaultValue={user.email}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-location"
+            label="location"
+            name="location"
+            defaultValue={user.location}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-bio"
+            label="bio"
+            name="bio"
+            defaultValue={user.bio}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-url"
+            label="user-url"
+            name="userUrl"
+            defaultValue={user.userUrl}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-twitter"
+            label="twitter username"
+            name="twitterUsername"
+            defaultValue={user.twitterUsername}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-facebook"
+            label="facebook username"
+            name="facebookUsername"
+            defaultValue={user.facebookUsername}
+          />
+          <TextField
+            className={classes.textField}
+            id="user-instagram-username"
+            label="instagram username"
+            name="instagramUsername"
+            defaultValue={user.instagramUsername}
+          />
+          <TextField
+            className={classes.textField}
+            label="OAUTH ID"
+            disabled
+            defaultValue={user.oauthID}
+          />
+        </div>
+        <ButtonGroup className={classes.buttonGroup}>
           <Button
             className={classes.button}
             type="submit"
@@ -426,7 +516,5 @@ export function UserPage() {
   const content = editProfile =>
     editProfile ? userProfileForm() : userProfile();
 
-  return (
-    <Container style={{ marginTop: '3em' }}>{content(editProfile)}</Container>
-  );
+  return <Container className={classes.root}>{content(editProfile)}</Container>;
 }

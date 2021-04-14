@@ -1,4 +1,4 @@
-import { put, call, takeLeading, delay, select } from 'redux-saga/effects';
+import { put, call, takeLeading, select } from 'redux-saga/effects';
 import request from 'utils/request';
 import { selectUser } from './selectors';
 import { User } from 'types/User';
@@ -35,7 +35,6 @@ export function* setCurrentUser(params) {
 
 export function* getUser(params) {
   try {
-    yield delay(500);
     const user = params.payload;
     console.log(`SAGA | getUser | USER SUB: ${user.sub} API_ROOT: ${API_ROOT}`);
 

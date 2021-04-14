@@ -28,6 +28,7 @@ import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
 import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
+import StorageIcon from '@material-ui/icons/Storage';
 import { makeStyles } from '@material-ui/core/styles';
 // import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
@@ -183,6 +184,9 @@ export function Header() {
       case 'info':
         currentIcon = <InfoIcon />;
         break;
+      case 'stats':
+        currentIcon = <StorageIcon />;
+        break;
 
       default:
     }
@@ -243,6 +247,7 @@ export function Header() {
           'artworks',
           'thanks',
           'info',
+          'stats',
           'help',
         ].map((text, index) => (
           <div key={text}>{listIcon(text, index)}</div>

@@ -34,6 +34,7 @@ export const INITIAL_STATE = {
   },
   artworks: [],
   artists: [],
+  stats: {},
 };
 
 export const GET_USER = 'user/getUser';
@@ -51,6 +52,8 @@ export const SET_ARTWORKS = 'artworks/setArtworks';
 export const GET_ARTWORKS = 'artworks/getArtworks';
 export const GET_ARTWORK_BY_ID = 'artworks/getArtworkById';
 export const SET_CURSOR_ARTWORKS = 'artworks/setCursor';
+
+export const GET_STATS = 'stats/getStats';
 
 export const UPDATE_FILTER_SORT = 'artworks/updateFilterSort';
 export const UPDATE_RATING = 'artworks/updateRating';

@@ -14,6 +14,7 @@ import { UserPage } from './pages/UserPage/Loadable';
 import { HomePage } from './pages/HomePage/Loadable';
 import { InfoPage } from './pages/InfoPage/Loadable';
 import { ThanksPage } from './pages/ThanksPage/Loadable';
+import { StatsPage } from './pages/StatsPage/Loadable';
 import { Header } from './components/Header';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +64,7 @@ export function App() {
         <Route path="/profile" component={UserPage} />
         <Route path="/info" component={InfoPage} />
         <Route path="/thanks" component={ThanksPage} />
+        <Route path="/stats" component={StatsPage} />
         <Route path="/logout" />
         <Route path="/" component={HomePage} />
         <Route path="" component={NotFoundPage} />
