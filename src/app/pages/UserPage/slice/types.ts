@@ -5,6 +5,7 @@ export interface UserState {
   user: User;
   loaded: number | null;
   loading: boolean;
+  oauthID?: string | null;
   error?: UserErrorType | null;
 }
 

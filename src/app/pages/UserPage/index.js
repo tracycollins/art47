@@ -91,26 +91,36 @@ export function UserPage() {
 
   const onDrop = useCallback(acceptedFiles => {
     console.log(`DROPPED FILES: ${acceptedFiles.length}`);
-    acceptedFiles.forEach(file => {
-      const reader = new FileReader();
+    // acceptedFiles.forEach(file => {
+    const file = acceptedFiles[0];
+    dispatch(
+      actions.uploadFile({
+        dataType: 'image',
+        type: 'profileImage',
+        file: file,
+      }),
+    );
 
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading has failed');
-      reader.onload = () => {
-        // Do whatever you want with the file contents
-        const binaryStr = reader.result;
-        console.log(binaryStr);
-        dispatch(
-          actions.uploadFile({
-            dataType: 'image',
-            type: 'profileImage',
-            fileName: 'profile.jpg',
-            data: binaryStr,
-          }),
-        );
-      };
-      reader.readAsArrayBuffer(file);
-    });
+    // reader.onabort = () => console.log('file reading was aborted');
+    // reader.onerror = () => console.log('file reading has failed');
+    // reader.onload = () => {
+    //   // Do whatever you want with the file contents
+    //   const binaryStr = reader.result;
+    //   // console.log(binaryStr);
+    //   dispatch(
+    //     actions.uploadFile({
+    //       dataType: 'image',
+    //       type: 'profileImage',
+    //       file: file,
+    //       fileName: 'profile.jpg',
+    //       filePath: file.path,
+    //       fileSize: file.size,
+    //       data: binaryStr,
+    //     }),
+    //   );
+    // };
+    // reader.readAsArrayBuffer(file);
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -208,12 +218,19 @@ export function UserPage() {
       return createLink({ user, linkType });
     });
 
+  let profileImage = '/art47_logo.png';
+  if (user.image && user.image.url) {
+    profileImage = user.image.url;
+  } else if (user && user.picture) {
+    profileImage = user.picture;
+  }
+
   const userProfile = () => (
     <Container>
       <Card className={classes.profile}>
         <CardMedia
           className={classes.media}
-          image={user ? user.picture : '/art47_logo.png'}
+          image={profileImage}
           // title={user ? `NAME: ${user.name}` : ''}
         />
         <CardContent>
@@ -271,14 +288,15 @@ export function UserPage() {
       <Card className={classes.profile}>
         <CardMedia
           className={classes.media}
-          image={user ? user.picture : '/art47_logo.png'}
+          // image={user ? user.picture : '/art47_logo.png'}
+          image={profileImage}
         />
         <CardMedia
           className={classes.media}
           image={'/art47_logo.png'}
           {...getRootProps()}
         >
-          <input {...getInputProps()} />
+          <input name={'profileImage'} {...getInputProps()} />
           {isDragActive ? (
             <Typography
               className={classes.dropZone}

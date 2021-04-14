@@ -29,6 +29,7 @@ export function* setCurrentUser(params) {
     yield put(actions.setUser(user));
   } catch (err) {
     console.error(err);
+    yield put(actions.userError(err));
   }
 }
 
@@ -48,6 +49,7 @@ export function* getUser(params) {
     yield put(actions.userLoaded(newUser));
   } catch (err) {
     console.error(err);
+    yield put(actions.userError(err));
   }
 }
 
@@ -98,25 +100,42 @@ export function* uploadFile(action) {
     const requestURL = `${API_ROOT}/users/upload/`;
     const user: User = yield select(selectUser);
 
-    const uploadObj = action.payload;
-    uploadObj.user = user;
+    const { type, dataType, file } = action.payload;
 
     console.log(
-      `uploadFile | TYPE: ${uploadObj.type} | DATA TYPE: ${uploadObj.dataType} | DATA SIZE: ${uploadObj.data.byteLength}`,
+      `uploadFile | TYPE: ${type} | DATA TYPE: ${dataType} | FILE: ${file.name} | FILE SIZE: ${file.size}`,
     );
-    console.log({ uploadObj });
+
+    const fileName = file.name;
+    let data = new FormData();
+    const oauthID = user.oauthID || '';
+    data.append('profileImage', file);
+    data.append('file_name', fileName);
+    data.append('oauthID', oauthID);
+    // data.append('user', subUser);
+    const POST_FILE_OPTIONS = {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      // headers: {
+      //   'Content-Type': 'multipart/form-data',
+      // },
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      // body: JSON.stringify(data), // body data type must match "Content-Type" header
+    };
 
     const options = {
-      ...POST_OPTIONS,
-      body: JSON.stringify(uploadObj),
+      ...POST_FILE_OPTIONS,
+      body: data,
     };
-    const result = yield call(request, requestURL, options);
 
+    const result = yield call(request, requestURL, options);
     console.log({ result });
+    const updatedUser = { ...user, ...result.user };
+
+    yield put(actions.setUser(updatedUser));
+    yield put(actions.userLoaded(updatedUser));
   } catch (err) {
     console.error(err);
-
-    // yield put(userUpdateError(err));
+    yield put(actions.userError(err));
   }
 }
 
@@ -141,8 +160,7 @@ export function* authenticatedUser(action) {
     yield put(actions.userLoaded(updatedUser));
   } catch (err) {
     console.error(err);
-
-    // yield put(userUpdateError(err));
+    yield put(actions.userError(err));
   }
 }
 

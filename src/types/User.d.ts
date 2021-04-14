@@ -1,6 +1,7 @@
 interface UserItem {
   id?: string;
   sub?: string;
+  oauthID?: string;
   image?: string;
   picture?: string;
 }
