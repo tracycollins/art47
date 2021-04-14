@@ -8,20 +8,20 @@ import { StatsState, StatsErrorType } from './types';
 export const initialState: StatsState = {
   stats: {
     artists: {
-      total: 47,
+      total: 0,
     },
     artworks: {
-      total: 147,
+      total: 0,
     },
     users: {
-      total: 473,
+      total: 0,
     },
     ratings: {
-      total: 4747,
+      total: 0,
     },
     user: {
-      rated: 1232,
-      unrated: 447,
+      rated: 0,
+      unrated: 0,
     },
   },
   loaded: null,

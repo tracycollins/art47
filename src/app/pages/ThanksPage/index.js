@@ -64,6 +64,8 @@ export function ThanksPage() {
   const user = useSelector(selectUser);
 
   const artistsDisplay = useCallback(() => {
+    dispatch(actions.getArtists());
+
     const artistsDisplayIds = [
       2,
       3,
@@ -83,12 +85,12 @@ export function ThanksPage() {
       24,
       28,
     ];
-    for (const id of artistsDisplayIds) {
-      if (!loading && !artists.find(artist => parseInt(artist.id) === id)) {
-        console.log(`dispatch getArtistById: ${id} | loading: ${loading}`);
-        dispatch(actions.getArtistById(id));
-      }
-    }
+    // for (const id of artistsDisplayIds) {
+    //   if (!loading && !artists.find(artist => parseInt(artist.id) === id)) {
+    //     console.log(`dispatch getArtistById: ${id} | loading: ${loading}`);
+    //     dispatch(actions.getArtistById(id));
+    //   }
+    // }
 
     const displayArtists = artists.filter(artist => {
       return artistsDisplayIds.includes(parseInt(artist.id));
@@ -97,7 +99,7 @@ export function ThanksPage() {
     return displayArtists.map(artist => (
       <ArtistExcerpt key={artist.id} user={user} artist={artist} />
     ));
-  }, [user, loading, actions, artists, dispatch]);
+  }, [user, actions, artists, dispatch]);
 
   useEffect(() => {
     artistsDisplay();
@@ -123,9 +125,6 @@ export function ThanksPage() {
                 spacing={50}
               >
                 {artistsDisplay()}
-                <div className={classes.progress}>
-                  {loading ? <CircularProgress /> : <></>}
-                </div>
               </GridList>
             )}
           </div>
