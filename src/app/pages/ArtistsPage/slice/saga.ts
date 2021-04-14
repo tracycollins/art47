@@ -1,12 +1,4 @@
-// import { useSelector, useDispatch } from 'react-redux';
-import {
-  // take,
-  call,
-  put,
-  select,
-  delay,
-  takeLeading,
-} from 'redux-saga/effects';
+import { call, put, select, takeLeading } from 'redux-saga/effects';
 import { artistsActions } from '.';
 import { initialState } from '.';
 import { artworksActions } from 'app/pages/ArtworksPage/slice/index';
@@ -31,8 +23,6 @@ export function* getArtistById(action) {
   const artistId = action.payload;
   console.log(`artistId | API_ROOT: ${API_ROOT} | ARTIST ID: ${artistId}`);
   try {
-    yield delay(100);
-
     const user: User = yield select(selectUser);
     const userId = user.id || user.sub || 0;
 
