@@ -22,7 +22,7 @@ import { selectUser } from 'app/pages/UserPage/slice/selectors';
 const useStyles = makeStyles(theme => ({
   root: {
     alignItems: 'center',
-    display: 'flex',
+    display: 'block',
     // width: '100%',
   },
   stats: {

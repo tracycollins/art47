@@ -42,6 +42,7 @@ export const SET_USER = 'user/setUser';
 export const UPDATE_USER = 'user/updateUser';
 export const UPLOAD_FILE = 'user/uploadFile';
 export const AUTHENTICATED_USER = 'user/authenticatedUser';
+export const GET_USER_TOP_UNRATED_RECS = 'user/getUserTopUnratedRecArtworks';
 
 export const SET_ARTISTS = 'artists/setArtists';
 export const GET_ARTISTS = 'artists/getArtists';

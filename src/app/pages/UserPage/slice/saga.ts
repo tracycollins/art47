@@ -8,8 +8,10 @@ import {
   UPDATE_USER,
   UPLOAD_FILE,
   AUTHENTICATED_USER,
+  GET_USER_TOP_UNRATED_RECS,
 } from 'app/constants';
 import { userActions as actions } from '.';
+import { artworksActions } from 'app/pages/ArtworksPage/slice';
 
 const developmentAppApiUrl =
   process.env.LOCAL_APP_API_URL || 'http://localhost:3001';
@@ -46,6 +48,31 @@ export function* getUser(params) {
       `SAGA | getUser | DB USER: _ID: ${newUser._id} ID: ${newUser.id}`,
     );
     yield put(actions.userLoaded(newUser));
+  } catch (err) {
+    console.error(err);
+    yield put(actions.userError(err));
+  }
+}
+
+export function* getUserTopUnratedRecArtworks(params) {
+  try {
+    yield put(artworksActions.startLoadArtworks());
+    const user = params.payload.user;
+    console.log(
+      `SAGA | getUserTopUnratedRecArtworks` +
+        ` | USER _ID: ${user._id}` +
+        ` | UNRATED: ${user.unrated ? user.unrated.length : 0}`,
+    );
+
+    const requestURL = `${API_ROOT}/artworks/user/${user.sub}/recs/top/`;
+
+    const { artworks } = yield call(request, requestURL);
+    console.log(
+      `SAGA | getUserTopUnratedRecArtworks | USER: _ID: ${user._id} | ARTWORKS: ${artworks.length}`,
+    );
+    yield put(artworksActions.artworksLoaded({ artworks }));
+    yield put(artworksActions.artworksFilterSort());
+    yield put(artworksActions.endLoadArtworks());
   } catch (err) {
     console.error(err);
     yield put(actions.userError(err));
@@ -169,4 +196,5 @@ export function* userSaga() {
   yield takeLeading(UPDATE_USER, updateUser);
   yield takeLeading(UPLOAD_FILE, uploadFile);
   yield takeLeading(AUTHENTICATED_USER, authenticatedUser);
+  yield takeLeading(GET_USER_TOP_UNRATED_RECS, getUserTopUnratedRecArtworks);
 }

@@ -103,12 +103,10 @@ export function ArtworksPage() {
   const currentArtwork = useSelector(selectCurrentArtwork);
   const hasNextPage = useSelector(selectHasNextPage);
   const loading = useSelector(selectLoading);
-  // const loaded = useSelector(selectLoaded);
   const error = useSelector(selectError);
   const cursor = useSelector(selectCursor);
 
   const [displayCurrentArtwork, setDisplayCurrentArtwork] = useState(false);
-
   const [topRated, toogleTopRated] = useToggle();
   const [topRecs, toogleTopRecs] = useToggle();
   const [unrated, toogleUnrated] = useToggle();

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useUserSlice } from 'app/pages/UserPage/slice';
+import { useArtworksSlice } from 'app/pages/ArtworksPage/slice';
 
 import { Helmet } from 'react-helmet-async';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
@@ -23,6 +24,7 @@ export function App() {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
   const { actions } = useUserSlice();
+  const artworksActions = useArtworksSlice().actions;
   const { isLoading, user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export function App() {
         ` | USER: ${user ? user.sub : 'UNDEFINED'}`,
     );
     if (!isLoading) {
+      dispatch(artworksActions.getArtworks());
       if (isAuthenticated && user) {
         dispatch(actions.authenticatedUser(user));
       } else {

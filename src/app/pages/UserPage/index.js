@@ -14,7 +14,7 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
 // import Link from '@material-ui/core/Link';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -36,28 +36,29 @@ import {
   selectLoading,
   selectLoaded,
 } from 'app/pages/UserPage/slice/selectors';
+import { selectTopUnratedArtwork } from 'app/pages/ArtworksPage/slice/selectors';
+
 import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
 import { userActions } from 'app/pages/UserPage/slice';
 
 const useStyles = makeStyles(theme => ({
   root: {
     margin: 'auto',
-    // textAlign: 'center',
   },
   grid: {
     margin: theme.spacing(1),
     display: 'flex',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   gridItem: {
     flex: 3,
     margin: theme.spacing(1),
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   gridItemArtworks: {
     flex: 5,
+  },
+  topRecsArtworksTitle: {
+    fontWeight: 400,
+    margin: theme.spacing(1),
   },
   media: {
     display: 'block',
@@ -72,7 +73,6 @@ const useStyles = makeStyles(theme => ({
   },
   dropZoneMedia: {
     objectFit: 'constrain',
-    // width: '100%',
     height: '100%',
   },
   dropZoneText: {
@@ -83,7 +83,6 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2),
   },
   table: {
-    // minWidth: 650,
     maxWidth: 200,
   },
   textField: {
@@ -106,12 +105,10 @@ const useStyles = makeStyles(theme => ({
   },
   gridList: {
     display: 'flex',
-    // width: '100%',
     alignItems: 'top',
     justifyContent: 'top',
     marginTop: theme.spacing(1),
     maxHeight: 0.85 * window.innerHeight,
-    // height: 0.5 * window.innerHeight,
   },
   appBar: {
     top: 'auto',
@@ -127,13 +124,7 @@ const useStyles = makeStyles(theme => ({
   recommendation: {
     marginBottom: theme.spacing(1),
   },
-  iconButton: {
-    // padding: theme.spacing(1),
-    // color: '#aa00ff',
-    // backgroundColor: '#aa00ff',
-    // margin: 'none',
-    // padding: 'none',
-  },
+  iconButton: {},
   info: {},
 }));
 
@@ -145,9 +136,12 @@ export function UserPage() {
   const form = useRef(null);
 
   const classes = useStyles();
-  const loading = useSelector(selectLoading);
-  const loaded = useSelector(selectLoaded);
-  const artworks = []; // will contain favs or new recs or ...
+  // const loading = useSelector(selectLoading);
+  const loadedUser = useSelector(selectLoaded);
+  // const loadedArtwork = useSelector(selectArtworkLoaded);
+  const artworks = useSelector(selectTopUnratedArtwork);
+
+  console.log(`artworks: ${artworks.length}`);
 
   const onDrop = useCallback(acceptedFiles => {
     console.log(`DROPPED FILES: ${acceptedFiles.length}`);
@@ -170,6 +164,13 @@ export function UserPage() {
   );
 
   useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(userActions.getUserTopUnratedRecArtworks({ user }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, selectLoading, isAuthenticated]);
+
+  useEffect(() => {
     if (user.image && user.image.url) {
       setProfileImage(user.image.url);
     } else if (user && user.picture) {
@@ -177,7 +178,7 @@ export function UserPage() {
     } else {
       setProfileImage(`/art47_logo.png`);
     }
-  }, [loaded, user]);
+  }, [loadedUser, user, isAuthenticated]);
 
   const handleEditUser = () => {
     setEditProfile(true);
@@ -192,6 +193,7 @@ export function UserPage() {
     );
     const newUser = Object.assign({}, user, formUser);
     dispatch(userActions.updateUser({ user: newUser }));
+    dispatch(userActions.getUserTopUnratedRecArtworks({ user }));
     setEditProfile(false);
   };
 
@@ -256,7 +258,8 @@ export function UserPage() {
   };
   const defaultArtworkImageUrl = '/art47_logo.png';
 
-  const artworksDisplay = () => {
+  const artworksDisplay = artworks => {
+    console.log(`artworksDisplay | artworks: ${artworks.length}`);
     if (artworks.length === 0) {
       return <img key={0} alt="default" src={defaultArtworkImageUrl} />;
     }
@@ -407,7 +410,7 @@ export function UserPage() {
     </Grid>
   );
 
-  const userProfile = () => (
+  const userProfile = artworks => (
     <Container className={classes.root}>
       <Grid container className={classes.grid}>
         <Grid item className={classes.gridItem}>
@@ -415,7 +418,7 @@ export function UserPage() {
             <Image
               style={{ backgroundColor: 'white' }}
               className={classes.image}
-              src={user.image ? user.image.url : null}
+              src={profileImage}
               alt={user.displayName}
               imageStyle={{
                 objectFit: 'contain',
@@ -508,26 +511,24 @@ export function UserPage() {
           </Card>
         </Grid>
         <Grid item className={classes.gridItemArtworks}>
-          {artworks.length === 0 ? (
-            <></>
-          ) : (
-            <div className={classes.artworkListRoot}>
-              <div className={classes.artworkList}>
-                <GridList
-                  className={classes.gridList}
-                  component={'div'}
-                  cellHeight={200}
-                  spacing={5}
-                  cols={5}
-                >
-                  {artworksDisplay()}
-                  <div className={classes.progress}>
-                    {loading ? <CircularProgress /> : <></>}
-                  </div>
-                </GridList>
-              </div>
+          <Typography variant="h6" className={classes.topRecsArtworksTitle}>
+            Your Top Unrated Recs
+          </Typography>
+
+          <div className={classes.artworkListRoot}>
+            <div className={classes.artworkList}>
+              <GridList
+                className={classes.gridList}
+                component={'div'}
+                cellHeight={200}
+                cellWidth={200}
+                spacing={5}
+                cols={6}
+              >
+                {artworksDisplay(artworks)}
+              </GridList>
             </div>
-          )}
+          </div>
         </Grid>
       </Grid>
 
@@ -537,8 +538,12 @@ export function UserPage() {
     </Container>
   );
 
-  const content = editProfile =>
-    editProfile ? userProfileForm() : userProfile();
+  const content = ({ editProfile, artworks }) =>
+    editProfile ? userProfileForm() : userProfile(artworks);
 
-  return <Container className={classes.root}>{content(editProfile)}</Container>;
+  return (
+    <Container className={classes.root}>
+      {content({ editProfile, artworks })}
+    </Container>
+  );
 }

@@ -42,6 +42,13 @@ const slice = createSlice({
       state.loading = true;
       state.loaded = null;
     },
+    getUserTopUnratedRecArtworks(state, action) {
+      const user = action.payload.user;
+      console.log(`getUserTopUnratedRecArtworks | USER: ${user._id}`);
+      state.error = null;
+      state.loading = true;
+      state.loaded = null;
+    },
     uploadFile(state, action) {
       const uploadObj = action.payload;
       console.log({ uploadObj });
