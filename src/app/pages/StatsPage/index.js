@@ -5,10 +5,9 @@ import React, { useEffect } from 'react';
 import Container from '@material-ui/core/Container';
 import { useSelector, useDispatch } from 'react-redux';
 import { useStatsSlice } from 'app/pages/StatsPage/slice';
-// import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { makeStyles } from '@material-ui/core/styles';
-
-import Divider from '@material-ui/core/Divider';
+// import Divider from '@material-ui/core/Divider';
 // import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -22,12 +21,27 @@ import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // display: 'flex',
-    width: '100%',
+    alignItems: 'center',
+    display: 'flex',
+    // width: '100%',
+  },
+  stats: {
+    marginTop: theme.spacing(5),
   },
   table: {
-    // minWidth: 650,
-    maxWidth: 200,
+    marginTop: theme.spacing(5),
+    minWidth: 400,
+    maxWidth: 600,
+    fontSize: '1.5rem',
+  },
+  tableHeader: {},
+  tableHeaderCell: {
+    fontSize: '1.2rem',
+    backgroundColor: theme.palette.primary.dark,
+    color: theme.palette.common.white,
+  },
+  tableBodyCell: {
+    fontSize: '1.1rem',
   },
   media: {
     width: 240,
@@ -100,6 +114,7 @@ function createData(entity, total) {
 }
 
 export function StatsPage() {
+  const { isAuthenticated } = useAuth0();
   const user = useSelector(selectUser);
   const stats = useSelector(selectStats);
   const { actions } = useStatsSlice();
@@ -118,54 +133,77 @@ export function StatsPage() {
     createData('Ratings', stats.ratings.total),
   ];
 
-  const rowsUserStats = [
+  const rowsUserStats = user => [
     createData('Rated', user.rated),
     createData('Unrated', user.unrated.length),
   ];
 
   const statsTable = () => (
     <div className={classes.stats}>
-      <TableContainer elevation={0} component={Paper}>
-        <Table
+      {isAuthenticated ? (
+        <TableContainer
           className={classes.table}
-          size="small"
-          aria-label="a dense table"
+          elevation={0}
+          component={Paper}
         >
-          <TableHead>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                User Stats
-              </TableCell>
-              <TableCell component="th" scope="row" align="right">
-                total
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rowsUserStats.map(row => (
-              <TableRow key={row.entity}>
-                <TableCell component="th" scope="row">
-                  {row.entity}
+          <Table aria-label="user stats">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  className={classes.tableHeaderCell}
+                  component="th"
+                  scope="row"
+                >
+                  {`${user.name} stats`}
                 </TableCell>
-                <TableCell align="right">{row.total}</TableCell>
+                <TableCell
+                  className={classes.tableHeaderCell}
+                  component="th"
+                  scope="row"
+                  align="right"
+                >
+                  total
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Divider />
-      <TableContainer elevation={0} component={Paper}>
-        <Table
-          className={classes.table}
-          size="small"
-          aria-label="a dense table"
-        >
+            </TableHead>
+            <TableBody>
+              {rowsUserStats(user).map(row => (
+                <TableRow key={row.entity}>
+                  <TableCell
+                    className={classes.tableBodyCell}
+                    component="th"
+                    scope="row"
+                  >
+                    {row.entity}
+                  </TableCell>
+                  <TableCell className={classes.tableBodyCell} align="right">
+                    {row.total}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <></>
+      )}
+      <TableContainer className={classes.table} elevation={0} component={Paper}>
+        <Table className={classes.table} aria-label="global stats">
           <TableHead>
             <TableRow>
-              <TableCell component="th" scope="row">
-                Global Stats
+              <TableCell
+                className={classes.tableHeaderCell}
+                component="th"
+                scope="row"
+              >
+                global stats
               </TableCell>
-              <TableCell component="th" scope="row" align="right">
+              <TableCell
+                className={classes.tableHeaderCell}
+                component="th"
+                scope="row"
+                align="right"
+              >
                 total
               </TableCell>
             </TableRow>
@@ -173,10 +211,16 @@ export function StatsPage() {
           <TableBody>
             {rowsGlobalStats.map(row => (
               <TableRow key={row.entity}>
-                <TableCell component="th" scope="row">
+                <TableCell
+                  className={classes.tableBodyCell}
+                  component="th"
+                  scope="row"
+                >
                   {row.entity}
                 </TableCell>
-                <TableCell align="right">{row.total}</TableCell>
+                <TableCell className={classes.tableBodyCell} align="right">
+                  {row.total}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

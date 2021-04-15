@@ -4,16 +4,13 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
-
 import { useDropzone } from 'react-dropzone';
-
 import { makeStyles } from '@material-ui/core/styles';
-
 import TextField from '@material-ui/core/TextField';
 import Image from 'material-ui-image';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Divider from '@material-ui/core/Divider';
+// import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
 // import Link from '@material-ui/core/Link';
@@ -29,7 +26,7 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardActionArea from '@material-ui/core/CardActionArea';
+// import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 // import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
@@ -130,9 +127,14 @@ const useStyles = makeStyles(theme => ({
   recommendation: {
     marginBottom: theme.spacing(1),
   },
-  info: {
-    margin: theme.spacing(1),
+  iconButton: {
+    // padding: theme.spacing(1),
+    // color: '#aa00ff',
+    // backgroundColor: '#aa00ff',
+    // margin: 'none',
+    // padding: 'none',
   },
+  info: {},
 }));
 
 export function UserPage() {
@@ -265,16 +267,6 @@ export function UserPage() {
 
   const userProfileForm = () => (
     <Grid container className={classes.profileRoot}>
-      {/* <Grid item xs className={classes.profileImage}>
-        <Image
-          className={classes.media}
-          src={profileImage}
-          alt={'profile image'}
-          imageStyle={{
-            objectFit: 'contain',
-          }}
-        />
-      </Grid> */}
       <Grid item xs className={classes.profile}>
         <Card className={classes.dropZone} elevation={0}>
           <CardMedia
@@ -416,109 +408,103 @@ export function UserPage() {
   );
 
   const userProfile = () => (
-    <Container
-      // xl={12}
-      // lg={12}
-      // md={12}
-      // sm={12}
-      // xs={12}
-      className={classes.root}
-    >
+    <Container className={classes.root}>
       <Grid container className={classes.grid}>
         <Grid item className={classes.gridItem}>
-          <Card style={{ backgroundColor: 'white' }} className={classes.info}>
-            <CardActionArea>
-              <Image
-                style={{ backgroundColor: 'white' }}
-                className={classes.image}
-                src={user.image ? user.image.url : null}
-                alt={user.displayName}
-                imageStyle={{
-                  objectFit: 'contain',
-                }}
-              />
-              <CardContent>
-                <Typography variant="h5" component="h2">
-                  {user ? `${user.firstName} ${user.lastName}` : ''}
-                </Typography>
-                <Typography variant="h6" component="h3">
-                  {user ? `username: ${user.userName}` : ''}
-                </Typography>
-                <Divider />
-                <Typography>{user ? user.email : ''}</Typography>
-                <Typography>{user ? user.location : ''}</Typography>
-                <Divider />
-              </CardContent>
-              <CardActions>
-                <IconButton
-                  disabled={user.userUrl === undefined}
-                  onClick={event => handleUserSiteClick(event, 'user')}
-                  aria-label="user's web site"
-                >
-                  <AccountBoxIcon />
-                </IconButton>
-                <IconButton
-                  disabled={user.instagramUsername === undefined}
-                  onClick={event => handleUserSiteClick(event, 'instagram')}
-                  aria-label="user's instagram"
-                >
-                  <InstagramIcon />
-                </IconButton>
-                <IconButton
-                  disabled={user.twitterUsername === undefined}
-                  onClick={event => handleUserSiteClick(event, 'twitter')}
-                  aria-label="user's twitter"
-                >
-                  <TwitterIcon />
-                </IconButton>
-                <IconButton
-                  disabled={user.facebookUsername === undefined}
-                  onClick={event => handleUserSiteClick(event, 'facebook')}
-                  aria-label="user's facebook"
-                >
-                  <FacebookIcon />
-                </IconButton>
-                <IconButton
-                  onClick={event => handleUserSiteClick(event, 'search')}
-                  aria-label="search for user"
-                >
-                  <SearchIcon />
-                </IconButton>
-              </CardActions>
-              <CardContent>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  {user.bio}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                {user && isAuthenticated ? (
-                  <>
-                    <Button
-                      onClick={handleEditUser}
-                      variant="contained"
-                      color="primary"
-                    >
-                      UPDATE
-                    </Button>
-                    <Button
-                      onClick={logout}
-                      variant="contained"
-                      color="secondary"
-                    >
-                      LOGOUT
-                    </Button>
-                  </>
-                ) : (
+          <Card style={{ backgroundColor: 'white' }}>
+            <Image
+              style={{ backgroundColor: 'white' }}
+              className={classes.image}
+              src={user.image ? user.image.url : null}
+              alt={user.displayName}
+              imageStyle={{
+                objectFit: 'contain',
+              }}
+            />
+            <CardContent>
+              <Typography variant="h5" component="h2">
+                {user ? `${user.firstName} ${user.lastName}` : ''}
+              </Typography>
+              <Typography variant="h6" component="h3">
+                {user ? `username: ${user.userName}` : ''}
+              </Typography>
+            </CardContent>
+            <CardContent>
+              <Typography>{user ? user.email : ''}</Typography>
+              <Typography>{user ? user.location : ''}</Typography>
+            </CardContent>
+            <IconButton
+              className={classes.iconButton}
+              disabled={user.userUrl === undefined}
+              onClick={event => handleUserSiteClick(event, 'user')}
+              aria-label="user's web site"
+            >
+              <AccountBoxIcon className={classes.iconButton} />
+            </IconButton>
+            <IconButton
+              className={classes.iconButton}
+              disabled={user.instagramUsername === undefined}
+              onClick={event => handleUserSiteClick(event, 'instagram')}
+              aria-label="user's instagram"
+            >
+              <InstagramIcon />
+            </IconButton>
+            <IconButton
+              className={classes.iconButton}
+              disabled={user.twitterUsername === undefined}
+              onClick={event => handleUserSiteClick(event, 'twitter')}
+              aria-label="user's twitter"
+            >
+              <TwitterIcon />
+            </IconButton>
+            <IconButton
+              className={classes.iconButton}
+              disabled={user.facebookUsername === undefined}
+              onClick={event => handleUserSiteClick(event, 'facebook')}
+              aria-label="user's facebook"
+            >
+              <FacebookIcon />
+            </IconButton>
+            <IconButton
+              className={classes.iconButton}
+              onClick={event => handleUserSiteClick(event, 'search')}
+              aria-label="search for user"
+            >
+              <SearchIcon />
+            </IconButton>
+            <CardContent>
+              <Typography variant="body2" color="textSecondary" component="p">
+                {user.bio}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              {user && isAuthenticated ? (
+                <>
                   <Button
-                    onClick={loginWithRedirect}
+                    onClick={handleEditUser}
                     variant="contained"
                     color="primary"
                   >
-                    LOGIN
+                    UPDATE
                   </Button>
-                )}
-              </CardActions>
-            </CardActionArea>
+                  <Button
+                    onClick={logout}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    LOGOUT
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={loginWithRedirect}
+                  variant="contained"
+                  color="primary"
+                >
+                  LOGIN
+                </Button>
+              )}
+            </CardActions>
           </Card>
         </Grid>
         <Grid item className={classes.gridItemArtworks}>
