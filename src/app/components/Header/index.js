@@ -1,23 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
-// import { useDispatch } from 'react-redux';
-// import { useUserSlice } from 'app/pages/UserPage/slice';
 import { useHistory } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
 import { green } from '@material-ui/core/colors';
-// import CardMedia from '@material-ui/core/CardMedia';
 import Container from '@material-ui/core/Container';
-// import Card from '@material-ui/core/Card';
-// import CardActions from '@material-ui/core/CardActions';
-// import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
-// import Button from '@material-ui/core/Button';
-// import ButtonGroup from '@material-ui/core/ButtonGroup';
-// import TextField from '@material-ui/core/TextField';
-// import TextArea from '@material-ui/core/TextArea';
+import Popover from '@material-ui/core/Popover';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -30,7 +20,6 @@ import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
 import StorageIcon from '@material-ui/icons/Storage';
 import { makeStyles } from '@material-ui/core/styles';
-// import { selectUser } from 'app/pages/UserPage/slice/selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,9 +31,13 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     flexDirection: 'column',
   },
+  popover: {
+    pointerEvents: 'none',
+  },
+  paper: {
+    padding: theme.spacing(1),
+  },
   textField: {
-    // marginLeft: theme.spacing(1),
-    // marginRight: theme.spacing(1),
     margin: theme.spacing(1),
     width: '25ch',
   },
@@ -105,6 +98,19 @@ export function Header() {
 
   const [displayHelp, setDisplayHelp] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState(1);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [popoverText, setPopoverText] = React.useState('');
+
+  const handlePopoverOpen = (event, menuText) => {
+    setPopoverText(menuText);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = (event, menuText) => {
+    setAnchorEl(null);
+  };
+
+  const popoverOpen = Boolean(anchorEl);
 
   const handleMenuClick = (event, value) => {
     setSelectedTab(value);
@@ -125,7 +131,7 @@ export function Header() {
       return;
     }
 
-    setDisplayHelp(open);
+    setDisplayHelp(open, anchorEl);
   };
 
   const listIcon = (menuText, index) => {
@@ -139,6 +145,10 @@ export function Header() {
               key={index}
               selected={selectedTab === menuText}
               onClick={e => handleMenuClick(e, menuText)}
+              aria-owns={popoverOpen ? 'mouse-over-popover' : undefined}
+              aria-haspopup="true"
+              onMouseEnter={e => handlePopoverOpen(e, menuText)}
+              onMouseLeave={e => handlePopoverClose(e, menuText)}
             >
               <ListItemIcon className={classes.icon} key={index}>
                 <AccountCircleIcon
@@ -161,6 +171,10 @@ export function Header() {
               key={index}
               selected={selectedTab === menuText}
               onClick={toggleHelp(true)}
+              aria-owns={popoverOpen ? 'mouse-over-popover' : undefined}
+              aria-haspopup="true"
+              onMouseEnter={e => handlePopoverOpen(e, menuText)}
+              onMouseLeave={e => handlePopoverClose(e, menuText)}
             >
               <ListItemIcon className={classes.icon} key={index}>
                 <HelpIcon />
@@ -197,6 +211,10 @@ export function Header() {
           key={index}
           selected={selectedTab === menuText}
           onClick={e => handleMenuClick(e, menuText)}
+          aria-owns={popoverOpen ? 'mouse-over-popover' : undefined}
+          aria-haspopup="true"
+          onMouseEnter={e => handlePopoverOpen(e, menuText)}
+          onMouseLeave={e => handlePopoverClose(e, menuText)}
         >
           <ListItemIcon className={classes.icon} key={index}>
             {currentIcon}
@@ -269,6 +287,27 @@ export function Header() {
       <Drawer anchor="left" open={displayHelp} onClose={toggleHelp(false)}>
         {help()}
       </Drawer>
+      <Popover
+        id="mouse-over-popover"
+        className={classes.popover}
+        classes={{
+          paper: classes.paper,
+        }}
+        open={popoverOpen}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'right',
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Typography>{popoverText}</Typography>
+      </Popover>
     </div>
   );
 }
