@@ -28,7 +28,7 @@ export const selectArtworksDisplayIds = createSelector(
 export const selectTopUnratedArtwork = createSelector(
   [selectDomain, selectUserDomain],
   (artworksState, userState) => {
-    if (!userState) {
+    if (!userState || !userState.user || userState.user.unrated) {
       return artworksState.artworks;
     }
     console.log({ userState });
