@@ -4,6 +4,7 @@ interface UserItem {
   oauthID?: string;
   image?: string;
   picture?: string;
+  unrated?: array;
 }
 
 export interface User extends UserItem {

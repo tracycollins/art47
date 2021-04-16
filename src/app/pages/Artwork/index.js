@@ -79,7 +79,6 @@ export function Artwork({ artwork, handleUpdateRating, prevNext }) {
       console.log('!!! NOT LOGGED IN - RATING IGNORED');
       return;
     }
-
     const ratingInstance = {
       user: { id: currentUser.id, _id: currentUser._id },
       artwork: { id: artwork.id, _id: artwork._id },

@@ -1,6 +1,7 @@
 import { call, put, select, takeLeading } from 'redux-saga/effects';
 import { initialState } from '.';
 import { artworksActions } from '.';
+import { userActions } from 'app/pages/UserPage/slice';
 import { selectUser } from 'app/pages/UserPage/slice/selectors';
 import { selectCursor, selectFilter, selectCurrentArtwork } from './selectors';
 import request from 'utils/request';
@@ -188,6 +189,7 @@ const POST_OPTIONS = {
 };
 
 export function* updateRating(action) {
+  const user = yield select(selectUser);
   const rating = action.payload.rating;
   console.log(
     `updateRating` +
@@ -226,6 +228,11 @@ export function* updateRating(action) {
       }),
     );
     yield put(artworksActions.setCurrentArtworkId(updatedArtwork.id));
+    const unrated = user.unrated.filter(
+      artwork_id => artwork_id !== updatedArtwork._id,
+    );
+    const updatedUser = Object.assign({}, user, { unrated });
+    yield put(userActions.setUser(updatedUser));
     yield put(artworksActions.endLoadArtworks());
   } catch (err) {
     console.error(err);

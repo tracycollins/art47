@@ -521,7 +521,6 @@ export function UserPage() {
                 className={classes.gridList}
                 component={'div'}
                 cellHeight={200}
-                cellWidth={200}
                 spacing={5}
                 cols={6}
               >
