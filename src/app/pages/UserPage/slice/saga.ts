@@ -29,6 +29,7 @@ export function* setCurrentUser(params) {
     );
 
     yield put(actions.setUser(user));
+    yield put(actions.getUserTopUnratedRecArtworks({ user }));
   } catch (err) {
     console.error(err);
     yield put(actions.userError(err));
@@ -48,6 +49,7 @@ export function* getUser(params) {
       `SAGA | getUser | DB USER: _ID: ${newUser._id} ID: ${newUser.id}`,
     );
     yield put(actions.userLoaded(newUser));
+    yield put(actions.getUserTopUnratedRecArtworks({ user: newUser }));
   } catch (err) {
     console.error(err);
     yield put(actions.userError(err));

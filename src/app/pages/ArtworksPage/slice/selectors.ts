@@ -2,8 +2,10 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from 'types';
 import { initialState } from '.';
+import { initialState as initialUserState } from 'app/pages/UserPage/slice';
 
 const selectDomain = (state: RootState) => state.artworks || initialState;
+const selectUserDomain = (state: RootState) => state.user || initialUserState;
 
 export const selectArtworks = createSelector(
   [selectDomain],
@@ -24,10 +26,15 @@ export const selectArtworksDisplayIds = createSelector(
 // );
 
 export const selectTopUnratedArtwork = createSelector(
-  [selectDomain],
-  artworksState => {
+  [selectDomain, selectUserDomain],
+  (artworksState, userState) => {
+    if (!userState) {
+      return artworksState.artworks;
+    }
+    console.log({ userState });
     const unratedArtworks = artworksState.artworks.filter(
-      artwork => !artwork.ratingUser || artwork.ratingUser === undefined,
+      // artwork => !artwork.ratingUser || artwork.ratingUser === undefined,
+      artwork => userState.user.unrated.includes(artwork._id),
     );
     unratedArtworks.sort((a, b) => {
       if (a.recommendationUser && b.recommendationUser) {
@@ -38,7 +45,7 @@ export const selectTopUnratedArtwork = createSelector(
       if (a.id < b.id) return -1;
       return 0;
     });
-    return unratedArtworks.slice(0, 10);
+    return unratedArtworks.slice(0, 9);
   },
 );
 

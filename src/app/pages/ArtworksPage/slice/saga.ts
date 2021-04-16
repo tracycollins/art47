@@ -255,9 +255,6 @@ export function* updateFilterSort(action) {
   }
 }
 
-/**
- * Root saga manages watcher lifecycle
- */
 export function* artworksSaga() {
   yield takeLeading(UPDATE_FILTER_SORT, updateFilterSort);
   yield takeLeading(UPDATE_RATING, updateRating);
