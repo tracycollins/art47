@@ -1,6 +1,6 @@
 {
   "name": "art47",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": false,
   "dependencies": {
     "@auth0/auth0-react": "1.4.0",
