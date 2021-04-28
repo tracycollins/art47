@@ -29,7 +29,9 @@ export function* setCurrentUser(params) {
     );
 
     yield put(actions.setUser(user));
-    yield put(actions.getUserTopUnratedRecArtworks({ user }));
+    if (user && user._id) {
+      yield put(actions.getUserTopUnratedRecArtworks({ user }));
+    }
   } catch (err) {
     console.error(err);
     yield put(actions.userError(err));
