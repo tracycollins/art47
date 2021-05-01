@@ -113,7 +113,7 @@ const useStyles = makeStyles(theme => ({
     // backgroundColor: 'transparent',
   },
   profileCard: { width: 510, margin: 'auto' },
-  profileImage: { width: '100%', height: 520, objectFit: 'contain' },
+  profileImage: { width: '100%', height: 420, objectFit: 'contain' },
   recommendation: {
     marginBottom: theme.spacing(1),
   },
