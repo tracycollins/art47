@@ -86,13 +86,13 @@ export function* getArtworks(options) {
     if (filter.topRated) {
       tempCursor.subDoc = 'rating';
       tempCursor.sort = 'rate';
-      value = tempCursor.rate || value;
+      value = tempCursor.rate !== undefined ? tempCursor.rate : value;
     }
 
     if (filter.topRecs) {
       tempCursor.subDoc = 'recommendation';
       tempCursor.sort = 'score';
-      value = tempCursor.score || value;
+      value = tempCursor.score !== undefined ? tempCursor.score : value;
     }
 
     if (filter.unrated) {
@@ -102,10 +102,10 @@ export function* getArtworks(options) {
     let requestURL = '';
 
     if (
-      !cursor.subDoc ||
-      cursor.subDoc === undefined ||
-      cursor.subDoc === null ||
-      cursor.subDoc === 'none'
+      !tempCursor.subDoc ||
+      tempCursor.subDoc === undefined ||
+      tempCursor.subDoc === null ||
+      tempCursor.subDoc === 'none'
     ) {
       requestURL = `${API_ROOT}/artworks/user/${userId}/cursor/${tempCursor.id}/`;
     } else if (filter.unrated) {

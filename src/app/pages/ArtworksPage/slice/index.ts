@@ -30,6 +30,7 @@ const slice = createSlice({
   reducers: {
     setCursor(state, action) {
       state.cursor = action.payload.cursor;
+      // console.log({ action });
     },
     updateRating(state, action) {
       state.loaded = false;
