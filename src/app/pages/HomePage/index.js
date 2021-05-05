@@ -3,12 +3,13 @@ import Typography from '@material-ui/core/Typography';
 
 import {
   makeStyles,
-  createMuiTheme,
+  // createMuiTheme,
   responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles';
 
-// import reducer from './reducer';
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
+
 import '@fontsource/bungee'; // Defaults to weight 400.
 
 let themeBungee = createMuiTheme({

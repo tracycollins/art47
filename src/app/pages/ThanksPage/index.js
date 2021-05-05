@@ -15,10 +15,12 @@ import {
 
 import {
   makeStyles,
-  createMuiTheme,
+  // createMuiTheme,
   responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles';
+
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
 import '@fontsource/bungee'; // Defaults to weight 400.
 
@@ -43,7 +45,11 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     height: 'auto',
   },
-  title: { marginTop: '5%', textAlign: 'center', justifyContent: 'center' },
+  title: {
+    marginTop: '5%',
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
   artistListRoot: {
     display: 'flex',
     margin: '5%',
@@ -108,8 +114,8 @@ export function ThanksPage() {
   return (
     <div className={classes.root}>
       <ThemeProvider theme={themeBungee}>
-        <Typography className={classes.title}>
-          <h1>THANK YOU, INAUGURAL ARTISTS!</h1>
+        <Typography className={classes.title} variant="h2">
+          THANK YOU, INAUGURAL ARTISTS!
         </Typography>
       </ThemeProvider>
       <ThemeProvider theme={themeBungee}>

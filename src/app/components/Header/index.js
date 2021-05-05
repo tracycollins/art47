@@ -19,7 +19,34 @@ import PeopleIcon from '@material-ui/icons/People';
 import StarsIcon from '@material-ui/icons/Stars';
 import InfoIcon from '@material-ui/icons/Info';
 import StorageIcon from '@material-ui/icons/Storage';
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
+
+import {
+  makeStyles,
+  // createMuiTheme,
+  responsiveFontSizes,
+  ThemeProvider,
+} from '@material-ui/core/styles';
+
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
+
+import '@fontsource/bungee'; // Defaults to weight 400.
+
+let themeBungee = createMuiTheme({
+  typography: {
+    fontFamily: ['Bungee'].join(','),
+    h1: {
+      fontSize: 120,
+    },
+    h2: {
+      fontSize: 40,
+    },
+    h3: {
+      fontSize: 20,
+    },
+  },
+});
+themeBungee = responsiveFontSizes(themeBungee);
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -275,39 +302,41 @@ export function Header() {
   );
 
   return (
-    <div className={classes.root}>
-      <Drawer
-        className={classes.drawer}
-        open
-        anchor="right"
-        variant="permanent"
-      >
-        {drawerList()}
-      </Drawer>
-      <Drawer anchor="left" open={displayHelp} onClose={toggleHelp(false)}>
-        {help()}
-      </Drawer>
-      <Popover
-        id="mouse-over-popover"
-        className={classes.popover}
-        classes={{
-          paper: classes.paper,
-        }}
-        open={popoverOpen}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'right',
-        }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
-      >
-        <Typography>{popoverText}</Typography>
-      </Popover>
-    </div>
+    <ThemeProvider theme={themeBungee}>
+      <div className={classes.root}>
+        <Drawer
+          className={classes.drawer}
+          open
+          anchor="right"
+          variant="permanent"
+        >
+          {drawerList()}
+        </Drawer>
+        <Drawer anchor="left" open={displayHelp} onClose={toggleHelp(false)}>
+          {help()}
+        </Drawer>
+        <Popover
+          id="mouse-over-popover"
+          className={classes.popover}
+          classes={{
+            paper: classes.paper,
+          }}
+          open={popoverOpen}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'center',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'center',
+            horizontal: 'right',
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus
+        >
+          <Typography>{popoverText}</Typography>
+        </Popover>
+      </div>
+    </ThemeProvider>
   );
 }

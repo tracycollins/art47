@@ -5,10 +5,12 @@ import Markdown from 'react-markdown';
 
 import {
   makeStyles,
-  createMuiTheme,
+  // createMuiTheme,
   responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles';
+
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
 import '@fontsource/bungee'; // Defaults to weight 400.
 import { title, text } from './info_txt.js';
