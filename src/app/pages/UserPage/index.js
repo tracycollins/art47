@@ -105,12 +105,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   appBar: {
-    // top: 0,
-    // bottom: 0,
     position: 'fixed',
     right: 72,
     color: theme.palette.primary.main,
-    // backgroundColor: 'transparent',
   },
   profileCard: { width: 510, margin: 'auto' },
   profileImage: { width: '100%', height: 420, objectFit: 'contain' },
@@ -127,12 +124,9 @@ export function UserPage() {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const form = useRef(null);
-
   const classes = useStyles();
   const loadedUser = useSelector(selectLoaded);
   const artworks = useSelector(selectTopUnratedArtwork);
-
-  // console.log(`artworks: ${artworks.length}`);
 
   const onDrop = useCallback(acceptedFiles => {
     console.log(`DROPPED FILES: ${acceptedFiles.length}`);
