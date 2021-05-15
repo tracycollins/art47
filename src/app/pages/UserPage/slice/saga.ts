@@ -6,7 +6,7 @@ import {
   GET_USER,
   SET_USER,
   UPDATE_USER,
-  UPLOAD_FILE,
+  UPLOAD_USER_FILE,
   AUTHENTICATED_USER,
   GET_USER_TOP_UNRATED_RECS,
 } from 'app/constants';
@@ -198,7 +198,7 @@ export function* userSaga() {
   yield takeLeading(SET_USER, setCurrentUser);
   yield takeLeading(GET_USER, getUser);
   yield takeLeading(UPDATE_USER, updateUser);
-  yield takeLeading(UPLOAD_FILE, uploadFile);
+  yield takeLeading(UPLOAD_USER_FILE, uploadFile);
   yield takeLeading(AUTHENTICATED_USER, authenticatedUser);
   yield takeLeading(GET_USER_TOP_UNRATED_RECS, getUserTopUnratedRecArtworks);
 }

@@ -40,7 +40,7 @@ export const INITIAL_STATE = {
 export const GET_USER = 'user/getUser';
 export const SET_USER = 'user/setUser';
 export const UPDATE_USER = 'user/updateUser';
-export const UPLOAD_FILE = 'user/uploadFile';
+export const UPLOAD_USER_FILE = 'user/uploadFile';
 export const AUTHENTICATED_USER = 'user/authenticatedUser';
 export const GET_USER_TOP_UNRATED_RECS = 'user/getUserTopUnratedRecArtworks';
 
@@ -53,6 +53,7 @@ export const SET_ARTWORKS = 'artworks/setArtworks';
 export const GET_ARTWORKS = 'artworks/getArtworks';
 export const GET_ARTWORK_BY_ID = 'artworks/getArtworkById';
 export const SET_CURSOR_ARTWORKS = 'artworks/setCursor';
+export const UPLOAD_ARTWORK_FILE = 'artworks/uploadFile';
 
 export const GET_STATS = 'stats/getStats';
 

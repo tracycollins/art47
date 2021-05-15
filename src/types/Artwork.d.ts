@@ -2,6 +2,7 @@ export interface Artwork {
   _id: string;
   id: string;
   title: string;
+  artist: { id: string; oauthID?: string };
   ratings: array;
   ratingUser: {
     id: string;

@@ -25,6 +25,30 @@ export const selectArtworksDisplayIds = createSelector(
 //     ),
 // );
 
+export const selectArtworkByUser = createSelector(
+  [selectDomain, selectUserDomain],
+  (artworksState, userState) => {
+    if (!userState || !userState.user || !userState.user) {
+      return [];
+    }
+    console.log({ userState });
+    const userArtworks = artworksState.artworks.filter(
+      artwork =>
+        artwork.artist && artwork.artist.oauthID === userState.user.oauthID,
+    );
+    userArtworks.sort((a, b) => {
+      if (a.recommendationUser && b.recommendationUser) {
+        if (a.recommendationUser.score < b.recommendationUser.score) return 1;
+        if (a.recommendationUser.score > b.recommendationUser.score) return -1;
+      }
+      if (a.id > b.id) return 1;
+      if (a.id < b.id) return -1;
+      return 0;
+    });
+    return userArtworks;
+  },
+);
+
 export const selectTopUnratedArtwork = createSelector(
   [selectDomain, selectUserDomain],
   (artworksState, userState) => {
@@ -45,7 +69,8 @@ export const selectTopUnratedArtwork = createSelector(
       if (a.id < b.id) return -1;
       return 0;
     });
-    return unratedArtworks.slice(0, 9);
+    // return unratedArtworks.slice(0, 9);
+    return unratedArtworks;
   },
 );
 

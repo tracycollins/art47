@@ -10,6 +10,7 @@ import { User } from 'types/User';
 import { Cursor } from 'types/Cursor';
 import { Filter } from 'types/Filter';
 import {
+  UPLOAD_ARTWORK_FILE,
   UPDATE_FILTER_SORT,
   UPDATE_RATING,
   GET_ARTWORKS,
@@ -188,6 +189,49 @@ const POST_OPTIONS = {
   // body: JSON.stringify(data), // body data type must match "Content-Type" header
 };
 
+export function* uploadFile(action) {
+  try {
+    const requestURL = `${API_ROOT}/artworks/upload`;
+    const user: User = yield select(selectUser);
+    const { type, dataType, file } = action.payload;
+
+    console.log(
+      `uploadFile | TYPE: ${type} | DATA TYPE: ${dataType} | FILE: ${file.name} | FILE SIZE: ${file.size}`,
+    );
+
+    const fileName = file.name;
+    let data = new FormData();
+    const oauthID = user.oauthID || '';
+    data.append('artworkImage', file);
+    data.append('file_name', fileName);
+    data.append('oauthID', oauthID);
+    const POST_FILE_OPTIONS = {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    };
+
+    const options = {
+      ...POST_FILE_OPTIONS,
+      body: data,
+    };
+
+    const result = yield call(request, requestURL, options);
+    console.log({ result });
+    const updatedArtwork = { ...result.artwork };
+    console.log({ updatedArtwork });
+    yield put(
+      artworksActions.artworksLoaded({
+        artworks: [updatedArtwork],
+      }),
+    );
+    yield put(artworksActions.setCurrentArtworkId(updatedArtwork.id));
+    yield put(artworksActions.endLoadArtworks());
+  } catch (err) {
+    console.error(err);
+    // yield put(actions.userError(err));
+  }
+}
+
 export function* updateRating(action) {
   const user = yield select(selectUser);
   const rating = action.payload.rating;
@@ -257,6 +301,7 @@ export function* updateFilterSort(action) {
 
 export function* artworksSaga() {
   yield takeLeading(UPDATE_FILTER_SORT, updateFilterSort);
+  yield takeLeading(UPLOAD_ARTWORK_FILE, uploadFile);
   yield takeLeading(UPDATE_RATING, updateRating);
   yield takeLeading(GET_ARTWORK_BY_ID, getArtworkById);
   yield takeLeading(GET_ARTWORKS, getArtworks);

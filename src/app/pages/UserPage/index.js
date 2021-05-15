@@ -36,9 +36,15 @@ import {
   // selectLoading,
   selectLoaded,
 } from 'app/pages/UserPage/slice/selectors';
-import { selectTopUnratedArtwork } from 'app/pages/ArtworksPage/slice/selectors';
+import {
+  selectLoaded as selectLoadedArtwork,
+  selectCurrentArtwork,
+  selectTopUnratedArtwork,
+  selectArtworkByUser,
+} from 'app/pages/ArtworksPage/slice/selectors';
 
 import { ArtworkExcerpt } from 'app/pages/ArtworkExcerpt/Loadable';
+import { artworksActions } from 'app/pages/ArtworksPage/slice';
 import { userActions } from 'app/pages/UserPage/slice';
 
 const useStyles = makeStyles(theme => ({
@@ -109,8 +115,9 @@ const useStyles = makeStyles(theme => ({
     right: 72,
     color: theme.palette.primary.main,
   },
-  profileCard: { width: 510, margin: 'auto' },
-  profileImage: { width: '100%', height: 420, objectFit: 'contain' },
+  profileCard: { width: 360 },
+  artworkImage: { width: '100%', height: 360, objectFit: 'contain' },
+  profileImage: { width: '100%', height: 360, objectFit: 'contain' },
   recommendation: {
     marginBottom: theme.spacing(1),
   },
@@ -122,14 +129,18 @@ export function UserPage() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
   const user = useSelector(selectUser);
+  const artwork = useSelector(selectCurrentArtwork);
   const dispatch = useDispatch();
   const form = useRef(null);
+  const artworkForm = useRef(null);
   const classes = useStyles();
   const loadedUser = useSelector(selectLoaded);
+  const loadedArtwork = useSelector(selectLoadedArtwork);
   const artworks = useSelector(selectTopUnratedArtwork);
+  const artistArtworks = useSelector(selectArtworkByUser);
 
-  const onDrop = useCallback(acceptedFiles => {
-    console.log(`DROPPED FILES: ${acceptedFiles.length}`);
+  const onDropProfile = useCallback(acceptedFiles => {
+    console.log(`DROPPED PROFILE FILES: ${acceptedFiles.length}`);
     const file = acceptedFiles[0];
     dispatch(
       userActions.uploadFile({
@@ -141,7 +152,35 @@ export function UserPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const dropZoneProfile = useDropzone({
+    onDrop: onDropProfile,
+  });
+
+  const onDropArtwork = useCallback(acceptedFiles => {
+    console.log(`DROPPED ARTWORK FILES: ${acceptedFiles.length}`);
+    const file = acceptedFiles[0];
+    dispatch(
+      artworksActions.uploadFile({
+        dataType: 'image',
+        type: 'artworkImage',
+        file: file,
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const dropZoneArtwork = useDropzone({
+    onDrop: onDropArtwork,
+  });
+
+  const [addArtwork, setAddArtwork] = React.useState(false);
+  const [artworkImage, setArtworkImage] = React.useState(
+    artwork && artwork.image && artwork.image.url
+      ? artwork.image.url
+      : '/art47_logo.png',
+  );
 
   const [editProfile, setEditProfile] = React.useState(false);
   const [profileImage, setProfileImage] = React.useState(
@@ -165,6 +204,31 @@ export function UserPage() {
     }
   }, [loadedUser, user, isAuthenticated]);
 
+  useEffect(() => {
+    if (artwork && artwork.image && artwork.image.url) {
+      setArtworkImage(artwork.image.url);
+    } else {
+      setArtworkImage(`/art47_logo.png`);
+    }
+  }, [loadedArtwork, artwork, isAuthenticated]);
+
+  const handleAddArtwork = () => {
+    setAddArtwork(true);
+  };
+
+  const handleAddArtworkSubmit = e => {
+    e.preventDefault();
+    const formData = new FormData(artworkForm.current);
+    const formArtwork = {};
+    formData.forEach(
+      (value, key) => (formArtwork[key] = value !== '' ? value : null),
+    );
+    const newArtwork = Object.assign({}, addArtworkForm);
+    console.log({ newArtwork });
+    dispatch(artworksActions.addArtwork({ artwork: newArtwork, user: user }));
+    setAddArtwork(false);
+  };
+
   const handleEditUser = () => {
     setEditProfile(true);
   };
@@ -184,6 +248,10 @@ export function UserPage() {
 
   const handleFormCancel = () => {
     setEditProfile(false);
+  };
+
+  const handleAddArtworkFormCancel = () => {
+    setAddArtwork(false);
   };
 
   const handleFormDelete = () => {
@@ -261,10 +329,13 @@ export function UserPage() {
             <CardMedia
               className={classes.profileImage}
               image={profileImage}
-              {...getRootProps()}
+              {...dropZoneProfile.getRootProps()}
             >
-              <input name={'profileImage'} {...getInputProps()} />
-              {isDragActive ? (
+              <input
+                name={'profileImage'}
+                {...dropZoneProfile.getInputProps()}
+              />
+              {dropZoneProfile.isDragActive ? (
                 <Typography
                   className={classes.dropZoneText}
                   variant="h5"
@@ -500,6 +571,47 @@ export function UserPage() {
           </Card>
         </Grid>
         <Grid item className={classes.gridItemArtworks}>
+          <div>
+            {user && isAuthenticated ? (
+              <>
+                <Button
+                  onClick={handleAddArtwork}
+                  variant="contained"
+                  color="primary"
+                >
+                  ADD ARTWORK
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={loginWithRedirect}
+                variant="contained"
+                color="primary"
+              >
+                LOGIN
+              </Button>
+            )}{' '}
+            <div className={classes.artworkList}>
+              <GridList
+                className={classes.gridList}
+                component={'div'}
+                cellHeight={200}
+                spacing={5}
+                cols={6}
+              >
+                {artworksDisplay(artistArtworks)}
+              </GridList>
+            </div>
+          </div>
+          <Typography
+            className={classes.gridItemArtworksTitle}
+            variant="h5"
+            component="h2"
+          >
+            your artwork
+          </Typography>
+        </Grid>{' '}
+        <Grid item className={classes.gridItemArtworks}>
           <div className={classes.artworkListRoot}>
             <div className={classes.artworkList}>
               <GridList
@@ -525,10 +637,96 @@ export function UserPage() {
     </Container>
   );
 
-  const content = ({ editProfile, artworks }) =>
-    editProfile ? userProfileForm() : userProfile(artworks);
+  const addArtworkForm = () => (
+    <Container className={classes.root}>
+      <Grid container className={classes.artworkRoot}>
+        <Grid item xs className={classes.gridItemArtwork}>
+          <Card className={classes.dropZone} elevation={0}>
+            <CardMedia
+              className={classes.artworkImage}
+              image={artworkImage}
+              {...dropZoneArtwork.getRootProps()}
+            >
+              <input
+                name={'artworkImage'}
+                {...dropZoneArtwork.getInputProps()}
+              />
+              {dropZoneArtwork.isDragActive ? (
+                <Typography
+                  className={classes.dropZoneText}
+                  variant="h5"
+                  component="h2"
+                >
+                  {`DROP ARTWORK HERE!`}
+                </Typography>
+              ) : (
+                <Typography className={classes.dropZoneText}>
+                  {`Drag 'n' drop a artwork image here (jpg or png), or click to select a file`}
+                </Typography>
+              )}
+            </CardMedia>
+          </Card>
+        </Grid>
+        <Grid item xs>
+          <form
+            ref={artworkForm}
+            className={classes.artworkForm}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleAddArtworkSubmit}
+          >
+            <div className={classes.addArtworkFormInput}>
+              <TextField
+                className={classes.textField}
+                id="artwork-title"
+                label="title"
+                name="artworkTitle"
+              />
+            </div>
+            <ButtonGroup className={classes.buttonGroup}>
+              <Button
+                className={classes.button}
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                SAVE
+              </Button>
+              <Button
+                className={classes.button}
+                onClick={handleAddArtworkFormCancel}
+                variant="contained"
+              >
+                CANCEL
+              </Button>
+              <Button
+                className={classes.button}
+                onClick={handleFormDelete}
+                variant="contained"
+                color="secondary"
+              >
+                DELETE
+              </Button>
+            </ButtonGroup>
+          </form>
+        </Grid>
+      </Grid>
+    </Container>
+  );
+
+  const content = ({ editProfile, addArtwork, artworks }) => {
+    if (editProfile) {
+      return userProfileForm();
+    } else if (addArtwork) {
+      return addArtworkForm();
+    } else {
+      return userProfile(artworks);
+    }
+  };
 
   return (
-    <div className={classes.root}>{content({ editProfile, artworks })}</div>
+    <div className={classes.root}>
+      {content({ editProfile, addArtwork, artworks })}
+    </div>
   );
 }

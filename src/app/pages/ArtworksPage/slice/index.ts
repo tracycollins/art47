@@ -32,6 +32,21 @@ const slice = createSlice({
       state.cursor = action.payload.cursor;
       // console.log({ action });
     },
+    addArtwork(state, action) {
+      state.loaded = false;
+      state.loading = true;
+      state.error = null;
+    },
+    uploadFile(state, action) {
+      const uploadObj = action.payload;
+      console.log({ uploadObj });
+    },
+    artworkAdded(state, action) {
+      const artwork = action.payload.artwork;
+      console.log({ artwork });
+      state.loaded = true;
+      state.loading = false;
+    },
     updateRating(state, action) {
       state.loaded = false;
       state.loading = true;
