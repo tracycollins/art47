@@ -681,6 +681,7 @@ export function UserPage() {
                 id="artwork-title"
                 label="title"
                 name="artworkTitle"
+                defaultValue={`untitled_${Date.now()}`}
               />
             </div>
             <ButtonGroup className={classes.buttonGroup}>
